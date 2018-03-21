@@ -15,8 +15,9 @@ class ViewController: UIViewController {
     var gravityPoint: CGPoint = CGPoint(x: UIScreen.main.bounds.size.width/2, y: 230)
     var radiusOfEffect : CGFloat = 200
     
-    var movingAngle: CGFloat = CGFloat.pi/2
-    var orbitVelocity: CGVector! = CGVector(dx: 0, dy: 0);
+//    var movingAngle: CGFloat = CGFloat.pi/2
+//    var orbitVelocity: CGVector! = CGVector(dx: 0, dy: 0);
+    var lineVelocity: CGVector! = CGVector(dx: 0, dy: -8);
     
     private var buffer: UIImage?
     var displayLink : CADisplayLink!
@@ -26,7 +27,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        lastPoint = CGPoint(x: 220, y: UIScreen.main.bounds.size.height/2)
+        lastPoint = CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
         
         //todo offset gravity point for radius
         gWell = UIView(frame: CGRect(origin: CGPoint(x: gravityPoint.x-radiusOfEffect/2, y: gravityPoint.y-radiusOfEffect/2), size: CGSize(width:radiusOfEffect, height: radiusOfEffect)))
@@ -80,71 +81,71 @@ class ViewController: UIViewController {
 
     
     @objc func update(){
-//        containerView.newMoveLocation(p: CGPoint(x: containerView.lastPoint.x, y: containerView.lastPoint.y+1));
-        
-        
-        
 //        newMoveLocation(p: CGPoint(x: lastPoint.x+orbitVelocity.dx, y: lastPoint.y+1+orbitVelocity.dy))
 
-        
-        
-//        let g = 6.6726e-11
-//        let em = 5.98e17
-//        let r = 6.38e6
-//
-//        var v : CGFloat;
-        
-//        movingAngle += CGFloat.random(min: -0.1, max: 0.05);
         let distFromGravityCenter = distance(a: lastPoint, b: gWell.center)
-//        if(distFromGravityCenter < radiusOfEffect/2){
+        if(distFromGravityCenter < radiusOfEffect/2){
 //            print(distFromGravityCenter)
+        
+            //gravRigid = line
+            //transform = grav field
             
-           
-//            v = CGFloat(sqrt((g*em)/r))
-//            print(v)
+            let offset = gWell.center - lastPoint;
+            let offsetVector = CGVector(dx: offset.x, dy: offset.y)
+            //        Vector3 objectOffset = transform.position - gravRigidBody.transform.position; // Get the object's 2d offset relative to this World Body
+            //        objectOffset.z = 0;
             
-            var targetAngle = (atan2(gWell.center.y - lastPoint.y, gWell.center.x - lastPoint.x)) + CGFloat.pi// * (180 / CGFloat.pi));
-            print(targetAngle, movingAngle)
-            movingAngle += (targetAngle - movingAngle)*0.01
-//            var new = (movingAngle * 180) / CGFloat.pi
-//
-//            if(new < 0){
-////                new = 360.0+new;
-//            }
-//
-//            if(new < targetAngle){
-//                new += 1;
-//                movingAngle += (new * CGFloat.pi) / 180;
-//            }
-//
-//            if(new >= targetAngle){
-//                new -= 1;
-//                movingAngle -= (new * CGFloat.pi) / 180;
-//            }
+            //        Vector3 objectTrajectory = gravRigidBody.velocity; // Get object's trajectory vector
             
-//            print(targetAngle, new)
+            //        float angle = Vector3.Angle (objectOffset, objectTrajectory); // Calculate object's angle of attack ( Not used here, but potentially insteresting to have )
             
-//            var c = CGFloat(distFromGravityCenter/10000);
-//            var s1 = gWell.center.x > lastPoint.x ? 1 : -1
-//            var s2 = gWell.center.y > lastPoint.y ? 1 : 1
-//            var sf = CGFloat(s1 * s2);
-//            c *= sf;
-//
-//            movingAngle += c;
+            //        float magsqr = objectOffset.sqrMagnitude; // Square Magnitude of the object's offset
             
-//            var anchorAngle = movingAngle;
-//            if(gWell.center.x > lastPoint.x){
-//                anchorAngle += CGFloat.pi/2;
-//                movingAngle += distFromGravityCenter/10000
-//            }else{
-//                anchorAngle -= CGFloat.pi/2;
-//                movingAngle -= distFromGravityCenter/10000
-//            }
-//        }
+            let magsqr : CGFloat = sqrt(CGVectorDotProduct(vector1: offsetVector, vector2: offsetVector))
+            
+            if ( magsqr > 0.0001 ) { // If object's force is significant
+                
+                // Apply gravitational force to the object - pemdas
+                let gravityVector : CGVector = (CGVectorMultiplyByScalar(vector: CGVectorNormalize(vector: offsetVector), value: 10) / magsqr ) * 2000;
+                //            gravRigidBody.AddForce ( gravityVector * ( orbitalDistance/proximityModifier) );
+                let change = (gravityVector * (distFromGravityCenter / 10000.0));
+                var v = CGVector(dx: lineVelocity.dx, dy: lineVelocity.dy);
+                v += change;
+                lineVelocity = v;
+            }
+            
+        }
 
-//        print(v)
-        var speed : CGFloat = 1;
-        newMoveLocation(p: CGPoint(x: lastPoint.x+(cos(movingAngle+CGFloat.pi)*speed), y: lastPoint.y+(sin(movingAngle+CGFloat.pi)*speed)))
+        
+        let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
+        let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+        newMoveLocation(p: pos);
+//        newMoveLocation(p: CGPoint(x: lastPoint.x+(cos(movingAngle+CGFloat.pi)*speed), y: lastPoint.y+(sin(movingAngle+CGFloat.pi)*speed)))
+    }
+    
+    func CGVectorDotProduct(vector1 : CGVector, vector2 : CGVector) -> CGFloat{
+        return vector1.dx * vector2.dx + vector1.dy * vector2.dy;
+    }
+    
+    func CGVectorLength(vector : CGVector) -> Float
+    {
+        return hypotf(Float(vector.dx), Float(vector.dy));
+    }
+
+    
+    func CGVectorMultiplyByScalar(vector : CGVector, value : CGFloat) -> CGVector{
+        return CGVector(dx: vector.dx * value, dy: vector.dy * value);
+    }
+    
+    func CGVectorNormalize(vector : CGVector) -> CGVector {
+        let length : CGFloat = CGFloat(CGVectorLength(vector: vector));
+        
+        if (length == 0) {
+            return CGVector.zero
+        }
+        
+        let scale : CGFloat = 1.0 / length;
+        return CGVectorMultiplyByScalar(vector: vector, value: scale);
     }
     
     func distance(a: CGPoint, b: CGPoint) -> CGFloat {
@@ -164,6 +165,14 @@ class ViewController: UIViewController {
         displayLink.remove(from: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
         displayLink = nil
     }
+}
+
+func -(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+    return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+}
+
+func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+    return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
 public extension Float {
@@ -203,4 +212,92 @@ public extension CGFloat {
     }
 }
 
+public extension CGVector{
+    /**
+     * Adds two CGVector values and returns the result as a new CGVector.
+     */
+    static public func + (left: CGVector, right: CGVector) -> CGVector {
+        return CGVector(dx: left.dx + right.dx, dy: left.dy + right.dy)
+    }
+    
+    /**
+     * Increments a CGVector with the value of another.
+     */
+    static public func += (left: inout CGVector, right: CGVector) {
+        left = left + right
+    }
+    
+    /**
+     * Subtracts two CGVector values and returns the result as a new CGVector.
+     */
+    static public func - (left: CGVector, right: CGVector) -> CGVector {
+        return CGVector(dx: left.dx - right.dx, dy: left.dy - right.dy)
+    }
+    
+    /**
+     * Decrements a CGVector with the value of another.
+     */
+    static public func -= (left: inout CGVector, right: CGVector) {
+        left = left - right
+    }
+    
+    /**
+     * Multiplies two CGVector values and returns the result as a new CGVector.
+     */
+    static public func * (left: CGVector, right: CGVector) -> CGVector {
+        return CGVector(dx: left.dx * right.dx, dy: left.dy * right.dy)
+    }
+    
+    /**
+     * Multiplies a CGVector with another.
+     */
+    static public func *= (left: inout CGVector, right: CGVector) {
+        left = left * right
+    }
+    
+    /**
+     * Multiplies the x and y fields of a CGVector with the same scalar value and
+     * returns the result as a new CGVector.
+     */
+    static public func * (vector: CGVector, scalar: CGFloat) -> CGVector {
+        return CGVector(dx: vector.dx * scalar, dy: vector.dy * scalar)
+    }
+    
+    /**
+     * Multiplies the x and y fields of a CGVector with the same scalar value.
+     */
+    static public func *= (vector: inout CGVector, scalar: CGFloat) {
+        vector = vector * scalar
+    }
+    
+    /**
+     * Divides two CGVector values and returns the result as a new CGVector.
+     */
+    static public func / (left: CGVector, right: CGVector) -> CGVector {
+        return CGVector(dx: left.dx / right.dx, dy: left.dy / right.dy)
+    }
+    
+    /**
+     * Divides a CGVector by another.
+     */
+    static public func /= (left: inout CGVector, right: CGVector) {
+        left = left / right
+    }
+    
+    /**
+     * Divides the dx and dy fields of a CGVector by the same scalar value and
+     * returns the result as a new CGVector.
+     */
+    static public func / (vector: CGVector, scalar: CGFloat) -> CGVector {
+        return CGVector(dx: vector.dx / scalar, dy: vector.dy / scalar)
+    }
+    
+    /**
+     * Divides the dx and dy fields of a CGVector by the same scalar value.
+     */
+    static public func /= (vector: inout CGVector, scalar: CGFloat) {
+        vector = vector / scalar
+    }
+    
 
+}
