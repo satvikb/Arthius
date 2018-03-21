@@ -12,32 +12,43 @@ class ViewController: UIViewController {
 
     var lastPoint: CGPoint!
     
-    var gravityPoint: CGPoint = CGPoint(x: UIScreen.main.bounds.size.width/2, y: 230)
-    var radiusOfEffect : CGFloat = 200
     
-//    var movingAngle: CGFloat = CGFloat.pi/2
-//    var orbitVelocity: CGVector! = CGVector(dx: 0, dy: 0);
-    var lineVelocity: CGVector! = CGVector(dx: 0, dy: -8);
+    var gravityWells : [GravityWell]! = []
     
+    var lineVelocity: CGVector! = CGVector(dx: 0, dy: -1);
+    var tempLineForces : CGVector! = CGVector.zero;
+    var lineMass : CGFloat = 1; //no effect for now?
+    let G : CGFloat = 1;
+        
     private var buffer: UIImage?
     var displayLink : CADisplayLink!
-
-    var gWell:UIView!;
+    
+    
+    var testLine : UIView!;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         lastPoint = CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
-        
-        //todo offset gravity point for radius
-        gWell = UIView(frame: CGRect(origin: CGPoint(x: gravityPoint.x-radiusOfEffect/2, y: gravityPoint.y-radiusOfEffect/2), size: CGSize(width:radiusOfEffect, height: radiusOfEffect)))
-        gWell.layer.cornerRadius = radiusOfEffect/2;
-        gWell.backgroundColor = UIColor(red: 0, green: 0.2, blue: 1, alpha: 0.4)
-        self.view.addSubview(gWell)
+
+        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/2, y: 230), core: 40, areaOfEffectDiameter: 200, mass: 40)
+        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/5, y: 230), core: 40, areaOfEffectDiameter: 300, mass: 200)
+        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/2+40, y: 450), core: 40, areaOfEffectDiameter: 240, mass: 300)
+
+        testLine = UIView(frame: CGRect(x: 40, y: 200, width: 50, height: 10));
+        testLine.backgroundColor = UIColor.blue
+        self.view.addSubview(testLine)
         
         start()
     }
 
+    func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat){
+        let newWell = GravityWell(corePoint: point, coreDiameter: core, areaOfEffectDiameter: areaOfEffectDiameter)
+        newWell.mass = mass;
+        self.view.addSubview(newWell)
+        gravityWells.append(newWell)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -81,46 +92,79 @@ class ViewController: UIViewController {
 
     
     @objc func update(){
-//        newMoveLocation(p: CGPoint(x: lastPoint.x+orbitVelocity.dx, y: lastPoint.y+1+orbitVelocity.dy))
-
-        let distFromGravityCenter = distance(a: lastPoint, b: gWell.center)
-        if(distFromGravityCenter < radiusOfEffect/2){
-//            print(distFromGravityCenter)
+//        let distFromGravityCenter = distance(a: lastPoint, b: gWell.center)
+//        if(distFromGravityCenter < gWell.areaOfEffectDiameter/2){
+////            print(distFromGravityCenter)
+//
+//            //gravRigid = line
+//            //transform = grav field
+//
+//            let offset = gWell.center - lastPoint;
+//            let offsetVector = CGVector(dx: offset.x, dy: offset.y)
+//            //        Vector3 objectOffset = transform.position - gravRigidBody.transform.position; // Get the object's 2d offset relative to this World Body
+//            //        objectOffset.z = 0;
+//
+//            //        Vector3 objectTrajectory = gravRigidBody.velocity; // Get object's trajectory vector
+//
+//            //        float angle = Vector3.Angle (objectOffset, objectTrajectory); // Calculate object's angle of attack ( Not used here, but potentially insteresting to have )
+//
+//            //        float magsqr = objectOffset.sqrMagnitude; // Square Magnitude of the object's offset
+//
+//            let magsqr : CGFloat = sqrt(CGVectorDotProduct(vector1: offsetVector, vector2: offsetVector))
+//
+//            if ( magsqr > 0.0001 ) { // If object's force is significant
+//
+//                // Apply gravitational force to the object - pemdas
+//                let gravityVector : CGVector = ((CGVectorNormalize(vector: offsetVector) * 10) / magsqr ) * 2000;
+//                //            gravRigidBody.AddForce ( gravityVector * ( orbitalDistance/proximityModifier) );
+//                let change = (gravityVector * (distFromGravityCenter / 10000.0));
+//                var v = CGVector(dx: lineVelocity.dx, dy: lineVelocity.dy);
+//                v += change;
+//                lineVelocity = v;
+//            }
+//
+//        }
+//
+//
+//        let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
+//        let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+//        newMoveLocation(p: pos);
         
-            //gravRigid = line
-            //transform = grav field
-            
-            let offset = gWell.center - lastPoint;
-            let offsetVector = CGVector(dx: offset.x, dy: offset.y)
-            //        Vector3 objectOffset = transform.position - gravRigidBody.transform.position; // Get the object's 2d offset relative to this World Body
-            //        objectOffset.z = 0;
-            
-            //        Vector3 objectTrajectory = gravRigidBody.velocity; // Get object's trajectory vector
-            
-            //        float angle = Vector3.Angle (objectOffset, objectTrajectory); // Calculate object's angle of attack ( Not used here, but potentially insteresting to have )
-            
-            //        float magsqr = objectOffset.sqrMagnitude; // Square Magnitude of the object's offset
-            
-            let magsqr : CGFloat = sqrt(CGVectorDotProduct(vector1: offsetVector, vector2: offsetVector))
-            
-            if ( magsqr > 0.0001 ) { // If object's force is significant
+        tempLineForces = CGVector.zero;
+        
+        for gravWell in gravityWells{
+            let distFromGravityCenter = distance(a: lastPoint, b: gravWell.center)
+            if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
+////                let v = sqrt( G * gravWell.mass / (gravWell.areaOfEffectDiameter/2) )
+                let f = (G * gravWell.mass * lineMass) / (distFromGravityCenter*distFromGravityCenter)
                 
-                // Apply gravitational force to the object - pemdas
-                let gravityVector : CGVector = (CGVectorMultiplyByScalar(vector: CGVectorNormalize(vector: offsetVector), value: 10) / magsqr ) * 2000;
-                //            gravRigidBody.AddForce ( gravityVector * ( orbitalDistance/proximityModifier) );
-                let change = (gravityVector * (distFromGravityCenter / 10000.0));
-                var v = CGVector(dx: lineVelocity.dx, dy: lineVelocity.dy);
-                v += change;
-                lineVelocity = v;
+                
+                let p2 = gravWell.center;
+                let p1 = lastPoint!;
+                let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)// * 180 / CGFloat.pi;
+//                testLine.transform = CGAffineTransform(rotationAngle: angleDeg * CGFloat.pi/180);
+                
+//                tempLineForces += f
+                let fx = f*cos(angleRad)
+                let fy = f*sin(angleRad)
+//                var v = CGVector(dx: tempLineForces.dx, dy: tempLineForces.dy);
+//                v += CGVector(dx: fx, dy: fy)
+                tempLineForces = tempLineForces + (CGVector(dx: fx, dy: fy))
+                print(fx, fy, f, lineVelocity, distFromGravityCenter, tempLineForces)
             }
             
         }
-
+        
+        //pemdas
+        let dV = (tempLineForces * CGFloat(displayLink.duration)) / lineMass
+//        calculate velocity change dV for this timestep using Ft / m.
+//        v = v + dV.
+        lineVelocity = lineVelocity + dV
+        
         
         let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
         let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
         newMoveLocation(p: pos);
-//        newMoveLocation(p: CGPoint(x: lastPoint.x+(cos(movingAngle+CGFloat.pi)*speed), y: lastPoint.y+(sin(movingAngle+CGFloat.pi)*speed)))
     }
     
     func CGVectorDotProduct(vector1 : CGVector, vector2 : CGVector) -> CGFloat{
