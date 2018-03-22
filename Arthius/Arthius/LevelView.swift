@@ -222,22 +222,4 @@ class LevelView : UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func propToPoint(prop: CGPoint) -> CGPoint {
-        return CGPoint(x: propToFloat(prop: prop.x, scaleWithX: true), y: propToFloat(prop: prop.y, scaleWithX: false))
-    }
-    
-    func propToVector(prop: CGVector) -> CGVector {
-        return CGVector(dx: propToFloat(prop: prop.dx, scaleWithX: true), dy: propToFloat(prop: prop.dy, scaleWithX: false))
-    }
-    
-    func propToFloat(prop: CGFloat, scaleWithX: Bool) -> CGFloat{
-        let screen = UIScreen.main.bounds;
-        return scaleWithX == true ? prop * screen.width : prop * screen.height;
-    }
-    
-    func propToRect(prop: CGRect) -> CGRect{
-        let screen = UIScreen.main.bounds;
-        return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
-    }
 }
