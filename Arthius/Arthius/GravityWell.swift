@@ -17,10 +17,15 @@ class GravityWell: UIView {
     var areaOfEffectDiameter : CGFloat!;
     
     var mass : CGFloat = 100000;
-    init(corePoint: CGPoint, coreDiameter: CGFloat, areaOfEffectDiameter: CGFloat) {
+    
+    var touched = {}
+    
+    init(corePoint: CGPoint, coreDiameter: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat) {
         self.corePoint = corePoint;
         self.coreDiameter = coreDiameter;
         self.areaOfEffectDiameter = areaOfEffectDiameter;
+        self.mass = mass;
+        
         let frame = CGRect(origin: CGPoint(x: corePoint.x-areaOfEffectDiameter/2, y: corePoint.y-areaOfEffectDiameter/2), size: CGSize(width:areaOfEffectDiameter, height: areaOfEffectDiameter))
         let coreFrame = CGRect(origin: CGPoint(x: (frame.width/2)-coreDiameter/2, y: (frame.height/2)-coreDiameter/2), size: CGSize(width:coreDiameter, height: coreDiameter))
 
@@ -39,7 +44,18 @@ class GravityWell: UIView {
         
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print(corePoint)
+        touched();
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+}
+
+extension GravityWell {
+    var data : GravityWellData {
+        return GravityWellData(position: self.corePoint, mass: self.mass, coreDiameter: self.coreDiameter, areaOfEffectDiameter: self.areaOfEffectDiameter)
     }
 }
