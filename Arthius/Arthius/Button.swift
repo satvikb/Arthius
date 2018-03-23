@@ -15,22 +15,20 @@ class Button : UIView{
     var heldDownFrame : CGRect!;
     var heldUpFrame : CGRect!;
     
-    var text : UILabel!;
+    var text : Label!;
 
-    init(propFrame: CGRect, text: String = ""){
+    init(propFrame: CGRect, text: String = "", fontSize: CGFloat = 20){
 //        let viewOffsetX : CGFloat = Screen.propToFloat(prop: -propFrame.width/20, scaleWithX: false)
 //        let viewOffsetY : CGFloat = Screen.y(p: -propWidth/20) //-0.01
         
         super.init(frame: Screen.propToRect(prop: propFrame))
         self.backgroundColor = UIColor.gray
         
-        
-        self.text = UILabel(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height))
+        self.text = Label(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), text: text)
         self.text.textAlignment = .center
-        //            self.text.font = UIFont(name: "IowanOldStyle-Roman", size: Screen.fontSize(fontSize: 30))
+        self.text.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
+        self.text.changeTextColor(color: UIColor.white)
         
-        
-        self.text.text = text
         self.addSubview(self.text)
 //        heldDownFrame = Screen.propToRect(prop:propFrame)
 //        heldUpFrame = Screen.propToRect(prop: propFrame).offsetBy(dx: viewOffsetX, dy: viewOffsetX)

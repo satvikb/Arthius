@@ -8,6 +8,8 @@
 
 import UIKit
 
+let DEFAULT_WIDTH : CGFloat = 375;
+
 class Screen {
     public static func propToRect(prop: CGRect) -> CGRect{
         let screen = UIScreen.main.bounds;
@@ -25,5 +27,9 @@ class Screen {
     public static func propToFloat(prop: CGFloat, scaleWithX: Bool) -> CGFloat{
         let screen = UIScreen.main.bounds;
         return scaleWithX == true ? prop * screen.width : prop * screen.height;
+    }
+    
+    public static func fontSize(propFontSize : CGFloat) -> CGFloat {
+        return propFontSize*(UIScreen.main.bounds.width/DEFAULT_WIDTH)
     }
 }

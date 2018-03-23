@@ -8,31 +8,76 @@
 
 import UIKit
 
+let transitionTime : CGFloat = 1;
+
 enum View {
     case Splash
     case Menu
-    case LevelSelect
+    case PlaySelect
+    case CampaignLevelSelect
     case LevelPlay
-    case LevelMake
+    case CreateSelect
+    case LevelCreate
     case LevelOver
 }
 
-class ViewController: UIViewController, MenuViewDelegate{
+class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate{
 
     var currentView : View!;
     var menuView : MenuView!;
-
+    var playSelectView : PlaySelectView!;
+    var campaignLevelSelectView : CampaignLevelSelectView!;
+    
     var l : Level!;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        currentView = View.Menu//View.Splash
+//        for family: String in UIFont.familyNames
+//        {
+//            print("\(family)")
+//            for names: String in UIFont.fontNames(forFamilyName: family)
+//            {
+//                print("== \(names)")
+//            }
+//        }
+//
+        currentView = View.Splash
         
         menuView = MenuView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         menuView.menuDelegate = self;
-        self.view.addSubview(menuView)
+        
+        playSelectView = PlaySelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
+        playSelectView.playSelectDelegate = self;
+        
+        
+        
+        // COPY ALL FILES FROM LEVELS FOLDER TO DOCUMENTS
+        // DO THIS BEFORE CAMPAIGNLEVELVIEW INIT
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        campaignLevelSelectView = CampaignLevelSelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
+        campaignLevelSelectView.campaignLevelSelectDelegate = self;
+        
+        
+        
+        
+        
+        
+        
+        
         
         do {
 //            try Disk.save
@@ -120,20 +165,54 @@ class ViewController: UIViewController, MenuViewDelegate{
             print("error loading level "+error.localizedDescription)
         }
         
+        
+        
+        
+        switchToView(newView: .Menu)
     }
     
     func switchToView(newView : View){
+        func removeView(view: UIView, after: CGFloat){
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(transitionTime), execute: {
+                view.removeFromSuperview()
+            })
+        }
+        
         switch currentView {
         case .Menu:
             menuView.removeFromSuperview()
+            break;
+        case .PlaySelect:
+            playSelectView.animateOut(time: transitionTime)
+            removeView(view: playSelectView, after: transitionTime)
+//            playSelectView.removeFromSuperview()
+            break;
+        case .CampaignLevelSelect:
+            campaignLevelSelectView.animateOut(time: transitionTime)
+            removeView(view: campaignLevelSelectView, after: transitionTime)
+            
         default: break
             
         }
         
+        currentView = newView;
+        
         switch newView {
+        case .Menu:
+            self.view.addSubview(menuView);
+            break;
         case .LevelPlay:
             let levelView : LevelView = LevelView(_level: l)
             self.view.addSubview(levelView)
+            break;
+        case .PlaySelect:
+            self.view.addSubview(playSelectView)
+            playSelectView.animateIn(time: transitionTime)
+            break;
+        case .CampaignLevelSelect:
+            self.view.addSubview(campaignLevelSelectView)
+            campaignLevelSelectView.animateIn(time: transitionTime)
+            
         default: break
             
         }
@@ -165,9 +244,38 @@ class ViewController: UIViewController, MenuViewDelegate{
         return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
     }
     
+    
+    //delegate methods
+    
     func menu_pressPlay(){
-        switchToView(newView: View.LevelPlay)
+        switchToView(newView: View.PlaySelect)
     }
+    
+    func playSelect_pressBack() {
+        switchToView(newView: View.Menu)
+    }
+    
+    func playSelect_pressCampaign() {
+        switchToView(newView: View.CampaignLevelSelect)
+
+    }
+    
+    func playSelect_pressGlobalLevelSelect() {
+        
+    }
+    
+    func playSelect_pressSavedLevelsSelect() {
+        
+    }
+    
+    func campaignLevelSelect_pressBack() {
+        switchToView(newView: .PlaySelect)
+    }
+    
+    func campaignLevelSelect_pressLevel(level: LevelData) {
+        
+    }
+    
 }
 
 //extension ViewController: MenuViewDelegate {
