@@ -85,11 +85,11 @@ class ViewController: UIViewController, MenuViewDelegate{
                         let dict = attr as NSDictionary
                         fileSize = dict.fileSize()
                         
-                        print(fileSize)
+                        print(fileSize, "bytes")
                     } catch {
                         print("Error: \(error)")
                     }
-                                        
+                    
                 } else {
                     print("FILE NOT AVAILABLE")
                 }
@@ -141,7 +141,7 @@ class ViewController: UIViewController, MenuViewDelegate{
     
     func testLevel() -> Level{
         var gWells : [GravityWellData] = []
-            gWells.append(GravityWell(corePoint: CGPoint(x: 0.7, y: 0.5), coreDiameter: 0.1, areaOfEffectDiameter: 0.65, mass: 1000).data)
+//        gWells.append(GravityWell(corePoint: propToPoint(prop: CGPoint(x: 0.7, y: 0.5)), coreDiameter: propToFloat(prop: 0.1, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.65, scaleWithX: true), mass: 1000).data)
         let level = Level(_name: "Lv 1", _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
         
         return level;

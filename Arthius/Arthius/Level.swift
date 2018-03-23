@@ -46,22 +46,22 @@ struct LevelData : Codable {
     var speedBoostData : [SpeedBoostData]
     
 
-    static func archive(w:LevelData) -> Data {
-        var fw = w
-        return Data(bytes: &fw, count: MemoryLayout<LevelData>.stride)
-    }
-    
-    static func unarchive(d:Data) -> LevelData {
-        guard d.count == MemoryLayout<LevelData>.stride else {
-            fatalError("BOOM!")
-        }
-        
-        var w:LevelData?
-        d.withUnsafeBytes({(bytes: UnsafePointer<LevelData>)->Void in
-            w = UnsafePointer<LevelData>(bytes).pointee
-        })
-        return w!
-    }
+//    static func archive(w:LevelData) -> Data {
+//        var fw = w
+//        return Data(bytes: &fw, count: MemoryLayout<LevelData>.stride)
+//    }
+//
+//    static func unarchive(d:Data) -> LevelData {
+//        guard d.count == MemoryLayout<LevelData>.stride else {
+//            fatalError("BOOM!")
+//        }
+//
+//        var w:LevelData?
+//        d.withUnsafeBytes({(bytes: UnsafePointer<LevelData>)->Void in
+//            w = UnsafePointer<LevelData>(bytes).pointee
+//        })
+//        return w!
+//    }
     
     
     
@@ -73,23 +73,23 @@ struct GravityWellData : Codable, Equatable{
     var coreDiameter : CGFloat;
     var areaOfEffectDiameter : CGFloat;
     
-    static func archive(w:GravityWellData) -> Data {
-        var fw = w
-        return Data(bytes: &fw, count: MemoryLayout<GravityWellData>.stride)
-    }
-    
-    static func unarchive(d:Data) -> GravityWellData {
-        guard d.count == MemoryLayout<GravityWellData>.stride else {
-            fatalError("BOOM!")
-        }
-        
-        var w:GravityWellData?
-        d.withUnsafeBytes({(bytes: UnsafePointer<GravityWellData>)->Void in
-            w = UnsafePointer<GravityWellData>(bytes).pointee
-        })
-        return w!
-    }
-    
+//    static func archive(w:GravityWellData) -> Data {
+//        var fw = w
+//        return Data(bytes: &fw, count: MemoryLayout<GravityWellData>.stride)
+//    }
+//
+//    static func unarchive(d:Data) -> GravityWellData {
+//        guard d.count == MemoryLayout<GravityWellData>.stride else {
+//            fatalError("BOOM!")
+//        }
+//
+//        var w:GravityWellData?
+//        d.withUnsafeBytes({(bytes: UnsafePointer<GravityWellData>)->Void in
+//            w = UnsafePointer<GravityWellData>(bytes).pointee
+//        })
+//        return w!
+//    }
+//
 }
 
 struct ColorBoxData: Codable {

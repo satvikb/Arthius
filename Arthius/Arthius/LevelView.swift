@@ -16,6 +16,7 @@ class LevelView : UIView {
     var levelView : UIScrollView!;
 
     var lastPoint: CGPoint!
+    var endRectScaled : CGRect!;
     
     var lineView : UIView!;
     var lineVelocity: CGVector!;
@@ -38,6 +39,9 @@ class LevelView : UIView {
         super.init(frame: UIScreen.main.bounds)//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
         self.tag = 12;
 
+        endRectScaled = propToRect(prop: level.levelData.endPosition);
+        
+        
         levelView = UIScrollView(frame: UIScreen.main.bounds)//propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)))
         levelView.isUserInteractionEnabled = true;
         levelView.bounces = false;
@@ -50,6 +54,11 @@ class LevelView : UIView {
         self.levelView.addSubview(lineView)
         
         
+        let endRect = UIView(frame: endRectScaled)
+        endRect.backgroundColor = UIColor.green
+        self.levelView.addSubview(endRect)
+        
+        
         
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         singleTap.cancelsTouchesInView = false
@@ -58,7 +67,7 @@ class LevelView : UIView {
         
         
         for gWell in level.levelData.gravityWells {
-            createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, saveGame: false)
+            createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, new: false, saveGame: false)
         }
 //        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/2, y: 230), core: 40, areaOfEffectDiameter: 200, mass: 250)
 //        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/5, y: 230), core: 40, areaOfEffectDiameter: 300, mass: 200)
@@ -82,7 +91,7 @@ class LevelView : UIView {
         recognizer.view!.backgroundColor = UIColor.black
         print(touchLocation, (self.next as! UIView).tag, recognizer.view!.tag)
         
-        createGravityWell(point: touchLocation, core: propToFloat(prop: 0.2, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.6, scaleWithX: true), mass: 200, saveGame: true)
+        createGravityWell(point: touchLocation, core: propToFloat(prop: 0.2, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.6, scaleWithX: true), mass: 200, new: true, saveGame: true)
     }
     
 //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -95,7 +104,7 @@ class LevelView : UIView {
     
 //    var i = 14;
     
-    func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat, saveGame: Bool/*TEMP*/){
+    func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat, new: Bool, saveGame: Bool/*TEMP*/){
         let newWell = GravityWell(corePoint: point, coreDiameter: core, areaOfEffectDiameter: areaOfEffectDiameter, mass: mass)
 //        newWell.mass = mass;
         levelView.addSubview(newWell)
@@ -103,18 +112,24 @@ class LevelView : UIView {
             newWell.removeFromSuperview()
             self.level.levelData.gravityWells.remove(at: self.level.levelData.gravityWells.index(of: newWell.data)!)
             self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: newWell)!)
+            self.TEMP_SAVE()
         }
 //        newWell.tag = i;
 //        i += 1;
         scaledGravityWells.append(newWell)
-        level.levelData.gravityWells.append(newWell.data)
-        
-        
-        
+        if(new == true){
+            self.level.levelData.gravityWells.append(newWell.data)
+        }
         
         //todo temp
         if(saveGame){
+            TEMP_SAVE()
+        }
+    }
+
+    func TEMP_SAVE(){
         do{
+            try Disk.remove("level.json", from: .documents)
             try Disk.save(level.levelData, to: .documents, as: "level.json")
             print("saved new")
             
@@ -138,7 +153,7 @@ class LevelView : UIView {
                         let dict = attr as NSDictionary
                         fileSize = dict.fileSize()
                         
-                        print(fileSize)
+                        print(fileSize, "bytes")
                     } catch {
                         print("Error: \(error)")
                     }
@@ -159,8 +174,9 @@ class LevelView : UIView {
                 Suggestions: \(error.localizedRecoverySuggestion ?? "")
                 """)
         }
-        }
+        
     }
+    
     
     private func drawLine(a: CGPoint, b: CGPoint, buffer: UIImage?) -> UIImage {
         let size = self.lineView.bounds.size
@@ -229,6 +245,12 @@ class LevelView : UIView {
         let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
         let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
         newMoveLocation(p: pos);
+        
+        
+        if(endRectScaled.contains(lastPoint)){
+            print("GAME")
+            //finish level
+        }
     }
     
     func CGVectorDotProduct(vector1 : CGVector, vector2 : CGVector) -> CGFloat{
