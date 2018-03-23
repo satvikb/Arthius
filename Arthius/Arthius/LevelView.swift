@@ -17,15 +17,16 @@ class LevelView : UIView {
 
     var lastPoint: CGPoint!
     
-    
-    var gravityWells : [GravityWell]! = []
-    
     var lineView : UIView!;
     var lineVelocity: CGVector!;
     var tempLineForces : CGVector! = CGVector.zero;
     var lineMass : CGFloat = 1; //no effect for now?
     let G : CGFloat = 1;
     
+    //Create scaled arrays to store the level elements that are scaled up to the current device size. TODO: Do this for all the other level elements.
+    //This is created because the GravityWellData in LevelData stores the proportional sizes. Instead of converting from prop to real in the update look, it's easier to just store the scaled wells as well.
+    //This is what is used for calculations, GravityWellData is what is used to save.
+    var scaledGravityWells : [GravityWell] = []
     
     private var buffer: UIImage?
     var displayLink : CADisplayLink!
@@ -57,7 +58,7 @@ class LevelView : UIView {
         
         
         for gWell in level.levelData.gravityWells {
-            createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass)
+            createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, saveGame: false)
         }
 //        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/2, y: 230), core: 40, areaOfEffectDiameter: 200, mass: 250)
 //        createGravityWell(point: CGPoint(x: UIScreen.main.bounds.size.width/5, y: 230), core: 40, areaOfEffectDiameter: 300, mass: 200)
@@ -81,7 +82,7 @@ class LevelView : UIView {
         recognizer.view!.backgroundColor = UIColor.black
         print(touchLocation, (self.next as! UIView).tag, recognizer.view!.tag)
         
-        createGravityWell(point: touchLocation, core: propToFloat(prop: 0.2, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.6, scaleWithX: true), mass: 200)
+        createGravityWell(point: touchLocation, core: propToFloat(prop: 0.2, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.6, scaleWithX: true), mass: 200, saveGame: true)
     }
     
 //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -92,19 +93,73 @@ class LevelView : UIView {
 //        }
 //    }
     
-    var i = 14;
+//    var i = 14;
     
-    func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat){
+    func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat, saveGame: Bool/*TEMP*/){
         let newWell = GravityWell(corePoint: point, coreDiameter: core, areaOfEffectDiameter: areaOfEffectDiameter, mass: mass)
 //        newWell.mass = mass;
         levelView.addSubview(newWell)
         newWell.touched = {
             newWell.removeFromSuperview()
-            self.gravityWells.remove(at: self.gravityWells.index(of: newWell)!)
+            self.level.levelData.gravityWells.remove(at: self.level.levelData.gravityWells.index(of: newWell.data)!)
+            self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: newWell)!)
         }
-        newWell.tag = i;
-        i += 1;
-        gravityWells.append(newWell)
+//        newWell.tag = i;
+//        i += 1;
+        scaledGravityWells.append(newWell)
+        level.levelData.gravityWells.append(newWell.data)
+        
+        
+        
+        
+        //todo temp
+        if(saveGame){
+        do{
+            try Disk.save(level.levelData, to: .documents, as: "level.json")
+            print("saved new")
+            
+            
+            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+            let url = NSURL(fileURLWithPath: path)
+            if let pathComponent = url.appendingPathComponent("level.json") {
+                let filePath = pathComponent.path
+                let fileManager = FileManager.default
+                if fileManager.fileExists(atPath: filePath) {
+                    print("FILE AVAILABLE "+filePath)
+                    
+                    var fileSize : UInt64
+                    
+                    do {
+                        //return [FileAttributeKey : Any]
+                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                        fileSize = attr[FileAttributeKey.size] as! UInt64
+                        
+                        //if you convert to NSDictionary, you can get file size old way as well.
+                        let dict = attr as NSDictionary
+                        fileSize = dict.fileSize()
+                        
+                        print(fileSize)
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                    
+                    
+                } else {
+                    print("FILE NOT AVAILABLE")
+                }
+            } else {
+                print("FILE PATH NOT AVAILABLE")
+            }
+        } catch let error as NSError{
+            fatalError("""
+                Domain: \(error.domain)
+                Code: \(error.code)
+                Description: \(error.localizedDescription)
+                Failure Reason: \(error.localizedFailureReason ?? "")
+                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+                """)
+        }
+        }
     }
     
     private func drawLine(a: CGPoint, b: CGPoint, buffer: UIImage?) -> UIImage {
@@ -147,7 +202,7 @@ class LevelView : UIView {
     @objc func update(){
         tempLineForces = CGVector.zero;
         
-        for gravWell in gravityWells{
+        for gravWell in scaledGravityWells{
             let distFromGravityCenter = distance(a: lastPoint, b: gravWell.center)
             if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
                 ////                let v = sqrt( G * gravWell.mass / (gravWell.areaOfEffectDiameter/2) )
@@ -161,7 +216,7 @@ class LevelView : UIView {
                 let fx = f*cos(angleRad)
                 let fy = f*sin(angleRad)
                 tempLineForces = tempLineForces + (CGVector(dx: fx, dy: fy))
-                print(fx, fy, f, lineVelocity, distFromGravityCenter, tempLineForces)
+//                print(fx, fy, f, lineVelocity, distFromGravityCenter, tempLineForces)
             }
             
         }

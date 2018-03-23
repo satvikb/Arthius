@@ -22,6 +22,8 @@ class ViewController: UIViewController, MenuViewDelegate{
     var currentView : View!;
     var menuView : MenuView!;
 
+    var l : Level!;
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -32,29 +34,70 @@ class ViewController: UIViewController, MenuViewDelegate{
         menuView.menuDelegate = self;
         self.view.addSubview(menuView)
         
-        let l = testLevel()
-        
         do {
 //            try Disk.save
-            try Disk.save(l.levelData, to: .documents, as: "level.json")
+//            try Disk.save(data: LevelData.archive(w: testLevel().levelData), to: .documents, as: "level.bin")
             
+            if !Disk.exists("level.json", in: .documents){
+                try Disk.save(testLevel().levelData, to: .documents, as: "level.json")
+            }
+//
             let file = "level.json" //this is the file. we will write to and read from it
-            
+//
             var text = "some text" //just a text
-            
+//
             if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                
+
                 let fileURL = dir.appendingPathComponent(file)
-    
+//                print(filePath)
+
                 //reading
                 do {
                     text = try String(contentsOf: fileURL, encoding: .utf8)
+                    print(text)
                 }
                 catch {/* error handling here */
                     print("read error")
                 }
             }
-            print(text)
+            
+            
+            
+            
+            
+            
+            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+            let url = NSURL(fileURLWithPath: path)
+            if let pathComponent = url.appendingPathComponent("level.json") {
+                let filePath = pathComponent.path
+                let fileManager = FileManager.default
+                if fileManager.fileExists(atPath: filePath) {
+                    print("FILE AVAILABLE "+filePath)
+                    
+                    var fileSize : UInt64
+                    
+                    do {
+                        //return [FileAttributeKey : Any]
+                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                        fileSize = attr[FileAttributeKey.size] as! UInt64
+                        
+                        //if you convert to NSDictionary, you can get file size old way as well.
+                        let dict = attr as NSDictionary
+                        fileSize = dict.fileSize()
+                        
+                        print(fileSize)
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                                        
+                } else {
+                    print("FILE NOT AVAILABLE")
+                }
+            } else {
+                print("FILE PATH NOT AVAILABLE")
+            }
+            
+            
         } catch let error as NSError {
             fatalError("""
                 Domain: \(error.domain)
@@ -63,6 +106,18 @@ class ViewController: UIViewController, MenuViewDelegate{
                 Failure Reason: \(error.localizedFailureReason ?? "")
                 Suggestions: \(error.localizedRecoverySuggestion ?? "")
                 """)
+        }
+        
+        l = Level(_levelData: LevelData(name: "", propFrame: CGRect.zero, startPosition: CGPoint.zero, endPosition: CGRect.zero, startVelocity: CGVector.zero, gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: []));
+        
+        do {
+//            let newLData = try Disk.retrieve("level.bin", from: .documents, as: Data.self)
+            let newLStruct = try Disk.retrieve("level.json", from: .documents, as: LevelData.self)
+            let newL = newLStruct//LevelData.unarchive(d: newLData)
+            l = Level(_levelData: newL);
+            print("set l")
+        } catch let error as NSError {
+            print("error loading level "+error.localizedDescription)
         }
         
     }
@@ -77,7 +132,7 @@ class ViewController: UIViewController, MenuViewDelegate{
         
         switch newView {
         case .LevelPlay:
-            let levelView : LevelView = LevelView(_level: testLevel())
+            let levelView : LevelView = LevelView(_level: l)
             self.view.addSubview(levelView)
         default: break
             
@@ -85,8 +140,8 @@ class ViewController: UIViewController, MenuViewDelegate{
     }
     
     func testLevel() -> Level{
-        let gWells : [GravityWellData] = []
-    //        gWells.append(GravityWell(corePoint: CGPoint(x: 0.7, y: 0.5), coreDiameter: 0.1, areaOfEffectDiameter: 0.65, mass: 1000).data)
+        var gWells : [GravityWellData] = []
+            gWells.append(GravityWell(corePoint: CGPoint(x: 0.7, y: 0.5), coreDiameter: 0.1, areaOfEffectDiameter: 0.65, mass: 1000).data)
         let level = Level(_name: "Lv 1", _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
         
         return level;

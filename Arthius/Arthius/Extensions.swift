@@ -35,6 +35,26 @@ public extension UIView {
         let screen = UIScreen.main.bounds;
         return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
     }
+    
+    
+    
+    public func pointToProp(point: CGPoint) -> CGPoint {
+        return CGPoint(x: floatToProp(float: point.x, scaleWithX: true), y: floatToProp(float: point.y, scaleWithX: false))
+    }
+    
+    public func pointToVector(vector: CGVector) -> CGVector {
+        return CGVector(dx: floatToProp(float: vector.dx, scaleWithX: true), dy: floatToProp(float: vector.dy, scaleWithX: false))
+    }
+    
+    public func floatToProp(float: CGFloat, scaleWithX: Bool) -> CGFloat{
+        let screen = UIScreen.main.bounds;
+        return scaleWithX == true ? float / screen.width : float / screen.height;
+    }
+    
+    public func rectToProp(rect: CGRect) -> CGRect{
+        let screen = UIScreen.main.bounds;
+        return CGRect(x: rect.origin.x / screen.width, y: rect.origin.y / screen.height, width: rect.width / screen.width, height: rect.height / screen.height)
+    }
 }
 
 

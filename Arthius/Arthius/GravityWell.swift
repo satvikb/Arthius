@@ -55,7 +55,11 @@ class GravityWell: UIView {
 }
 
 extension GravityWell {
+//    var data : GravityWellData {
+//        return GravityWellData(position: corePoint, mass: self.mass, coreDiameter: self.coreDiameter, areaOfEffectDiameter: self.areaOfEffectDiameter)
+//    }
+    
     var data : GravityWellData {
-        return GravityWellData(position: self.corePoint, mass: self.mass, coreDiameter: self.coreDiameter, areaOfEffectDiameter: self.areaOfEffectDiameter)
+        return GravityWellData(position: pointToProp(point: self.corePoint), mass: self.mass, coreDiameter: floatToProp(float: self.coreDiameter, scaleWithX: true), areaOfEffectDiameter: floatToProp(float: self.areaOfEffectDiameter, scaleWithX: true))
     }
 }
