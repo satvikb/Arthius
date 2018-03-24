@@ -34,6 +34,7 @@ extension Disk {
                 throw error
             }
         }
+
         var searchPathDirectory: FileManager.SearchPathDirectory
         switch directory {
         case .documents:

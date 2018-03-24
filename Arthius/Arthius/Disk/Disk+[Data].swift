@@ -109,9 +109,10 @@ public extension Disk {
     ///   - type: here for Swifty generics magic, use [Data].self
     /// - Returns: [Data] from disk
     /// - Throws: Error if there were any issues retrieving the specified folder of files
-    static func retrieve(_ path: String, from directory: Directory, as type: [Data].Type) throws -> [Data] {
+    static func retrieve(array path: String, from directory: Directory, as type: [Data].Type) throws -> [Data] {
         do {
             let url = try getExistingFileURL(for: path, in: directory)
+            print("Disk retrieve []: "+url.path)
             let fileUrls = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [])
             let sortedFileUrls = fileUrls.sorted(by: { (url1, url2) -> Bool in
                 if let fileNameInt1 = fileNameInt(url1), let fileNameInt2 = fileNameInt(url2) {
@@ -119,6 +120,7 @@ public extension Disk {
                 }
                 return true
             })
+            print("Disk retrieve []: \(sortedFileUrls.count)")
             var dataObjects = [Data]()
             for i in 0..<sortedFileUrls.count {
                 let fileUrl = sortedFileUrls[i]

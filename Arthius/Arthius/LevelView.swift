@@ -66,6 +66,7 @@ class LevelView : UIView {
         levelView.addGestureRecognizer(singleTap)
         
         
+        
         for gWell in level.levelData.gravityWells {
             createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, new: false, saveGame: false)
         }
@@ -128,53 +129,53 @@ class LevelView : UIView {
     }
 
     func TEMP_SAVE(){
-        do{
-            try Disk.remove("level.json", from: .documents)
-            try Disk.save(level.levelData, to: .documents, as: "level.json")
-            print("saved new")
-            
-            
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
-            let url = NSURL(fileURLWithPath: path)
-            if let pathComponent = url.appendingPathComponent("level.json") {
-                let filePath = pathComponent.path
-                let fileManager = FileManager.default
-                if fileManager.fileExists(atPath: filePath) {
-                    print("FILE AVAILABLE "+filePath)
-                    
-                    var fileSize : UInt64
-                    
-                    do {
-                        //return [FileAttributeKey : Any]
-                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-                        fileSize = attr[FileAttributeKey.size] as! UInt64
-                        
-                        //if you convert to NSDictionary, you can get file size old way as well.
-                        let dict = attr as NSDictionary
-                        fileSize = dict.fileSize()
-                        
-                        print(fileSize, "bytes")
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                    
-                    
-                } else {
-                    print("FILE NOT AVAILABLE")
-                }
-            } else {
-                print("FILE PATH NOT AVAILABLE")
-            }
-        } catch let error as NSError{
-            fatalError("""
-                Domain: \(error.domain)
-                Code: \(error.code)
-                Description: \(error.localizedDescription)
-                Failure Reason: \(error.localizedFailureReason ?? "")
-                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-                """)
-        }
-        
+//        do{
+//            try Disk.remove("level.json", from: .documents)
+//            try Disk.save(level.levelData, to: .documents, as: "level.json")
+//            print("saved new")
+//
+//
+//            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+//            let url = NSURL(fileURLWithPath: path)
+//            if let pathComponent = url.appendingPathComponent("level.json") {
+//                let filePath = pathComponent.path
+//                let fileManager = FileManager.default
+//                if fileManager.fileExists(atPath: filePath) {
+//                    print("FILE AVAILABLE "+filePath)
+//
+//                    var fileSize : UInt64
+//
+//                    do {
+//                        //return [FileAttributeKey : Any]
+//                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+//                        fileSize = attr[FileAttributeKey.size] as! UInt64
+//
+//                        //if you convert to NSDictionary, you can get file size old way as well.
+//                        let dict = attr as NSDictionary
+//                        fileSize = dict.fileSize()
+//
+//                        print(fileSize, "bytes")
+//                    } catch {
+//                        print("Error: \(error)")
+//                    }
+//
+//
+//                } else {
+//                    print("FILE NOT AVAILABLE")
+//                }
+//            } else {
+//                print("FILE PATH NOT AVAILABLE")
+//            }
+//        } catch let error as NSError{
+//            fatalError("""
+//                Domain: \(error.domain)
+//                Code: \(error.code)
+//                Description: \(error.localizedDescription)
+//                Failure Reason: \(error.localizedFailureReason ?? "")
+//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                """)
+//        }
+//
     }
     
     

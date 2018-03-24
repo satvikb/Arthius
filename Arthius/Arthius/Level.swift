@@ -17,10 +17,10 @@ class Level : NSObject{
 //    var gravityWells : [GravityWellData] = []
     
     
-    init(_name : String, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
+    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
         super.init()
         
-        let lD = LevelData(name: _name, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
+        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
         levelData = lD;
 //        levelName = name;
 //        propFrame = _propFrame;
@@ -35,7 +35,7 @@ class Level : NSObject{
 }
 
 struct LevelData : Codable {
-    var name : String;
+    var levelMetadata : LevelMetadata;
     var propFrame : CGRect;
     var startPosition : CGPoint;
     var endPosition : CGRect;
@@ -62,9 +62,14 @@ struct LevelData : Codable {
 //        })
 //        return w!
 //    }
-    
-    
-    
+}
+
+struct LevelMetadata : Codable {
+    var levelUUID : String;
+    var levelNumber : Int; // can definetely be hacked, just used for numbering purposes in campaign levels or whatever else
+    var levelName : String;
+    var levelVersion : String; // allows for "version Epic" instead of just boring numbers
+    var levelAuthor : String;
 }
 
 struct GravityWellData : Codable, Equatable{

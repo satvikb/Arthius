@@ -56,15 +56,51 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         // COPY ALL FILES FROM LEVELS FOLDER TO DOCUMENTS
         // DO THIS BEFORE CAMPAIGNLEVELVIEW INIT
         
+        func copyFolders() {
+            let filemgr = FileManager.default
+//            filemgr.delegate = self
+            let dirPaths = filemgr.urls(for: .documentDirectory, in: .userDomainMask)
+            let docsURL = dirPaths[0]
+            
+            let folderPath = Bundle.main.resourceURL!.appendingPathComponent("Levels").path
+            let docsFolder = docsURL.appendingPathComponent(CAMPAIGN_LEVEL_FOLDER).path
+            copyFiles(pathFromBundle: folderPath, pathDestDocs: docsFolder)
+        }
+        
+        func copyFiles(pathFromBundle : String, pathDestDocs: String) {
+            let fileManagerIs = FileManager.default
+//            fileManagerIs.delegate = self
+            
+            do {
+                let filelist = try fileManagerIs.contentsOfDirectory(atPath: pathFromBundle)
+                try? fileManagerIs.copyItem(atPath: pathFromBundle, toPath: pathDestDocs)
+                
+                for filename in filelist {
+                    try? fileManagerIs.copyItem(atPath: "\(pathFromBundle)/\(filename)", toPath: "\(pathDestDocs)/\(filename)")
+                    print("Copying \(pathFromBundle)/\(filename) to \(pathDestDocs)/\(filename)")
+                }
+            } catch {
+                print("\nError\n")
+            }
+        }
+        
+        
+        copyFolders()
         
         
         
-        
-        
-        
-        
-        
-        
+//        let fileManager = FileManager.default
+//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        do {
+//            let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
+//            // process files
+//            for url in fileURLs {
+//                print(url.path)
+//            }
+//        } catch {
+//            print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
+//        }
+//
         
         
         
@@ -78,93 +114,91 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         
         
         
-        
-        do {
-//            try Disk.save
-//            try Disk.save(data: LevelData.archive(w: testLevel().levelData), to: .documents, as: "level.bin")
-            
-            if !Disk.exists("level.json", in: .documents){
-                try Disk.save(testLevel().levelData, to: .documents, as: "level.json")
-            }
 //
-            let file = "level.json" //this is the file. we will write to and read from it
+//        do {
+////            if !Disk.exists("CampaignLevels/level.json", in: .documents){
+////                try Disk.save(testLevel().levelData, to: .documents, as: "level.json")
+////            }
+////
+//            let file = "level.json" //this is the file. we will write to and read from it
+////
+//            var text = "some text" //just a text
+////
+//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
 //
-            var text = "some text" //just a text
+//                let fileURL = dir.appendingPathComponent(file)
+//                print(fileURL.path)
 //
-            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-
-                let fileURL = dir.appendingPathComponent(file)
-//                print(filePath)
-
-                //reading
-                do {
-                    text = try String(contentsOf: fileURL, encoding: .utf8)
-                    print(text)
-                }
-                catch {/* error handling here */
-                    print("read error")
-                }
-            }
-            
-            
-            
-            
-            
-            
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
-            let url = NSURL(fileURLWithPath: path)
-            if let pathComponent = url.appendingPathComponent("level.json") {
-                let filePath = pathComponent.path
-                let fileManager = FileManager.default
-                if fileManager.fileExists(atPath: filePath) {
-                    print("FILE AVAILABLE "+filePath)
-                    
-                    var fileSize : UInt64
-                    
-                    do {
-                        //return [FileAttributeKey : Any]
-                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-                        fileSize = attr[FileAttributeKey.size] as! UInt64
-                        
-                        //if you convert to NSDictionary, you can get file size old way as well.
-                        let dict = attr as NSDictionary
-                        fileSize = dict.fileSize()
-                        
-                        print(fileSize, "bytes")
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                    
-                } else {
-                    print("FILE NOT AVAILABLE")
-                }
-            } else {
-                print("FILE PATH NOT AVAILABLE")
-            }
-            
-            
-        } catch let error as NSError {
-            fatalError("""
-                Domain: \(error.domain)
-                Code: \(error.code)
-                Description: \(error.localizedDescription)
-                Failure Reason: \(error.localizedFailureReason ?? "")
-                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-                """)
-        }
+//                //reading
+//                do {
+//                    text = try String(contentsOf: fileURL, encoding: .utf8)
+//                    print(text)
+//                }
+//                catch let error as NSError{/* error handling here */
+//                    print("read error "+error.localizedDescription)
+//                }
+//            }
+//
+//
+//
+//
+//
+//
+//            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+//            let url = NSURL(fileURLWithPath: path)
+//            if let pathComponent = url.appendingPathComponent("level.json") {
+//                let filePath = pathComponent.path
+//                let fileManager = FileManager.default
+//                if fileManager.fileExists(atPath: filePath) {
+//                    print("FILE AVAILABLE "+filePath)
+//
+//                    var fileSize : UInt64
+//
+//                    do {
+//                        //return [FileAttributeKey : Any]
+//                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+//                        fileSize = attr[FileAttributeKey.size] as! UInt64
+//
+//                        //if you convert to NSDictionary, you can get file size old way as well.
+//                        let dict = attr as NSDictionary
+//                        fileSize = dict.fileSize()
+//
+//                        print(fileSize, "bytes")
+//                    } catch {
+//                        print("Error: \(error)")
+//                    }
+//
+//                } else {
+//                    print("FILE NOT AVAILABLE "+pathComponent.path)
+//                }
+//            } else {
+//                print("FILE PATH NOT AVAILABLE")
+//            }
+//
+//
+//        } catch let error as NSError {
+//            print("""
+//                NO SAVE TEST
+//                Domain: \(error.domain)
+//                Code: \(error.code)
+//                Description: \(error.localizedDescription)
+//                Failure Reason: \(error.localizedFailureReason ?? "")
+//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                """)
+//        }
         
-        l = Level(_levelData: LevelData(name: "", propFrame: CGRect.zero, startPosition: CGPoint.zero, endPosition: CGRect.zero, startVelocity: CGVector.zero, gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: []));
-        
-        do {
-//            let newLData = try Disk.retrieve("level.bin", from: .documents, as: Data.self)
-            let newLStruct = try Disk.retrieve("level.json", from: .documents, as: LevelData.self)
-            let newL = newLStruct//LevelData.unarchive(d: newLData)
-            l = Level(_levelData: newL);
-            print("set l")
-        } catch let error as NSError {
-            print("error loading level "+error.localizedDescription)
-        }
-        
+//        l = Level(_levelData: LevelData(name: "", propFrame: CGRect.zero, startPosition: CGPoint.zero, endPosition: CGRect.zero, startVelocity: CGVector.zero, gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: []));
+//
+//        do {
+////            let newLData = try Disk.retrieve("level.bin", from: .documents, as: Data.self)
+//            let newLStruct = try Disk.retrieve("level.json", from: .documents, as: LevelData.self)
+//            let newL = newLStruct//LevelData.unarchive(d: newLData)
+//            l = Level(_levelData: newL);
+//            print("set l")
+//        } catch let error as NSError {
+//            print("error loading level "+error.localizedDescription)
+//        }
+//
         
         
         
@@ -217,15 +251,15 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             
         }
     }
-    
+//
     func testLevel() -> Level{
         var gWells : [GravityWellData] = []
 //        gWells.append(GravityWell(corePoint: propToPoint(prop: CGPoint(x: 0.7, y: 0.5)), coreDiameter: propToFloat(prop: 0.1, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.65, scaleWithX: true), mass: 1000).data)
-        let level = Level(_name: "Lv 1", _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
-        
+        let level = Level(_metadata: LevelMetadata(levelUUID: "UUID", levelNumber: 0, levelName: "Lv 1", levelVersion: "0", levelAuthor: "Satvik Borra"), _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
+
         return level;
     }
-    
+//
     public func propToPoint(prop: CGPoint) -> CGPoint {
         return CGPoint(x: propToFloat(prop: prop.x, scaleWithX: true), y: propToFloat(prop: prop.y, scaleWithX: false))
     }

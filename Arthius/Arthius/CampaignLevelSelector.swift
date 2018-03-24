@@ -34,11 +34,14 @@ class CampaignLevelSelectView: UIView {
         }
         self.addSubview(button)
         
+        loadLevels()
     }
     
     func loadLevels(){
-        //load all .gws files from campaignlevels directory
+        // load all .gws files from campaignlevels directory
         // loading async?
+        
+        print(File.getAllCampaignLevels().count)
     }
     
     func animateIn(time: CGFloat){
