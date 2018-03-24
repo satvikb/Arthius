@@ -21,28 +21,21 @@ enum View {
     case LevelOver
 }
 
-class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate{
+class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate{
 
     var currentView : View!;
     var menuView : MenuView!;
     var playSelectView : PlaySelectView!;
     var campaignLevelSelectView : CampaignLevelSelectView!;
     
-    var l : Level!;
+    
+    var levelView : LevelView!;
+    var currentLevel : Level!;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-//        for family: String in UIFont.familyNames
-//        {
-//            print("\(family)")
-//            for names: String in UIFont.fontNames(forFamilyName: family)
-//            {
-//                print("== \(names)")
-//            }
-//        }
-//
         currentView = View.Splash
         
         menuView = MenuView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
@@ -89,117 +82,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         
         
         
-//        let fileManager = FileManager.default
-//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//        do {
-//            let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
-//            // process files
-//            for url in fileURLs {
-//                print(url.path)
-//            }
-//        } catch {
-//            print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
-//        }
-//
-        
-        
-        
         campaignLevelSelectView = CampaignLevelSelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         campaignLevelSelectView.campaignLevelSelectDelegate = self;
-        
-        
-        
-        
-        
-        
-        
-        
-//
-//        do {
-////            if !Disk.exists("CampaignLevels/level.json", in: .documents){
-////                try Disk.save(testLevel().levelData, to: .documents, as: "level.json")
-////            }
-////
-//            let file = "level.json" //this is the file. we will write to and read from it
-////
-//            var text = "some text" //just a text
-////
-//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//
-//                let fileURL = dir.appendingPathComponent(file)
-//                print(fileURL.path)
-//
-//                //reading
-//                do {
-//                    text = try String(contentsOf: fileURL, encoding: .utf8)
-//                    print(text)
-//                }
-//                catch let error as NSError{/* error handling here */
-//                    print("read error "+error.localizedDescription)
-//                }
-//            }
-//
-//
-//
-//
-//
-//
-//            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
-//            let url = NSURL(fileURLWithPath: path)
-//            if let pathComponent = url.appendingPathComponent("level.json") {
-//                let filePath = pathComponent.path
-//                let fileManager = FileManager.default
-//                if fileManager.fileExists(atPath: filePath) {
-//                    print("FILE AVAILABLE "+filePath)
-//
-//                    var fileSize : UInt64
-//
-//                    do {
-//                        //return [FileAttributeKey : Any]
-//                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-//                        fileSize = attr[FileAttributeKey.size] as! UInt64
-//
-//                        //if you convert to NSDictionary, you can get file size old way as well.
-//                        let dict = attr as NSDictionary
-//                        fileSize = dict.fileSize()
-//
-//                        print(fileSize, "bytes")
-//                    } catch {
-//                        print("Error: \(error)")
-//                    }
-//
-//                } else {
-//                    print("FILE NOT AVAILABLE "+pathComponent.path)
-//                }
-//            } else {
-//                print("FILE PATH NOT AVAILABLE")
-//            }
-//
-//
-//        } catch let error as NSError {
-//            print("""
-//                NO SAVE TEST
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
-        
-//        l = Level(_levelData: LevelData(name: "", propFrame: CGRect.zero, startPosition: CGPoint.zero, endPosition: CGRect.zero, startVelocity: CGVector.zero, gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: []));
-//
-//        do {
-////            let newLData = try Disk.retrieve("level.bin", from: .documents, as: Data.self)
-//            let newLStruct = try Disk.retrieve("level.json", from: .documents, as: LevelData.self)
-//            let newL = newLStruct//LevelData.unarchive(d: newLData)
-//            l = Level(_levelData: newL);
-//            print("set l")
-//        } catch let error as NSError {
-//            print("error loading level "+error.localizedDescription)
-//        }
-//
-        
         
         
         switchToView(newView: .Menu)
@@ -224,7 +108,11 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         case .CampaignLevelSelect:
             campaignLevelSelectView.animateOut(time: transitionTime)
             removeView(view: campaignLevelSelectView, after: transitionTime)
-            
+            break;
+        case .LevelPlay:
+            //TODO animate
+            removeView(view: levelView, after: transitionTime)
+            break;
         default: break
             
         }
@@ -236,7 +124,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             self.view.addSubview(menuView);
             break;
         case .LevelPlay:
-            let levelView : LevelView = LevelView(_level: l)
+            levelView = LevelView(_level: currentLevel)//, _resetToLevel: currentLevel)
+            levelView.levelViewDelegate = self;
             self.view.addSubview(levelView)
             break;
         case .PlaySelect:
@@ -252,13 +141,13 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         }
     }
 //
-    func testLevel() -> Level{
-        var gWells : [GravityWellData] = []
-//        gWells.append(GravityWell(corePoint: propToPoint(prop: CGPoint(x: 0.7, y: 0.5)), coreDiameter: propToFloat(prop: 0.1, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.65, scaleWithX: true), mass: 1000).data)
-        let level = Level(_metadata: LevelMetadata(levelUUID: "UUID", levelNumber: 0, levelName: "Lv 1", levelVersion: "0", levelAuthor: "Satvik Borra"), _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
-
-        return level;
-    }
+//    func testLevel() -> Level{
+//        var gWells : [GravityWellData] = []
+////        gWells.append(GravityWell(corePoint: propToPoint(prop: CGPoint(x: 0.7, y: 0.5)), coreDiameter: propToFloat(prop: 0.1, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.65, scaleWithX: true), mass: 1000).data)
+//        let level = Level(_metadata: LevelMetadata(levelUUID: "UUID", levelNumber: 0, levelName: "Lv 1", levelVersion: "0", levelAuthor: "Satvik Borra"), _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
+//
+//        return level;
+//    }
 //
     public func propToPoint(prop: CGPoint) -> CGPoint {
         return CGPoint(x: propToFloat(prop: prop.x, scaleWithX: true), y: propToFloat(prop: prop.y, scaleWithX: false))
@@ -307,9 +196,18 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
     }
     
     func campaignLevelSelect_pressLevel(level: LevelData) {
-        
+        currentLevel = Level(_levelData: level);
+        switchToView(newView: .LevelPlay)
     }
     
+    func level_pressMenu() {
+        //TODO, respective location
+        switchToView(newView: .Menu)
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true;
+    }
 }
 
 //extension ViewController: MenuViewDelegate {
