@@ -20,11 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Arthius/CampaignLevelSelector.swift"
-            timestampString = "543609072.6551501"
+            timestampString = "543610746.771449"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "loadLevels()"
             landmarkType = "7">
          </BreakpointContent>

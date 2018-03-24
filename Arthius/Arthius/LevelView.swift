@@ -23,7 +23,9 @@ class LevelView : UIView {
 
     
     var lastPoint: CGPoint!
+    
     var endRectScaled : CGRect!;
+    var endColor : Color!; //Dont really need a variable b/c you can access directly from levelData, but conveinence
     
     var linePath : UIBezierPath!;
     var lineShape : CAShapeLayer!;
@@ -60,6 +62,7 @@ class LevelView : UIView {
         lineVelocity = propToVector(prop: level.levelData.startVelocity);
         endRectScaled = propToRect(prop: level.levelData.endPosition);
         lineColor = level.levelData.startColor;
+        endColor = level.levelData.endColor;
         
         setupLevelView()
         setupLine()
@@ -109,7 +112,7 @@ class LevelView : UIView {
     
     func setupLevelEnd(){
         let endRect = UIView(frame: endRectScaled)
-        endRect.backgroundColor = UIColor.green
+        endRect.backgroundColor = ColorBox.ColorToUIColor(col: level.levelData.endColor)
         self.levelView.addSubview(endRect)
     }
     
@@ -172,31 +175,27 @@ class LevelView : UIView {
     
     var longTapInital : CGPoint = CGPoint.zero;
     var currentGravityWellCreated : GravityWell!;
-    
+    var justCreatedWell : Bool!; //if a well was just created over another well, do not delete the well under it
     @objc func handleTap(_ recognizer: UIGestureRecognizer) {
         // Perform operation
         if(recognizer.state == .began){
             longTapInital = recognizer.location(in: recognizer.view)
             currentGravityWellCreated = createGravityWell(point: longTapInital, core: propToFloat(prop: 0.015, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.05, scaleWithX: true), mass: 100, new: true)
-            print("start long")
+            print("Creating gravity well")
         }else if(recognizer.state == .changed){
             let p = recognizer.location(in: recognizer.view)
             let d : CGFloat = CGFloat(sqrtf(Float(pow(p.x-longTapInital.x, 2) + pow(p.y-longTapInital.y, 2))))
             
-            print(d)
+//            print(d)
             currentGravityWellCreated.areaOfEffectDiameter = d*2;
             currentGravityWellCreated.coreDiameter = d/2; // 1/4 ratio
             //TODO
             //currentGravityWellCreated.mass =
             currentGravityWellCreated.updateSize()
+        }else if(recognizer.state == .ended){
+            print("Created well of radius \(currentGravityWellCreated.areaOfEffectDiameter/2)")
+            justCreatedWell = true;
         }
-        
-//        let touchLocation: CGPoint = recognizer.location(in: recognizer.view)
-//
-//        recognizer.view!.backgroundColor = UIColor.black
-//        print(touchLocation, (self.next as! UIView).tag, recognizer.view!.tag)
-//
-//        createGravityWell(point: touchLocation, core: propToFloat(prop: 0.2, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.6, scaleWithX: true), mass: 200, new: true)
     }
     
     func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat, new: Bool) -> GravityWell{
@@ -204,8 +203,13 @@ class LevelView : UIView {
 
         levelView.addSubview(newWell)
         newWell.touched = {
-            newWell.removeFromSuperview()
-            self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: newWell)!)
+            if(self.justCreatedWell == false){
+                print("del")
+                newWell.removeFromSuperview()
+                self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: newWell)!)
+//                self.justCreatedWell = false;
+            }
+            self.justCreatedWell = false
         }
 
         newWell.layer.zPosition = -100
@@ -279,8 +283,10 @@ class LevelView : UIView {
             newMoveLocation(p: pos);
             
             if(endRectScaled.contains(lastPoint)){
-                print("GAME")
-                //finish level
+                if(lineColor == endColor){
+                    //finish level
+                    print("GAME")
+                }
             }
             
             for cBox in scaledColorBoxes {

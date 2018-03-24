@@ -48,7 +48,6 @@ class CampaignLevelSelectView: UIView {
         
         
         levels = File.getAllCampaignLevels()
-        print(levels.count)
         
         let xTiles : CGFloat = 3;
         let yTiles : CGFloat = 3;
@@ -60,7 +59,7 @@ class CampaignLevelSelectView: UIView {
         let yMiddlePadding : CGFloat = 0.02;
 
         let startY : CGFloat = 0.25
-        var startX : CGFloat = 0;
+//        var startX : CGFloat = 0;
         
         let preDivX : CGFloat = ((xMiddlePadding*(xTiles-1))+(sidePadding*2));
         let tilePropWidth = (1.0-preDivX)/xTiles;

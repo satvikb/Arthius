@@ -17,10 +17,10 @@ class Level : NSObject{
 //    var gravityWells : [GravityWellData] = []
     
     
-    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _startColor : Color, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
+    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _startColor : Color, _endColor : Color, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
         super.init()
         
-        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, startColor: _startColor, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
+        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, startColor: _startColor, endColor: _endColor, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
         levelData = lD;
 //        levelName = name;
 //        propFrame = _propFrame;
@@ -41,6 +41,7 @@ struct LevelData : Codable {
     var endPosition : CGRect;
     var startVelocity : CGVector;
     var startColor : Color;
+    var endColor : Color;
     var gravityWells : [GravityWellData]
     var colorBoxData : [ColorBoxData]
     var rockData : [RockData]

@@ -19,6 +19,7 @@ class BaseLevelRectangle : UIView {
         //TODO deal with rotation and box
         
         super.init(frame: frame)
+        self.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.transform = CGAffineTransform(rotationAngle: rotation);
 
         

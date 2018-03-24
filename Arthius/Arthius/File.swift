@@ -35,12 +35,14 @@ class File {
             let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
             // process files
             for url in fileURLs {
-                print("L:"+url.lastPathComponent)
                 
                 if(url.pathExtension == "gws"){
                     let fileName = url.lastPathComponent
                     let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: .Campaign)+"/\(fileName)", from: .documents, as: LevelData.self)
                     levels.append(level)
+                    
+                    let attr = try fileManager.attributesOfItem(atPath: url.path);
+                    print("Loaded level: \(url.lastPathComponent) \(attr[FileAttributeKey.size] as! UInt64) bytes")
                 }
             }
             

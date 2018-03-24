@@ -56,8 +56,6 @@ class Button : UIView{
     }
     
     func rawPressed(){
-//        pressUp()
-        print("PRESS")
         pressed()
     }
     
@@ -77,10 +75,7 @@ class Button : UIView{
 //        })
 //    }
     var heldDown = false
-//    var touchDown = {}
-//    var touchUp = {}
-//    var touchMoveOutside = {}
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         heldDown = true;
     }
