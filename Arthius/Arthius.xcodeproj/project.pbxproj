@@ -131,6 +131,7 @@
 		401998832061A52E00411CB8 /* Arthius */ = {
 			isa = PBXGroup;
 			children = (
+				40A41FC02066D8E9000E4634 /* GLS */,
 				40A41FB72065C95D000E4634 /* Core */,
 				40A41FB52065B109000E4634 /* Levels */,
 				40A41FAD20659E5A000E4634 /* LevelElements */,
@@ -205,6 +206,13 @@
 				40E544D5206336FA006505D5 /* Level.swift */,
 			);
 			name = Core;
+			sourceTree = "<group>";
+		};
+		40A41FC02066D8E9000E4634 /* GLS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = GLS;
 			sourceTree = "<group>";
 		};
 		B43E9B0EAC5C813523E658A9 /* Pods */ = {

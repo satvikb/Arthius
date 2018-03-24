@@ -12,12 +12,13 @@ protocol LevelViewDelegate: class {
     func level_pressMenu()
 }
 
-class LevelView : UIView {
+class LevelView : UIView, UIScrollViewDelegate {
     
     var level : Level!; //The current level, up to date with user created items.
     //var resetToLevel :  Level!; //The level it is reset to after clicking restart, without user interaction.
     
     var levelView : LevelScrollView!;
+    var stageView : UIView!;
 
     weak var levelViewDelegate:LevelViewDelegate?
 
@@ -82,7 +83,27 @@ class LevelView : UIView {
         levelView.showsHorizontalScrollIndicator = false;
         levelView.delaysContentTouches = false;
         levelView.contentSize = propToRect(prop: level.levelData.propFrame).size
+//        levelView.contentOffset = propToRect(prop: increaseRect(rect: level.levelData.propFrame, byPercentage: 0.1)).origin
+        levelView.delegate = self;
+        levelView.minimumZoomScale = 0.5
+        levelView.maximumZoomScale = 3;
+        levelView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.addSubview(levelView)
+        
+        stageView = UIView(frame: propToRect(prop: CGRect(origin: CGPoint.zero, size: level.levelData.propFrame.size)))
+        stageView.layer.borderColor = UIColor.black.cgColor;
+        stageView.layer.borderWidth = 3;
+        stageView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        levelView.addSubview(stageView)
+    }
+    
+    func increaseRect(rect: CGRect, byPercentage percentage: CGFloat) -> CGRect {
+        let startWidth = rect.width
+        let startHeight = rect.height
+        let adjustmentWidth = (startWidth * percentage) / 2.0
+        let adjustmentHeight = (startHeight * percentage) / 2.0
+//        return CGRectInset(rect, -adjustmentWidth, -adjustmentHeight)
+        return rect.insetBy(dx: -adjustmentWidth, dy: -adjustmentHeight)
     }
     
     func setupGestureRecognizers(){
@@ -92,7 +113,7 @@ class LevelView : UIView {
         //        singleTap.delegate = self;
         singleTap.minimumPressDuration = 0.1;
         singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
-        levelView.addGestureRecognizer(singleTap)
+        stageView.addGestureRecognizer(singleTap)
     }
     
     func setupLine(){
@@ -107,13 +128,13 @@ class LevelView : UIView {
         lineShape.lineWidth = 10;
         lineShape.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor;
         lineShape.zPosition = 100;
-        self.levelView.layer.addSublayer(lineShape)
+        self.stageView.layer.addSublayer(lineShape)
     }
     
     func setupLevelEnd(){
         let endRect = UIView(frame: endRectScaled)
         endRect.backgroundColor = ColorBox.ColorToUIColor(col: level.levelData.endColor)
-        self.levelView.addSubview(endRect)
+        self.stageView.addSubview(endRect)
     }
     
     func createUIButtons(){
@@ -201,7 +222,8 @@ class LevelView : UIView {
     func createGravityWell(point: CGPoint, core: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat, new: Bool) -> GravityWell{
         let newWell = GravityWell(corePoint: point, coreDiameter: core, areaOfEffectDiameter: areaOfEffectDiameter, mass: mass)
 
-        levelView.addSubview(newWell)
+        stageView.addSubview(newWell)
+        
         newWell.touched = {
             if(self.justCreatedWell == false){
                 print("del")
@@ -219,9 +241,9 @@ class LevelView : UIView {
     }
     
     func createColorBox(frame : CGRect, rotation : CGFloat, box : Bool, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
-        let newBox = ColorBox(frame: frame, rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth)
+        let newBox = ColorBox(frame: frame, rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth, _stageView: stageView)
         
-        levelView.addSubview(newBox)
+        stageView.addSubview(newBox)
         scaledColorBoxes.append(newBox)
         
         return newBox
@@ -356,6 +378,33 @@ class LevelView : UIView {
         }
     }
     
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return stageView;
+    }
+    
+//
+//    - (void)centerContent
+//    {
+//    CGFloat top = 0, left = 0;
+//    if (self.scrollView.contentSize.width < self.scrollView.bounds.size.width) {
+//    left = (self.scrollView.bounds.size.width-self.scrollView.contentSize.width) * 0.5f;
+//    }
+//    if (self.scrollView.contentSize.height < self.scrollView.bounds.size.height) {
+//    top = (self.scrollView.bounds.size.height-self.scrollView.contentSize.height) * 0.5f;
+//    }
+//    self.scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
+//    }
+    func centerScroll(){
+        let offsetX = max((levelView.bounds.width - levelView.contentSize.width) * 0.5, 0)
+        let offsetY = max((levelView.bounds.height - levelView.contentSize.height) * 0.5, 0)
+        self.levelView.contentInset = UIEdgeInsetsMake(offsetY, offsetX, 0, 0)
+//        self.levelView.center = CGPoint(x: levelView.contentSize.width * 0.5 + offsetX, y: levelView.contentSize.height * 0.5 + offsetY)
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerScroll()
+    }
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

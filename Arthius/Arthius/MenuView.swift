@@ -10,6 +10,7 @@ import UIKit
 
 protocol MenuViewDelegate: class {
     func menu_pressPlay()
+    func menu_pressCreate()
 }
 
 class MenuView: UIView {
@@ -19,11 +20,17 @@ class MenuView: UIView {
     init(startPosition: CGPoint){
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
         
-        let button = Button(propFrame: CGRect(x: 0.4, y: 0.5, width: 0.2, height: 0.1), text: "play")
-        button.pressed = {
+        let playButton = Button(propFrame: CGRect(x: 0.2, y: 0.4, width: 0.6, height: 0.1), text: "play")
+        playButton.pressed = {
             self.menuDelegate?.menu_pressPlay()
         }
-        self.addSubview(button)
+        self.addSubview(playButton)
+        
+        let createButton = Button(propFrame: CGRect(x: 0.2, y: 0.55, width: 0.6, height: 0.1), text: "create")
+        createButton.pressed = {
+            self.menuDelegate?.menu_pressCreate()
+        }
+        self.addSubview(createButton)
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -31,10 +31,13 @@ class ColorBox :  BaseLevelRectangle {
     var lineOnASide : Bool = false;
     var lineOnLeftSide : Bool = false;
     
-    init(frame: CGRect, rotation: CGFloat, box: Bool, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat) {
+    var stageView : UIView;
+    
+    init(frame: CGRect, rotation: CGFloat, box: Bool, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat, _stageView : UIView) {
         leftColor = _leftColor;
         rightColor = _rightColor;
         middlePropWidth = _middlePropWidth;
+        stageView = _stageView;
         
         super.init(frame: frame, rotation: rotation, box: box)
         self.backgroundColor = ColorBox.ColorToUIColor(col: backgroundColor)
@@ -54,7 +57,7 @@ class ColorBox :  BaseLevelRectangle {
     
     func pointInRightRect(locInMain : CGPoint) -> Bool{
         //TODO test if superview.superview exists
-        let locInSub = rightView.convert(locInMain, from: superview?.superview)
+        let locInSub = rightView.convert(locInMain, from: stageView)
         
         if(rightView.bounds.contains(locInSub)){
             return true
@@ -64,7 +67,7 @@ class ColorBox :  BaseLevelRectangle {
     
     func pointInLeftRect(locInMain : CGPoint) -> Bool{
         //TODO test if superview.superview exists
-        let locInSub = leftView.convert(locInMain, from: superview?.superview)
+        let locInSub = leftView.convert(locInMain, from: stageView)
         
         if(leftView.bounds.contains(locInSub)){
             return true

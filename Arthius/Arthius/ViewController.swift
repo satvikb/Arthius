@@ -195,6 +195,10 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         switchToView(newView: View.PlaySelect)
     }
     
+    func menu_pressCreate() {
+        switchToView(newView: View.CreateSelect)
+    }
+    
     func playSelect_pressBack() {
         switchToView(newView: View.Menu)
     }
