@@ -14,6 +14,15 @@ import UIKit
     Simple touch by line to change color
     Split into two sides, required and new color depends on entry side
 */
+
+enum CurrentLineState {
+    case OutOfLine
+    case InOneSide
+    case InOtherSide
+    case ExitedLine
+    case ColorSwitched
+}
+
 class ColorBox :  BaseLevelRectangle {
     
     var leftColor : Color!;
@@ -26,10 +35,11 @@ class ColorBox :  BaseLevelRectangle {
     var lineEnterLeft = {}
     var lineEnterRight = {}
     
-    var lineInBox : Bool = false;
+    var lineState : CurrentLineState! = .OutOfLine;
     
-    var lineOnASide : Bool = false;
-    var lineOnLeftSide : Bool = false;
+    var step1 : Bool = false;
+    var step2 : Bool = false;
+    var allowColorChange : Bool = true;
     
     var stageView : UIView;
     

@@ -53,8 +53,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0ED1BA252DE3A773B1DF06A0 /* Pods_Arthius.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Arthius.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32144D2D00DB6EA71D80EEAE /* Pods-Arthius.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Arthius.release.xcconfig"; path = "Pods/Target Support Files/Pods-Arthius/Pods-Arthius.release.xcconfig"; sourceTree = "<group>"; };
 		401998812061A52E00411CB8 /* Arthius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arthius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401998842061A52E00411CB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		401998862061A52E00411CB8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 		40EDDB9A206445DA006FF6ED /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		40EDDB9C206447A6006FF6ED /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		40EDDB9E206448EC006FF6ED /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
-		B0084E81C6F9B2101315A3A1 /* Pods-Arthius.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Arthius.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Arthius/Pods-Arthius.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,21 +99,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		213BFCF3320DFAA345B5B772 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				0ED1BA252DE3A773B1DF06A0 /* Pods_Arthius.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		401998782061A52D00411CB8 = {
 			isa = PBXGroup;
 			children = (
 				401998832061A52E00411CB8 /* Arthius */,
 				401998822061A52E00411CB8 /* Products */,
-				B43E9B0EAC5C813523E658A9 /* Pods */,
-				213BFCF3320DFAA345B5B772 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -213,15 +200,6 @@
 			children = (
 			);
 			path = GLS;
-			sourceTree = "<group>";
-		};
-		B43E9B0EAC5C813523E658A9 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				B0084E81C6F9B2101315A3A1 /* Pods-Arthius.debug.xcconfig */,
-				32144D2D00DB6EA71D80EEAE /* Pods-Arthius.release.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
