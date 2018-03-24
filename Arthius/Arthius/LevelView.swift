@@ -335,27 +335,7 @@ class LevelView : UIView, UIScrollViewDelegate {
                             cBox.step1 = false;
                             cBox.step2 = false;
                         }
-                        
-//                        if(cBox.lineState != CurrentLineState.InOtherSide && cBox.lineState == CurrentLineState.OutOfLine && lineColor == cBox.leftColor){
-//                            cBox.lineState = CurrentLineState.InOneSide;
-//                        }else{
-//                            cBox.lineState = CurrentLineState.InOtherSide;
-//                            print("R-L change")
-//                            changeLineColor(to: cBox.leftColor)
-//                        }
-//
-                        //line entered from left
-//                        if(cBox.lineOnASide == false && lineColor == cBox.leftColor){
-//                            cBox.lineOnASide = true;
-//                            cBox.lineOnLeftSide = true;
-//                            print("IN LEFT")
-//                        }else{
-//                            //line entered from right
-//                            if(cBox.lineOnLeftSide == false){
-//                                print("Change Color R-L")
-//                                changeLineColor(to: cBox.leftColor)
-//                            }
-//                        }
+
                     }
                     
                     if(cBox.pointInRightRect(locInMain: lastPoint)){
@@ -364,14 +344,11 @@ class LevelView : UIView, UIScrollViewDelegate {
                             //coming from outside world into right side changer
                             if(cBox.rightColor == lineColor){
                                 cBox.step1 = true;
-                                print("s1")
                             }
                         }else if(cBox.step1 == true){
                             //coming from left side to this side
-                            print("s1.5")
                             if(lineColor == cBox.leftColor){
                                 cBox.step2 = true;
-                                print("s2")
 
                             }
                         }
@@ -382,34 +359,9 @@ class LevelView : UIView, UIScrollViewDelegate {
                             cBox.step2 = false;
                         }
                         
-//                        if(cBox.lineState != CurrentLineState.InOtherSide && cBox.lineState == CurrentLineState.OutOfLine  && lineColor == cBox.rightColor){
-//                            cBox.lineState = CurrentLineState.InOneSide;
-//                        }else if(lineColor == cBox.leftColor && cBox.lineState == CurrentLineState.InOneSide){
-//                            cBox.lineState = CurrentLineState.InOtherSide;
-//                            print("L-R change")
-//                            changeLineColor(to: cBox.rightColor)
-//                        }
-                        
-                        //coming from left
-//                        if(cBox.lineOnASide == true){
-//                            if(cBox.lineOnLeftSide == true){
-//                                print("Change Color L-R")
-//                                changeLineColor(to: cBox.rightColor)
-//                            }
-//                        }else{
-//                            if(lineColor == cBox.rightColor){
-//                                cBox.lineOnASide = true;
-//                                cBox.lineOnLeftSide = false;
-//                                print("IN RIGHT")
-//                            }
-//                        }
                     }
                 
                 }else{
-//                    if(cBox.lineState != CurrentLineState.OutOfLine){
-//                        cBox.lineState = CurrentLineState.ExitedLine
-//                    }
-                    
                     cBox.step1 = false;
                     cBox.step2 = false;
                 }

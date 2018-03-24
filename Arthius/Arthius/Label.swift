@@ -22,11 +22,13 @@ class Label: UILabel{
     var inPos: CGPoint!
     
     var vAlign: VAlign = .Default;
+    var insets: Bool = false;
     
-    init(frame: CGRect, text: String, _outPos: CGPoint = CGPoint.zero, _inPos: CGPoint = CGPoint.zero, textColor: UIColor = UIColor.white, valign : VAlign = .Default){
+    init(frame: CGRect, text: String, _outPos: CGPoint = CGPoint.zero, _inPos: CGPoint = CGPoint.zero, textColor: UIColor = UIColor.white, valign : VAlign = .Default, _insets: Bool = true){
         outPos = _outPos
         inPos = _inPos
         vAlign = valign;
+        insets = _insets;
         
         let newFrame = CGRect(origin: outPos, size: frame.size)
         super.init(frame: newFrame)
@@ -57,8 +59,12 @@ class Label: UILabel{
             rect.size.height = height;
         }
         
-        let insets = UIEdgeInsets(top: 0, left: r.width*0.1, bottom: 0, right: r.width*0.1)
-        super .drawText(in: UIEdgeInsetsInsetRect(rect, insets))
+        var theInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+        if(insets == true){
+            theInsets = UIEdgeInsets(top: 0, left: r.width*0.1, bottom: 0, right: r.width*0.1)
+        }
+        super.drawText(in: UIEdgeInsetsInsetRect(rect, theInsets))
+
     }
     
     required init?(coder aDecoder: NSCoder) {

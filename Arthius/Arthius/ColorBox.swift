@@ -15,13 +15,13 @@ import UIKit
     Split into two sides, required and new color depends on entry side
 */
 
-enum CurrentLineState {
-    case OutOfLine
-    case InOneSide
-    case InOtherSide
-    case ExitedLine
-    case ColorSwitched
-}
+//enum CurrentLineState {
+//    case OutOfLine
+//    case InOneSide
+//    case InOtherSide
+//    case ExitedLine
+//    case ColorSwitched
+//}
 
 class ColorBox :  BaseLevelRectangle {
     
@@ -32,14 +32,13 @@ class ColorBox :  BaseLevelRectangle {
     var leftView : UIView!;
     var rightView : UIView!;
     
-    var lineEnterLeft = {}
-    var lineEnterRight = {}
+//    var lineEnterLeft = {}
+//    var lineEnterRight = {}
     
-    var lineState : CurrentLineState! = .OutOfLine;
     
     var step1 : Bool = false;
     var step2 : Bool = false;
-    var allowColorChange : Bool = true;
+//    var allowColorChange : Bool = true;
     
     var stageView : UIView;
     
