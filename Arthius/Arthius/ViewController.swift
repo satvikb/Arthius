@@ -64,16 +64,37 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             let fileManagerIs = FileManager.default
 //            fileManagerIs.delegate = self
             
+            let tempPath = fileManagerIs.temporaryDirectory.path
+            
             do {
                 let filelist = try fileManagerIs.contentsOfDirectory(atPath: pathFromBundle)
                 try? fileManagerIs.copyItem(atPath: pathFromBundle, toPath: pathDestDocs)
                 
                 for filename in filelist {
-                    try? fileManagerIs.copyItem(atPath: "\(pathFromBundle)/\(filename)", toPath: "\(pathDestDocs)/\(filename)")
-                    print("Copying \(pathFromBundle)/\(filename) to \(pathDestDocs)/\(filename)")
+                    let bundlePath = "\(pathFromBundle)/\(filename)"
+                    let docPath = "\(pathDestDocs)/\(filename)";
+
+                    if(fileManagerIs.fileExists(atPath: docPath)){
+                        let docFileEqualToBundleFile = fileManagerIs.contentsEqual(atPath: docPath, andPath: bundlePath)
+                        
+                        if(docFileEqualToBundleFile == false){
+                            let fileTemp = "\(tempPath)/\(filename)";
+                            try? fileManagerIs.copyItem(atPath: bundlePath, toPath: fileTemp)
+                            
+                            // fileManagerIs.replaceitem(URL(string: docPath)!, withItemAt: URL(string: tempPath)!)
+                            let replace = try fileManagerIs.replaceItemAt(URL(string: docPath)!, withItemAt: URL(string: fileTemp)!, backupItemName: "BU.gws", options: []);
+                            if(replace != nil){
+                                print("Lv \(filename) NOT equal. Replacing with original.")
+                            }
+                        }
+                    }else{
+                        try? fileManagerIs.copyItem(atPath: bundlePath, toPath: docPath)
+                        print("Copying \(pathFromBundle)/\(filename) to \(pathDestDocs)/\(filename)")
+                    }
+                    
                 }
-            } catch {
-                print("\nError\n")
+            } catch let error as NSError{
+                print("\nError \(error.localizedDescription)\n")
             }
         }
         

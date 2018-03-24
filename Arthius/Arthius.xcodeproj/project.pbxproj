@@ -28,6 +28,8 @@
 		40A41FB62065B10A000E4634 /* Levels in Resources */ = {isa = PBXBuildFile; fileRef = 40A41FB52065B109000E4634 /* Levels */; };
 		40A41FB92065C96A000E4634 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FB82065C96A000E4634 /* File.swift */; };
 		40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FBA20660512000E4634 /* LevelScrollView.swift */; };
+		40A41FBD2066B647000E4634 /* ColorBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FBC2066B647000E4634 /* ColorBox.swift */; };
+		40A41FBF2066B6D0000E4634 /* BaseLevelRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */; };
 		40E544D22062FA44006505D5 /* GravityWell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D12062FA44006505D5 /* GravityWell.swift */; };
 		40E544D42063108C006505D5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D32063108C006505D5 /* Extensions.swift */; };
 		40E544D6206336FA006505D5 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D5206336FA006505D5 /* Level.swift */; };
@@ -77,6 +79,8 @@
 		40A41FB52065B109000E4634 /* Levels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Levels; sourceTree = "<group>"; };
 		40A41FB82065C96A000E4634 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		40A41FBA20660512000E4634 /* LevelScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelScrollView.swift; sourceTree = "<group>"; };
+		40A41FBC2066B647000E4634 /* ColorBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBox.swift; sourceTree = "<group>"; };
+		40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLevelRectangle.swift; sourceTree = "<group>"; };
 		40E544D12062FA44006505D5 /* GravityWell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityWell.swift; sourceTree = "<group>"; };
 		40E544D32063108C006505D5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		40E544D5206336FA006505D5 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
@@ -138,7 +142,6 @@
 				4019988B2061A52E00411CB8 /* Assets.xcassets */,
 				4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */,
 				401998902061A52E00411CB8 /* Info.plist */,
-				40E544D5206336FA006505D5 /* Level.swift */,
 				40A41FA520659BC0000E4634 /* Views */,
 			);
 			path = Arthius;
@@ -186,7 +189,9 @@
 		40A41FAD20659E5A000E4634 /* LevelElements */ = {
 			isa = PBXGroup;
 			children = (
+				40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */,
 				40E544D12062FA44006505D5 /* GravityWell.swift */,
+				40A41FBC2066B647000E4634 /* ColorBox.swift */,
 			);
 			name = LevelElements;
 			sourceTree = "<group>";
@@ -197,6 +202,7 @@
 				40EDDB9E206448EC006FF6ED /* Screen.swift */,
 				40E544D32063108C006505D5 /* Extensions.swift */,
 				40A41FB82065C96A000E4634 /* File.swift */,
+				40E544D5206336FA006505D5 /* Level.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -288,6 +294,7 @@
 			files = (
 				40A41F9920647124000E4634 /* Disk.swift in Sources */,
 				40EDDB9B206445DA006FF6ED /* MenuView.swift in Sources */,
+				40A41FBD2066B647000E4634 /* ColorBox.swift in Sources */,
 				40A41F9F20647124000E4634 /* Disk+[Data].swift in Sources */,
 				40E544D22062FA44006505D5 /* GravityWell.swift in Sources */,
 				40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */,
@@ -304,6 +311,7 @@
 				40A41FA320649F99000E4634 /* CampaignLevelSelector.swift in Sources */,
 				401998852061A52E00411CB8 /* AppDelegate.swift in Sources */,
 				40A41FB92065C96A000E4634 /* File.swift in Sources */,
+				40A41FBF2066B6D0000E4634 /* BaseLevelRectangle.swift in Sources */,
 				40E544D6206336FA006505D5 /* Level.swift in Sources */,
 				40E544D42063108C006505D5 /* Extensions.swift in Sources */,
 				40A41FAA20659E41000E4634 /* Label.swift in Sources */,

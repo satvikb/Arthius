@@ -29,6 +29,8 @@ class LevelView : UIView {
     var lineShape : CAShapeLayer!;
     
     var lineVelocity: CGVector!;
+    var lineColor : Color!;
+    
     var tempLineForces : CGVector! = CGVector.zero;
     var lineMass : CGFloat = 1; //no effect for now?
     let G : CGFloat = 1;
@@ -41,6 +43,8 @@ class LevelView : UIView {
     //This is created because the GravityWellData in LevelData stores the proportional sizes. Instead of converting from prop to real in the update look, it's easier to just store the scaled wells as well.
     //This is what is used for calculations, GravityWellData is what is used to save.
     var scaledGravityWells : [GravityWell] = []
+    var scaledColorBoxes : [ColorBox] = []
+    
     
     var displayLink : CADisplayLink!
     
@@ -48,63 +52,68 @@ class LevelView : UIView {
     var paused = true;
     
     
-    init(_level: Level){//, _resetToLevel : Level) {
+    init(_level: Level){
         level = _level;
-//        resetToLevel = _resetToLevel;
-        
-        super.init(frame: UIScreen.main.bounds)//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
-        self.tag = 12;
+        super.init(frame: UIScreen.main.bounds)
 
-        lastPoint = propToPoint(prop: level.levelData.startPosition);//CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
+        lastPoint = propToPoint(prop: level.levelData.startPosition);
         lineVelocity = propToVector(prop: level.levelData.startVelocity);
-        
-        
         endRectScaled = propToRect(prop: level.levelData.endPosition);
+        lineColor = level.levelData.startColor;
         
-        levelView = LevelScrollView(frame: UIScreen.main.bounds)//propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)))
+        setupLevelView()
+        setupLine()
+        setupLevelEnd()
+        setupGestureRecognizers()
+        createLevelElementsFromLevel()
+        createUIButtons()
+
+        start()
+    }
+    
+    func setupLevelView(){
+        levelView = LevelScrollView(frame: UIScreen.main.bounds)
         levelView.isUserInteractionEnabled = true;
         levelView.bounces = false;
         levelView.showsVerticalScrollIndicator = false;
         levelView.showsHorizontalScrollIndicator = false;
         levelView.delaysContentTouches = false;
-        levelView.contentSize = propToRect(prop: _level.levelData.propFrame).size//CGRect(x: 0, y: 0, width: 3, height: 1)).size
-        
-        print(levelView.contentSize)
-        
-        
+        levelView.contentSize = propToRect(prop: level.levelData.propFrame).size
+        self.addSubview(levelView)
+    }
+    
+    func setupGestureRecognizers(){
+        let singleTap = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        singleTap.cancelsTouchesInView = false
+        //        singleTap.numberOfTapsRequired = 1
+        //        singleTap.delegate = self;
+        singleTap.minimumPressDuration = 0.1;
+        singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
+        levelView.addGestureRecognizer(singleTap)
+    }
+    
+    func setupLine(){
         linePath = UIBezierPath();
+        linePath.move(to: self.lastPoint);
+
         lineShape = CAShapeLayer();
         lineShape.frame = levelView.frame
         lineShape.path = linePath.cgPath;
         lineShape.lineCap = kCALineCapRound;
-        lineShape.fillColor = UIColor.blue.cgColor;
+        lineShape.fillColor = UIColor.clear.cgColor;
         lineShape.lineWidth = 10;
-        lineShape.strokeColor = UIColor.green.cgColor
+        lineShape.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor;
         lineShape.zPosition = 100;
         self.levelView.layer.addSublayer(lineShape)
-        
+    }
+    
+    func setupLevelEnd(){
         let endRect = UIView(frame: endRectScaled)
         endRect.backgroundColor = UIColor.green
         self.levelView.addSubview(endRect)
-        
-        
-        let singleTap = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        singleTap.cancelsTouchesInView = false
-//        singleTap.numberOfTapsRequired = 1
-//        singleTap.delegate = self;
-        singleTap.minimumPressDuration = 0.1;
-        singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
-        levelView.addGestureRecognizer(singleTap)
-        
-        
-        for gWell in level.levelData.gravityWells {
-            let _ = createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, new: false)
-        }
-
-        
-        self.addSubview(levelView)
-
-        
+    }
+    
+    func createUIButtons(){
         playResetBtn = Button(propFrame: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
         playResetBtn.pressed = {
             if(self.paused == true){
@@ -115,12 +124,6 @@ class LevelView : UIView {
                 //currently playing, pause and reset level
                 self.paused = true;
                 self.resetLine()
-                
-                //remove all gravity wells. WAIT NO. RESTARTING THE LEVEL DOESNT REMOVE WELLS LOL ONLY RESTARTS THE LINE NVM
-//                for well in self.scaledGravityWells{
-//                    well.removeFromSuperview()
-//
-//                }
             }
         }
         
@@ -133,20 +136,38 @@ class LevelView : UIView {
         
         self.addSubview(playResetBtn);
         self.addSubview(homeBtn);
-
-        start()
-
+    }
+    
+    func createLevelElementsFromLevel(){
+        createGravityWellsFromLevel()
+        createColorBoxesFromLevel()
+    }
+    
+    func createGravityWellsFromLevel(){
+        
+        for gWell in level.levelData.gravityWells {
+            let _ = createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, new: false)
+        }
+        
+    }
+    
+    func createColorBoxesFromLevel(){
+        for cBox in level.levelData.colorBoxData {
+            let _ = createColorBox(frame: propToRect(prop: cBox.frame), rotation: cBox.rotation, box: cBox.box, leftCol: cBox.leftColor, rightCol: cBox.rightColor, backgroundColor: cBox.backgroundColor, middlePropWidth: cBox.middlePropWidth)
+        }
     }
     
     func resetLine(){
         
+        lastPoint = propToPoint(prop: level.levelData.startPosition);//CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
+        lineVelocity = propToVector(prop: level.levelData.startVelocity);
+        lineColor = level.levelData.startColor;
+            
         self.linePath = UIBezierPath();
         self.lineShape.path = nil;
         self.playResetBtn.text.text = ">"
-
-        lastPoint = propToPoint(prop: level.levelData.startPosition);//CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
-        lineVelocity = propToVector(prop: level.levelData.startVelocity);
-        
+        linePath.move(to: self.lastPoint);
+        lineShape.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor
     }
     
     var longTapInital : CGPoint = CGPoint.zero;
@@ -193,6 +214,15 @@ class LevelView : UIView {
         return newWell;
     }
     
+    func createColorBox(frame : CGRect, rotation : CGFloat, box : Bool, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
+        let newBox = ColorBox(frame: frame, rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth)
+        
+        levelView.addSubview(newBox)
+        scaledColorBoxes.append(newBox)
+        
+        return newBox
+    }
+    
     func snapshot(){
         let levelSave = level;
         
@@ -206,7 +236,7 @@ class LevelView : UIView {
     
     func newMoveLocation(p: CGPoint){
         //TODO only call once at init
-        linePath.move(to: self.lastPoint);
+//        linePath.move(to: self.lastPoint);
 
         linePath.addLine(to: p)
         
@@ -216,6 +246,10 @@ class LevelView : UIView {
         self.lastPoint = p;
     }
     
+    func changeLineColor(to: Color){
+        lineColor = to;
+        lineShape.strokeColor = ColorBox.ColorToUIColor(col: to).cgColor
+    }
     
     @objc func update(){
         if(paused == false){
@@ -224,62 +258,77 @@ class LevelView : UIView {
             for gravWell in scaledGravityWells{
                 let distFromGravityCenter = distance(a: lastPoint, b: gravWell.center)
                 if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
-                    ////                let v = sqrt( G * gravWell.mass / (gravWell.areaOfEffectDiameter/2) )
                     let f = (G * gravWell.mass * lineMass) / (distFromGravityCenter*distFromGravityCenter)
-                    
                     
                     let p2 = gravWell.center;
                     let p1 = lastPoint!;
-                    let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)// * 180 / CGFloat.pi;
+                    let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)
                     
                     let fx = f*cos(angleRad)
                     let fy = f*sin(angleRad)
                     tempLineForces = tempLineForces + (CGVector(dx: fx, dy: fy))
-        //                print(fx, fy, f, lineVelocity, distFromGravityCenter, tempLineForces)
                 }
-                
             }
             
             //pemdas
             let dV = tempLineForces / lineMass
             lineVelocity = lineVelocity + dV
             
-            
             let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
             let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
             newMoveLocation(p: pos);
-            
             
             if(endRectScaled.contains(lastPoint)){
                 print("GAME")
                 //finish level
             }
+            
+            for cBox in scaledColorBoxes {
+                
+                if(cBox.pointInRect(locInMain: lastPoint)){
+                    cBox.lineInBox = true;
+                    
+                    if(cBox.pointInLeftRect(locInMain: lastPoint)){
+                        
+                        //line entered from left
+                        if(cBox.lineOnASide == false && lineColor == cBox.leftColor){
+                            cBox.lineOnASide = true;
+                            cBox.lineOnLeftSide = true;
+                            print("IN LEFT")
+                        }else{
+                            //line entered from right
+                            if(cBox.lineOnLeftSide == false){
+                                print("Change Color R-L")
+                                changeLineColor(to: cBox.leftColor)
+                            }
+                        }
+                    }
+                    
+                    if(cBox.pointInRightRect(locInMain: lastPoint)){
+                        
+                        //coming from left
+                        if(cBox.lineOnASide == true){
+                            if(cBox.lineOnLeftSide == true){
+                                print("Change Color L-R")
+                                changeLineColor(to: cBox.rightColor)
+                            }
+                        }else{
+                            if(lineColor == cBox.rightColor){
+                                cBox.lineOnASide = true;
+                                cBox.lineOnLeftSide = false;
+                                print("IN RIGHT")
+                            }
+                        }
+                    }
+                }else{
+                    cBox.lineInBox = false;
+                    cBox.lineOnASide = false;
+                    cBox.lineOnLeftSide = false;
+                }
+                
+                
+            }
         }
-    }
-    
-    func CGVectorDotProduct(vector1 : CGVector, vector2 : CGVector) -> CGFloat{
-        return vector1.dx * vector2.dx + vector1.dy * vector2.dy;
-    }
-    
-    func CGVectorLength(vector : CGVector) -> Float
-    {
-        return hypotf(Float(vector.dx), Float(vector.dy));
-    }
-    
-    
-    func CGVectorMultiplyByScalar(vector : CGVector, value : CGFloat) -> CGVector{
-        return CGVector(dx: vector.dx * value, dy: vector.dy * value);
-    }
-    
-    func CGVectorNormalize(vector : CGVector) -> CGVector {
-        let length : CGFloat = CGFloat(CGVectorLength(vector: vector));
-        
-        if (length == 0) {
-            return CGVector.zero
-        }
-        
-        let scale : CGFloat = 1.0 / length;
-        return CGVectorMultiplyByScalar(vector: vector, value: scale);
     }
     
     func distance(a: CGPoint, b: CGPoint) -> CGFloat {
@@ -301,14 +350,6 @@ class LevelView : UIView {
         }
     }
     
-    
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        if(otherGestureRecognizer.isKind(of: UIPanGestureRecognizer.self)){
-//            return true
-//        }
-//        return false
-//    }
- 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

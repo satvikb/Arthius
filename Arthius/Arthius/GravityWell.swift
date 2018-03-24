@@ -92,9 +92,6 @@ class GravityWell: UIView {
         return false
     }
     
-    
-    
-    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

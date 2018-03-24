@@ -17,10 +17,10 @@ class Level : NSObject{
 //    var gravityWells : [GravityWellData] = []
     
     
-    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
+    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _startColor : Color, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
         super.init()
         
-        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
+        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, startColor: _startColor, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
         levelData = lD;
 //        levelName = name;
 //        propFrame = _propFrame;
@@ -40,6 +40,7 @@ struct LevelData : Codable {
     var startPosition : CGPoint;
     var endPosition : CGRect;
     var startVelocity : CGVector;
+    var startColor : Color;
     var gravityWells : [GravityWellData]
     var colorBoxData : [ColorBoxData]
     var rockData : [RockData]
@@ -98,7 +99,13 @@ struct GravityWellData : Codable, Equatable{
 }
 
 struct ColorBoxData: Codable {
-    
+    var frame : CGRect;
+    var rotation : CGFloat;
+    var box : Bool;
+    var leftColor : Color;
+    var rightColor : Color;
+    var backgroundColor : Color;
+    var middlePropWidth : CGFloat;
 }
 
 struct RockData: Codable {
@@ -106,5 +113,15 @@ struct RockData: Codable {
 }
 
 struct SpeedBoostData: Codable {
-    
+    var frame : CGRect;
+    var rotation : CGFloat;
+    var box : Bool;
+}
+
+// 0-1 values
+struct Color : Codable, Equatable{
+    var r : CGFloat;
+    var g : CGFloat;
+    var b : CGFloat;
+    var a : CGFloat
 }
