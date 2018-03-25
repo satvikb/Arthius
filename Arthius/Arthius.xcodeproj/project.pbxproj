@@ -37,6 +37,7 @@
 		40B0351D2066FF6500A4D8FB /* LevelBeatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */; };
 		40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351E2067004D00A4D8FB /* LevelSelector.swift */; };
 		40B035222067290200A4D8FB /* MiscElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035212067290200A4D8FB /* MiscElements.swift */; };
+		40B0352420681C7D00A4D8FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 40B0352320681C7D00A4D8FB /* GoogleService-Info.plist */; };
 		40E544D22062FA44006505D5 /* GravityWell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D12062FA44006505D5 /* GravityWell.swift */; };
 		40E544D42063108C006505D5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D32063108C006505D5 /* Extensions.swift */; };
 		40E544D6206336FA006505D5 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D5206336FA006505D5 /* Level.swift */; };
@@ -44,6 +45,7 @@
 		40EDDB9B206445DA006FF6ED /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EDDB9A206445DA006FF6ED /* MenuView.swift */; };
 		40EDDB9D206447A6006FF6ED /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EDDB9C206447A6006FF6ED /* Button.swift */; };
 		40EDDB9F206448EC006FF6ED /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EDDB9E206448EC006FF6ED /* Screen.swift */; };
+		E6A6B1AF1F138E265C1B0FF7 /* Pods_Arthius.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD0CE8671AF22C36007E769 /* Pods_Arthius.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,6 +62,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0CD0CE8671AF22C36007E769 /* Pods_Arthius.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Arthius.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		165F6C7285252D138E364996 /* Pods-Arthius.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Arthius.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Arthius/Pods-Arthius.debug.xcconfig"; sourceTree = "<group>"; };
 		401998812061A52E00411CB8 /* Arthius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arthius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401998842061A52E00411CB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		401998862061A52E00411CB8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +97,7 @@
 		40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelBeatView.swift; sourceTree = "<group>"; };
 		40B0351E2067004D00A4D8FB /* LevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelector.swift; sourceTree = "<group>"; };
 		40B035212067290200A4D8FB /* MiscElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscElements.swift; sourceTree = "<group>"; };
+		40B0352320681C7D00A4D8FB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		40E544D12062FA44006505D5 /* GravityWell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityWell.swift; sourceTree = "<group>"; };
 		40E544D32063108C006505D5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		40E544D5206336FA006505D5 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
@@ -100,6 +105,7 @@
 		40EDDB9A206445DA006FF6ED /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		40EDDB9C206447A6006FF6ED /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		40EDDB9E206448EC006FF6ED /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
+		90160F80A2F61C321116C0AE /* Pods-Arthius.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Arthius.release.xcconfig"; path = "Pods/Target Support Files/Pods-Arthius/Pods-Arthius.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,17 +113,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6A6B1AF1F138E265C1B0FF7 /* Pods_Arthius.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1B82607DB0D66E5FB4230BFC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				165F6C7285252D138E364996 /* Pods-Arthius.debug.xcconfig */,
+				90160F80A2F61C321116C0AE /* Pods-Arthius.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		401998782061A52D00411CB8 = {
 			isa = PBXGroup;
 			children = (
 				401998832061A52E00411CB8 /* Arthius */,
 				401998822061A52E00411CB8 /* Products */,
+				1B82607DB0D66E5FB4230BFC /* Pods */,
+				5AD1867BE0DD11FFE80248EE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,6 +150,7 @@
 		401998832061A52E00411CB8 /* Arthius */ = {
 			isa = PBXGroup;
 			children = (
+				40B0352320681C7D00A4D8FB /* GoogleService-Info.plist */,
 				401998842061A52E00411CB8 /* AppDelegate.swift */,
 				401998862061A52E00411CB8 /* ViewController.swift */,
 				40B0352020671DB400A4D8FB /* Supporting Files */,
@@ -231,6 +250,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		5AD1867BE0DD11FFE80248EE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0CD0CE8671AF22C36007E769 /* Pods_Arthius.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -238,10 +265,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 401998932061A52E00411CB8 /* Build configuration list for PBXNativeTarget "Arthius" */;
 			buildPhases = (
+				861F38D5EF17FF6E88CA8C5E /* [CP] Check Pods Manifest.lock */,
 				4019987D2061A52E00411CB8 /* Sources */,
 				4019987E2061A52E00411CB8 /* Frameworks */,
 				4019987F2061A52E00411CB8 /* Resources */,
 				4005821420645DD2008C9659 /* Embed Frameworks */,
+				5BCFFDF49AB0B40074ADD6FB /* [CP] Embed Pods Frameworks */,
+				A74AFE0FC20EB0D3A879630F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -297,10 +327,83 @@
 				40A41FB62065B10A000E4634 /* Levels in Resources */,
 				40A41FAF2065A1ED000E4634 /* SF-Pro-Text-Heavy.otf in Resources */,
 				40A41FB12065A696000E4634 /* SF-Pro-Text-Light.otf in Resources */,
+				40B0352420681C7D00A4D8FB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5BCFFDF49AB0B40074ADD6FB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Arthius/Pods-Arthius-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BoringSSL/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Arthius/Pods-Arthius-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		861F38D5EF17FF6E88CA8C5E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Arthius-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A74AFE0FC20EB0D3A879630F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Arthius/Pods-Arthius-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4019987D2061A52E00411CB8 /* Sources */ = {
@@ -476,6 +579,7 @@
 		};
 		401998942061A52E00411CB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 165F6C7285252D138E364996 /* Pods-Arthius.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -497,6 +601,7 @@
 		};
 		401998952061A52E00411CB8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 90160F80A2F61C321116C0AE /* Pods-Arthius.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
