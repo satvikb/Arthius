@@ -15,7 +15,7 @@ protocol CreateLevelSelectorViewDelegate: class {
 //    func playSelect_pressSavedLevelsSelect()
 }
 
-class CreateLevelSelectView : UIView {
+class CreateLevelSelectView : UIView, LevelSelectorDelegate {
     weak var createLevelSelectDelegate:CreateLevelSelectorViewDelegate?
     var titleLabel : Label!;
     
@@ -58,8 +58,13 @@ class CreateLevelSelectView : UIView {
         
         levels = File.getAllLevels(type: .UserMade)
         
+        if(levelSelectScroll != nil){
+            levelSelectScroll.removeFromSuperview()
+        }
         
+        //TODO NOT like campaign levels, make them all like the New button, fully horizontal, stacked
         levelSelectScroll = LevelSelector(frame: propToRect(prop: CGRect(x: 0, y: 0.45, width: 1, height: 0.55)), xTiles: 3, yTiles: 3, levels: levels)
+        levelSelectScroll.levelSelectorDelegate = self;
         self.addSubview(levelSelectScroll)
     }
     

@@ -36,6 +36,7 @@
 		40B0351B2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351A2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift */; };
 		40B0351D2066FF6500A4D8FB /* LevelBeatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */; };
 		40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351E2067004D00A4D8FB /* LevelSelector.swift */; };
+		40B035222067290200A4D8FB /* MiscElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035212067290200A4D8FB /* MiscElements.swift */; };
 		40E544D22062FA44006505D5 /* GravityWell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D12062FA44006505D5 /* GravityWell.swift */; };
 		40E544D42063108C006505D5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D32063108C006505D5 /* Extensions.swift */; };
 		40E544D6206336FA006505D5 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E544D5206336FA006505D5 /* Level.swift */; };
@@ -91,6 +92,7 @@
 		40B0351A2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLevelsLevelSelector.swift; sourceTree = "<group>"; };
 		40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelBeatView.swift; sourceTree = "<group>"; };
 		40B0351E2067004D00A4D8FB /* LevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelector.swift; sourceTree = "<group>"; };
+		40B035212067290200A4D8FB /* MiscElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscElements.swift; sourceTree = "<group>"; };
 		40E544D12062FA44006505D5 /* GravityWell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityWell.swift; sourceTree = "<group>"; };
 		40E544D32063108C006505D5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		40E544D5206336FA006505D5 /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
@@ -130,18 +132,15 @@
 		401998832061A52E00411CB8 /* Arthius */ = {
 			isa = PBXGroup;
 			children = (
+				401998842061A52E00411CB8 /* AppDelegate.swift */,
+				401998862061A52E00411CB8 /* ViewController.swift */,
+				40B0352020671DB400A4D8FB /* Supporting Files */,
 				40A41FC02066D8E9000E4634 /* GLS */,
 				40A41FB72065C95D000E4634 /* Core */,
 				40A41FB52065B109000E4634 /* Levels */,
 				40A41FAD20659E5A000E4634 /* LevelElements */,
 				40A41FA820659E33000E4634 /* UI */,
 				40A41F8C20647114000E4634 /* Disk */,
-				401998842061A52E00411CB8 /* AppDelegate.swift */,
-				401998862061A52E00411CB8 /* ViewController.swift */,
-				401998882061A52E00411CB8 /* Main.storyboard */,
-				4019988B2061A52E00411CB8 /* Assets.xcassets */,
-				4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */,
-				401998902061A52E00411CB8 /* Info.plist */,
 				40A41FA520659BC0000E4634 /* Views */,
 			);
 			path = Arthius;
@@ -198,6 +197,7 @@
 				40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */,
 				40E544D12062FA44006505D5 /* GravityWell.swift */,
 				40A41FBC2066B647000E4634 /* ColorBox.swift */,
+				40B035212067290200A4D8FB /* MiscElements.swift */,
 			);
 			name = LevelElements;
 			sourceTree = "<group>";
@@ -218,6 +218,17 @@
 			children = (
 			);
 			path = GLS;
+			sourceTree = "<group>";
+		};
+		40B0352020671DB400A4D8FB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				401998882061A52E00411CB8 /* Main.storyboard */,
+				4019988B2061A52E00411CB8 /* Assets.xcassets */,
+				4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */,
+				401998902061A52E00411CB8 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -324,6 +335,7 @@
 				40E544D6206336FA006505D5 /* Level.swift in Sources */,
 				40E544D42063108C006505D5 /* Extensions.swift in Sources */,
 				40B035172066FB8700A4D8FB /* CreateLevelSelector.swift in Sources */,
+				40B035222067290200A4D8FB /* MiscElements.swift in Sources */,
 				40A41FAA20659E41000E4634 /* Label.swift in Sources */,
 				40A41FA120647124000E4634 /* Disk+Errors.swift in Sources */,
 			);

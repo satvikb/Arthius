@@ -36,6 +36,11 @@ public extension UIView {
         return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
     }
     
+    public func propToRect(prop: CGRect, within: CGRect) -> CGRect{
+        let screen = within;
+        return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
+    }
+    
     
     
     public func pointToProp(point: CGPoint) -> CGPoint {

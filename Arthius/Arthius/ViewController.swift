@@ -23,7 +23,7 @@ enum View {
     case LevelBeat
 }
 
-class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate{
+class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate{
 
     var currentView : View!;
     var menuView : MenuView!;
@@ -33,6 +33,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
     
     var levelView : LevelView!;
     var currentLevel : Level!;
+    
+    var createLevelView : CreateLevelView!;
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,6 +143,11 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             createLevelSelectView.animateOut(time: transitionTime)
             removeView(view: createLevelSelectView, after: transitionTime)
             break;
+        case .LevelCreate:
+            //TODO animate
+//            createLevelView.animateOut(time: transitionTime)
+            removeView(view: createLevelView, after: transitionTime)
+            break;
         default: break
             
         }
@@ -164,8 +171,15 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             self.view.addSubview(campaignLevelSelectView)
             campaignLevelSelectView.animateIn(time: transitionTime)
         case .CreateSelect:
+            createLevelSelectView.loadLevels()
             self.view.addSubview(createLevelSelectView)
             createLevelSelectView.animateIn(time: transitionTime)
+            break;
+        case .LevelCreate:
+            createLevelView = CreateLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), existingLevel: currentLevel.levelData)
+            createLevelView.delegate = self;
+            self.view.addSubview(createLevelView)
+            break;
         default: break
             
         }
@@ -245,11 +259,17 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
     
     func createLevelSelect_pressLevel(level: LevelData) {
         currentLevel = Level(_levelData: level);
-        switchToView(newView: .LevelPlay)
+        switchToView(newView: .LevelCreate)
+    }
+    
+    func createLevelView_pressBack() {
+        switchToView(newView: .CreateSelect)
     }
     
     func createLevelSelect_createNew() {
         print("CREATE NEW LEVEL")
+        currentLevel = Level(_levelData: CreateLevelView.BlankLevel())
+        switchToView(newView: .LevelCreate)
     }
     
     override var prefersStatusBarHidden: Bool {

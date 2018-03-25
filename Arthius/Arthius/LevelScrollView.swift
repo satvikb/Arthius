@@ -8,6 +8,7 @@
 
 import UIKit
 
+//if needed use to handle custom scrolling/zooming
 class LevelScrollView : UIScrollView{
     
     

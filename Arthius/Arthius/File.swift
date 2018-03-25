@@ -52,7 +52,7 @@ class File {
             //            print("Error Loading Campaign Levels")
             
             print("""
-                ERROR GETTING CAMPAIGN LEVELS
+                ERROR GETTING \(type.rawValue) LEVELS
                 Domain: \(error.domain)
                 Code: \(error.code)
                 Description: \(error.localizedDescription)

@@ -8,6 +8,7 @@
 
 import UIKit
 
+//TODO: what is the point of this lol its literlly just a container for LevelData (unnecessary)
 class Level : NSObject{
     
     var levelData : LevelData!;
@@ -99,7 +100,7 @@ struct GravityWellData : Codable, Equatable{
 //
 }
 
-struct ColorBoxData: Codable {
+struct ColorBoxData: Codable, Equatable {
     var frame : CGRect;
     var rotation : CGFloat;
     var box : Bool;
