@@ -15,15 +15,13 @@ class Button : UIView{
     var heldDownFrame : CGRect!;
     var heldUpFrame : CGRect!;
     
-    var text : Label!;
+    var text : UILabel!;
 
     var inPos : CGPoint;
     var outPos : CGPoint;
     
-    init(propFrame: CGRect, text: String = "", fontSize: CGFloat = 20, outPos : CGPoint = Screen.propToPoint(prop: CGPoint(x: -1, y: 0))){
-//        let viewOffsetX : CGFloat = Screen.propToFloat(prop: -propFrame.width/20, scaleWithX: false)
-//        let viewOffsetY : CGFloat = Screen.y(p: -propWidth/20) //-0.01
-        let frame : CGRect = Screen.propToRect(prop: propFrame)
+    init(frame: CGRect, text: String = "", fontSize: CGFloat = 20, outPos : CGPoint = Screen.propToPoint(prop: CGPoint(x: -1, y: 0))){
+//        let frame : CGRect = Screen.propToRect(prop: propFrame, within: withinFrame)
         
         self.inPos = frame.origin
         self.outPos = outPos;
@@ -31,10 +29,11 @@ class Button : UIView{
         super.init(frame: CGRect(origin: outPos, size: frame.size))
         self.backgroundColor = UIColor.gray
         
-        self.text = Label(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), text: text)
+        self.text = UILabel(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height))
         self.text.textAlignment = .center
+        self.text.text = text;
         self.text.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
-        self.text.changeTextColor(color: UIColor.white)
+        self.text.textColor = UIColor.white
         
         self.addSubview(self.text)
 //        heldDownFrame = Screen.propToRect(prop:propFrame)
@@ -79,6 +78,7 @@ class Button : UIView{
             self.frame.origin = self.inPos
         })
     }
+    
     var heldDown = false
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -7,12 +7,16 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
-let transitionTime : CGFloat = 0.1;
+let transitionTime : CGFloat = 0.2;
+let db = Firestore.firestore()
 
 enum View {
     case Splash
     case Menu
+    case Account
     case PlaySelect
     case CampaignLevelSelect
     case LevelPlay
@@ -23,11 +27,13 @@ enum View {
     case LevelBeat
 }
 
-class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate{
+class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate{
+    
    
 
     var currentView : View!;
     var menuView : MenuView!;
+    var accountView : AccountView!;
     var playSelectView : PlaySelectView!;
     var campaignLevelSelectView : CampaignLevelSelectView!;
     var createLevelSelectView : CreateLevelSelectView!;
@@ -44,9 +50,13 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         currentView = View.Splash
         
         File.copyLevelsFromBundleToDocuments()
+        firebaseAuthHandler()
 
         menuView = MenuView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         menuView.menuDelegate = self;
+        
+        accountView = AccountView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)))
+        accountView.accountDelegate = self;
         
         playSelectView = PlaySelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         playSelectView.playSelectDelegate = self;
@@ -64,9 +74,15 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         switchToView(newView: .Menu)
     }
     
+    func firebaseAuthHandler(){
+        let _ = Auth.auth().addStateDidChangeListener({(auth, user) in
+            print("CHANGE \(String(describing: user?.uid))")
+        })
+    }
+    
     func switchToView(newView : View, transitionTime : CGFloat = transitionTime){
         func removeView(view: UIView, after: CGFloat){
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(transitionTime), execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(after), execute: {
                 view.removeFromSuperview()
             })
         }
@@ -76,6 +92,9 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             menuView.animateOut()
             removeView(view: menuView, after: transitionTime)
             break;
+        case .Account:
+            accountView.animateOut()
+            removeView(view: accountView, after: transitionTime)
         case .PlaySelect:
             playSelectView.animateOut(time: transitionTime)
             removeView(view: playSelectView, after: transitionTime)
@@ -109,6 +128,9 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             self.view.addSubview(menuView);
             menuView.animateIn()
             break;
+        case .Account:
+            self.view.addSubview(accountView)
+            accountView.animateIn()
         case .LevelPlay:
             levelView = LevelView(_level: currentLevel, _parentView: currentView)//, _resetToLevel: currentLevel)
             levelView.levelViewDelegate = self;
@@ -174,6 +196,26 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
     
     func menu_pressCreate() {
         switchToView(newView: View.CreateSelect)
+    }
+    
+    func menu_pressAccount() {
+        switchToView(newView: .Account)
+    }
+    
+    func account_pressBack() {
+        switchToView(newView: .Menu)
+    }
+    
+    func account_isLoggedIn() -> Bool {
+        return Auth.auth().currentUser != nil
+    }
+    
+    func account_signUp(email: String, password: String) {
+        
+    }
+    
+    func account_signIn(email: String, password: String) {
+        
     }
     
     func playSelect_pressBack() {

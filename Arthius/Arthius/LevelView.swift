@@ -140,7 +140,7 @@ class LevelView : UIView, UIScrollViewDelegate {
     }
     
     func createUIButtons(){
-        playResetBtn = Button(propFrame: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
+        playResetBtn = Button(frame: propToRect(prop: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1)), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
         playResetBtn.pressed = {
             if(self.paused == true){
                 //play
@@ -153,7 +153,7 @@ class LevelView : UIView, UIScrollViewDelegate {
             }
         }
         
-        homeBtn = Button(propFrame: CGRect(x: 0, y: 0, width: 0.15, height: 0.1), text: "H", fontSize: Screen.fontSize(propFontSize: 20))
+        homeBtn = Button(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 0.15, height: 0.1)), text: "H", fontSize: Screen.fontSize(propFontSize: 20))
         homeBtn.pressed = {
             //TODO confirmation?
             self.stop()

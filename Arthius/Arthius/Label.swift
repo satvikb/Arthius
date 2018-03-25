@@ -24,9 +24,10 @@ class Label: UILabel{
     var vAlign: VAlign = .Default;
     var insets: Bool = false;
     
-    init(frame: CGRect, text: String, _outPos: CGPoint = CGPoint.zero, _inPos: CGPoint = CGPoint.zero, textColor: UIColor = UIColor.white, valign : VAlign = .Default, _insets: Bool = true){
+    //TODO for Label and Button, _outPos: take into account withinFrame
+    init(frame: CGRect, text: String, _outPos: CGPoint = Screen.propToPoint(prop: CGPoint(x: -1, y: 0)), textColor: UIColor = UIColor.white, valign : VAlign = .Default, _insets: Bool = true){
         outPos = _outPos
-        inPos = _inPos
+        inPos = frame.origin;
         vAlign = valign;
         insets = _insets;
         
@@ -71,13 +72,13 @@ class Label: UILabel{
         fatalError("init(coder:) has not been implemented")
     }
     
-    func animateIn(time: CGFloat){
+    func animateIn(time: CGFloat = transitionTime){
         UIView.animate(withDuration: TimeInterval(time), animations: {
             self.frame.origin = self.inPos
         })
     }
     
-    func animateOut(time: CGFloat){
+    func animateOut(time: CGFloat = transitionTime){
         UIView.animate(withDuration: TimeInterval(time), animations: {
             self.frame.origin = self.outPos
         })

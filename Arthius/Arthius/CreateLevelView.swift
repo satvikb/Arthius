@@ -41,13 +41,13 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         levelData = existingLevel;
         
-        backBtn = Button(propFrame: CGRect(x: 0, y: 0, width: 0.1, height: 0.1), text: "back", fontSize: Screen.fontSize(propFontSize: 20))
+        backBtn = Button(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 0.1, height: 0.1)), text: "back", fontSize: Screen.fontSize(propFontSize: 20))
         backBtn.pressed = {
             self.saveLevel()
             self.delegate?.createLevelView_pressBack()
         }
         
-        playBtn = Button(propFrame: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
+        playBtn = Button(frame: propToRect(prop: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1)), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
         playBtn.pressed = {
             self.saveLevel()
             self.delegate?.createLevelView_playLv()

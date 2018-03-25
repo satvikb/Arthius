@@ -29,20 +29,20 @@ class PlaySelectView: UIView {
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
         
         
-        titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.5, y: 0.05, width: 0.4, height: 0.15)), text: "Play", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), _inPos: propToPoint(prop: CGPoint(x: 0.5, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
+        titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.5, y: 0.05, width: 0.4, height: 0.15)), text: "Play", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
         titleLabel.font = UIFont(name: "SFProText-Heavy", size: Screen.fontSize(propFontSize: 70))
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textAlignment = .right
         self.addSubview(titleLabel)
 
-        backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
+        backButton = Button(frame: propToRect(prop: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15)), text: "back")
         backButton.pressed = {
             self.playSelectDelegate?.playSelect_pressBack()
         }
         self.addSubview(backButton)
 
         
-        campaignButton = Button(propFrame: CGRect(x: 0.1, y: 0.25, width: 0.8, height: 0.15), text: "Campaign", fontSize: 60)
+        campaignButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.25, width: 0.8, height: 0.15)), text: "Campaign", fontSize: 60)
         campaignButton.text.textAlignment = .left;
         campaignButton.pressed = {
             self.playSelectDelegate?.playSelect_pressCampaign()
@@ -51,7 +51,7 @@ class PlaySelectView: UIView {
         self.addSubview(campaignButton)
         
         
-        globalLevelSelectButton = Button(propFrame: CGRect(x: 0.1, y: 0.45, width: 0.8, height: 0.25), text: "Global\nLevel\nSelect", fontSize: 60)
+        globalLevelSelectButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.45, width: 0.8, height: 0.25)), text: "Global\nLevel\nSelect", fontSize: 60)
         globalLevelSelectButton.text.numberOfLines = 3;
         globalLevelSelectButton.text.textAlignment = .left;
         globalLevelSelectButton.pressed = {
@@ -61,7 +61,7 @@ class PlaySelectView: UIView {
         self.addSubview(globalLevelSelectButton)
         
         
-        savedLevelsSelectButton = Button(propFrame: CGRect(x: 0.1, y: 0.75, width: 0.8, height: 0.15), text: "Saved Levels", fontSize: 60)
+        savedLevelsSelectButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.75, width: 0.8, height: 0.15)), text: "Saved Levels", fontSize: 60)
         savedLevelsSelectButton.text.textAlignment = .left;
         savedLevelsSelectButton.pressed = {
             self.playSelectDelegate?.playSelect_pressSavedLevelsSelect()

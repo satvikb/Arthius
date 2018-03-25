@@ -16,6 +16,11 @@ class Screen {
         return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
     }
     
+    public static func propToRect(prop: CGRect, within: CGRect) -> CGRect{
+        let screen = within;
+        return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
+    }
+    
     public static func propToPoint(prop: CGPoint) -> CGPoint {
         return CGPoint(x: propToFloat(prop: prop.x, scaleWithX: true), y: propToFloat(prop: prop.y, scaleWithX: false))
     }

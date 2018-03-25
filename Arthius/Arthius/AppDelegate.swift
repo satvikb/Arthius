@@ -20,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-2889096611002538~2676874001")
+        
         return true
     }
 
