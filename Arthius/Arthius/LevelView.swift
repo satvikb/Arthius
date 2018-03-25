@@ -15,6 +15,7 @@ protocol LevelViewDelegate: class {
 class LevelView : UIView, UIScrollViewDelegate {
     
     var level : Level!; //The current level, up to date with user created items.
+    var parentView : View!;
     //var resetToLevel :  Level!; //The level it is reset to after clicking restart, without user interaction.
     
     var levelView : LevelScrollView!;
@@ -55,8 +56,9 @@ class LevelView : UIView, UIScrollViewDelegate {
     var paused = true;
     
     
-    init(_level: Level){
+    init(_level: Level, _parentView: View){
         level = _level;
+        parentView = _parentView;
         super.init(frame: UIScreen.main.bounds)
 
         lastPoint = propToPoint(prop: level.levelData.startPosition);
@@ -406,6 +408,17 @@ class LevelView : UIView, UIScrollViewDelegate {
 //    }
 //    self.scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
 //    }
+    
+    func animateIn(){
+        homeBtn.animateIn()
+        playResetBtn.animateIn()
+    }
+    
+    func animateOut(){
+        homeBtn.animateOut()
+        playResetBtn.animateOut()
+    }
+    
     func centerScroll(){
         let offsetX = max((levelView.bounds.width - levelView.contentSize.width) * 0.5, 0)
         let offsetY = max((levelView.bounds.height - levelView.contentSize.height) * 0.5, 0)

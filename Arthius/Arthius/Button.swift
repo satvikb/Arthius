@@ -17,11 +17,18 @@ class Button : UIView{
     
     var text : Label!;
 
-    init(propFrame: CGRect, text: String = "", fontSize: CGFloat = 20){
+    var inPos : CGPoint;
+    var outPos : CGPoint;
+    
+    init(propFrame: CGRect, text: String = "", fontSize: CGFloat = 20, outPos : CGPoint = Screen.propToPoint(prop: CGPoint(x: -1, y: 0))){
 //        let viewOffsetX : CGFloat = Screen.propToFloat(prop: -propFrame.width/20, scaleWithX: false)
 //        let viewOffsetY : CGFloat = Screen.y(p: -propWidth/20) //-0.01
+        let frame : CGRect = Screen.propToRect(prop: propFrame)
         
-        super.init(frame: Screen.propToRect(prop: propFrame))
+        self.inPos = frame.origin
+        self.outPos = outPos;
+
+        super.init(frame: CGRect(origin: outPos, size: frame.size))
         self.backgroundColor = UIColor.gray
         
         self.text = Label(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), text: text)
@@ -61,19 +68,17 @@ class Button : UIView{
     
     var pressed = {}
     
-//    func animateOut(){
-//        UIView.animate(withDuration: transitionTime, animations: {
-//            self.pressView.frame.origin = Screen.outPos
-//            self.backgroundView.frame.origin = Screen.outPos
-//        })
-//    }
-//
-//    func animateIn(){
-//        UIView.animate(withDuration: transitionTime, animations: {
-//            self.pressView.frame.origin = self.heldUpFrame.origin
-//            self.backgroundView.frame.origin = self.heldDownFrame.origin
-//        })
-//    }
+    func animateOut(){
+        UIView.animate(withDuration: TimeInterval(transitionTime), animations: {
+            self.frame.origin = self.outPos
+        })
+    }
+
+    func animateIn(){
+        UIView.animate(withDuration: TimeInterval(transitionTime), animations: {
+            self.frame.origin = self.inPos
+        })
+    }
     var heldDown = false
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

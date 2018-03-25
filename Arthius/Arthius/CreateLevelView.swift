@@ -10,6 +10,7 @@ import UIKit
 
 protocol CreateLevelViewDelegate: class {
     func createLevelView_pressBack()
+    func createLevelView_playLv()
 }
 
 enum ToolbarItems {
@@ -21,13 +22,19 @@ enum ToolbarItems {
 class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     weak var delegate : CreateLevelViewDelegate?;
+    
     var toolbox : UIScrollView!;
     var backBtn : Button!;
-    
+    var playBtn : Button!;
+
     var levelView : LevelScrollView!;
     var stageView : UIView!;
     
     var levelData : LevelData!;
+    
+    var startPointView : UIView!;
+    var endPointView : UIView!;
+    
     
     init(frame: CGRect, existingLevel: LevelData) {
         super.init(frame: frame)
@@ -40,6 +47,12 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
             self.delegate?.createLevelView_pressBack()
         }
         
+        playBtn = Button(propFrame: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
+        playBtn.pressed = {
+            self.saveLevel()
+            self.delegate?.createLevelView_playLv()
+        }
+        
         createLevelScrollView()
         
         toolbox = UIScrollView(frame: propToRect(prop: CGRect(x: 0, y: 0.1, width: 0.2, height: 0.8)))
@@ -50,16 +63,18 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         
         createStartAndEnd()
+        loadCurrentLevel()
+        
         addItemsToToolbox()
         
         self.addSubview(toolbox)
         self.addSubview(backBtn)
-        
+        self.addSubview(playBtn)
 
     }
     
     static func BlankLevel() -> LevelData{
-        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 5, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
+        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
 
     }
     
@@ -97,16 +112,21 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     func loadCurrentLevel(){
         //load all the current items already in data
         for cBox in levelData.colorBoxData {
-            createColorbox(d: cBox)
+            addColorBoxToView(d: cBox)
 //            let cBoxView = ColorBox(frame: cBox.frame, rotation: cBox.rotation, box: cBox.box, _leftColor: cBox.leftColor, _rightColor: cBox.rightColor, backgroundColor: cBox.backgroundColor, _middlePropWidth: cBox.middlePropWidth, _stageView: stageView)
         }
     }
     
     func createStartAndEnd(){
         //show simple rectangle for now for start points
+        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.startPosition.x-0.05, y: levelData.startPosition.y-0.05, width: 0.1, height: 0.1)))
+        startPointView.backgroundColor = UIColor.green;
+        stageView.addSubview(startPointView);
         
         //show the end frame
-        
+        endPointView = UIView(frame: propToRect(prop: levelData.endPosition))
+        endPointView.backgroundColor = UIColor.black;
+        stageView.addSubview(endPointView);
     }
     
     func addItemsToToolbox(){
@@ -114,12 +134,15 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let colorChangeBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 0.1), within: toolbox.frame))
         colorChangeBtn.backgroundColor = UIColor.yellow;
         colorChangeBtn.pressed = {
-            self.createColorbox(d: ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.startColor, rightColor: self.levelData.startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2))
+            let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.startColor, rightColor: self.levelData.startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
+            self.addColorBoxToView(d: colorBoxData)
+            self.levelData.colorBoxData.append(colorBoxData)
+
         }
         toolbox.addSubview(colorChangeBtn)
     }
     
-    func createColorbox(d : ColorBoxData){
+    func addColorBoxToView(d : ColorBoxData){
         var data = d
         let colorBox = ColorBox(frame: propToRect(prop: data.frame), rotation: data.rotation, box: data.box, _leftColor: data.leftColor, _rightColor: data.rightColor, backgroundColor: data.backgroundColor, _middlePropWidth: data.middlePropWidth, _stageView: stageView, _editable: true)
         
@@ -137,9 +160,17 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
 //        colorBox.panGesture.delegate = self;
         colorBox.frameChangeKnob.panGesture.delegate = self
-        
-        levelData.colorBoxData.append(data)
         stageView.addSubview(colorBox)
+    }
+    
+    func animateIn(){
+        backBtn.animateIn()
+        playBtn.animateIn()
+    }
+    
+    func animateOut(){
+        backBtn.animateOut()
+        playBtn.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {

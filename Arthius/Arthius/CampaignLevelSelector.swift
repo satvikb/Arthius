@@ -23,9 +23,11 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
     
     var levelSelectScroll : LevelSelector!;
     
+    var backButton : Button!;
+    
     init(startPosition: CGPoint){
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
-        
+        self.isUserInteractionEnabled = true;
         
         titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.5, y: 0.05, width: 0.6, height: 0.15)), text: "Campaign", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), _inPos: propToPoint(prop: CGPoint(x: 0.3, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
         titleLabel.font = UIFont(name: "SFProText-Heavy", size: Screen.fontSize(propFontSize: 70))
@@ -33,7 +35,7 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
         titleLabel.textAlignment = .right
         self.addSubview(titleLabel)
         
-        let backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
+        backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
         backButton.pressed = {
             self.campaignLevelSelectDelegate?.campaignLevelSelect_pressBack()
         }
@@ -50,16 +52,19 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
 
         
         levelSelectScroll = LevelSelector(frame: propToRect(prop: CGRect(x: 0, y: 0.25, width: 1, height: 0.75)), xTiles: 3, yTiles: 3, levels: levels)
+        levelSelectScroll.isUserInteractionEnabled = true;
+        levelSelectScroll.levelSelectorDelegate = self
         self.addSubview(levelSelectScroll)
     }
     
     func animateIn(time: CGFloat){
         titleLabel.animateIn(time: time)
-        
+        backButton.animateIn()
     }
     
     func animateOut(time : CGFloat){
         titleLabel.animateOut(time: time)
+        backButton.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {

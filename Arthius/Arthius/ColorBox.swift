@@ -79,9 +79,14 @@ class ColorBox :  BaseLevelRectangle {
 //        TODO box (done)
         frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
         frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
-            self.handleFrameChangePan(pan: pan)
+            //in case
+            if(self.editable == true){
+                self.handleFrameChangePan(pan: pan)
+            }
         }
-        self.addSubview(frameChangeKnob)
+        if(editable){
+            self.addSubview(frameChangeKnob)
+        }
     }
     
     func pointInRightRect(locInMain : CGPoint) -> Bool{

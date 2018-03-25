@@ -170,4 +170,61 @@ class File {
             return USER_SAVES_FOLDER;
         }
     }
+    
+    
+    
+    static func copyLevelsFromBundleToDocuments(){
+    
+        func copyFolders() {
+            let filemgr = FileManager.default
+            //            filemgr.delegate = self
+            let dirPaths = filemgr.urls(for: .documentDirectory, in: .userDomainMask)
+            let docsURL = dirPaths[0]
+            
+            let folderPath = Bundle.main.resourceURL!.appendingPathComponent("Levels").path
+            let docsFolder = docsURL.appendingPathComponent(CAMPAIGN_LEVEL_FOLDER).path
+            copyFiles(pathFromBundle: folderPath, pathDestDocs: docsFolder)
+        }
+        
+        func copyFiles(pathFromBundle : String, pathDestDocs: String) {
+            let fileManagerIs = FileManager.default
+            //            fileManagerIs.delegate = self
+            
+            let tempPath = fileManagerIs.temporaryDirectory.path
+            
+            do {
+                let filelist = try fileManagerIs.contentsOfDirectory(atPath: pathFromBundle)
+                try? fileManagerIs.copyItem(atPath: pathFromBundle, toPath: pathDestDocs)
+                
+                for filename in filelist {
+                    let bundlePath = "\(pathFromBundle)/\(filename)"
+                    let docPath = "\(pathDestDocs)/\(filename)";
+                    
+                    if(fileManagerIs.fileExists(atPath: docPath)){
+                        let docFileEqualToBundleFile = fileManagerIs.contentsEqual(atPath: docPath, andPath: bundlePath)
+                        
+                        if(docFileEqualToBundleFile == false){
+                            let fileTemp = "\(tempPath)/\(filename)";
+                            try? fileManagerIs.copyItem(atPath: bundlePath, toPath: fileTemp)
+                            
+                            // fileManagerIs.replaceitem(URL(string: docPath)!, withItemAt: URL(string: tempPath)!)
+                            let replace = try fileManagerIs.replaceItemAt(URL(string: docPath)!, withItemAt: URL(string: fileTemp)!, backupItemName: "BU.gws", options: []);
+                            if(replace != nil){
+                                print("Lv \(filename) NOT equal. Replacing with original.")
+                            }
+                        }
+                    }else{
+                        try? fileManagerIs.copyItem(atPath: bundlePath, toPath: docPath)
+                        print("Copying \(pathFromBundle)/\(filename) to \(pathDestDocs)/\(filename)")
+                    }
+                    
+                }
+            } catch let error as NSError{
+                print("\nError \(error.localizedDescription)\n")
+            }
+        }
+    
+        copyFolders()
+    }
+    
 }

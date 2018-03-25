@@ -17,20 +17,33 @@ class MenuView: UIView {
     
     weak var menuDelegate:MenuViewDelegate?
 
+    var playButton : Button!;
+    var createButton : Button!;
+    
     init(startPosition: CGPoint){
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
         
-        let playButton = Button(propFrame: CGRect(x: 0.2, y: 0.4, width: 0.6, height: 0.1), text: "play")
+        playButton = Button(propFrame: CGRect(x: 0.2, y: 0.4, width: 0.6, height: 0.1), text: "play")
         playButton.pressed = {
             self.menuDelegate?.menu_pressPlay()
         }
         self.addSubview(playButton)
         
-        let createButton = Button(propFrame: CGRect(x: 0.2, y: 0.55, width: 0.6, height: 0.1), text: "create")
+        createButton = Button(propFrame: CGRect(x: 0.2, y: 0.55, width: 0.6, height: 0.1), text: "create")
         createButton.pressed = {
             self.menuDelegate?.menu_pressCreate()
         }
         self.addSubview(createButton)
+    }
+    
+    func animateIn(){
+        playButton.animateIn()
+        createButton.animateIn()
+    }
+    
+    func animateOut(){
+        playButton.animateOut()
+        createButton.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {

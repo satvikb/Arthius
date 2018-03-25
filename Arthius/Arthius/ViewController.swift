@@ -8,7 +8,7 @@
 
 import UIKit
 
-let transitionTime : CGFloat = 1;
+let transitionTime : CGFloat = 0.1;
 
 enum View {
     case Splash
@@ -24,6 +24,7 @@ enum View {
 }
 
 class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate{
+   
 
     var currentView : View!;
     var menuView : MenuView!;
@@ -42,6 +43,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         
         currentView = View.Splash
         
+        File.copyLevelsFromBundleToDocuments()
+
         menuView = MenuView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         menuView.menuDelegate = self;
         
@@ -54,60 +57,6 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         // COPY ALL FILES FROM LEVELS FOLDER TO DOCUMENTS
         // DO THIS BEFORE CAMPAIGNLEVELVIEW INIT
         
-        func copyFolders() {
-            let filemgr = FileManager.default
-//            filemgr.delegate = self
-            let dirPaths = filemgr.urls(for: .documentDirectory, in: .userDomainMask)
-            let docsURL = dirPaths[0]
-            
-            let folderPath = Bundle.main.resourceURL!.appendingPathComponent("Levels").path
-            let docsFolder = docsURL.appendingPathComponent(CAMPAIGN_LEVEL_FOLDER).path
-            copyFiles(pathFromBundle: folderPath, pathDestDocs: docsFolder)
-        }
-        
-        func copyFiles(pathFromBundle : String, pathDestDocs: String) {
-            let fileManagerIs = FileManager.default
-//            fileManagerIs.delegate = self
-            
-            let tempPath = fileManagerIs.temporaryDirectory.path
-            
-            do {
-                let filelist = try fileManagerIs.contentsOfDirectory(atPath: pathFromBundle)
-                try? fileManagerIs.copyItem(atPath: pathFromBundle, toPath: pathDestDocs)
-                
-                for filename in filelist {
-                    let bundlePath = "\(pathFromBundle)/\(filename)"
-                    let docPath = "\(pathDestDocs)/\(filename)";
-
-                    if(fileManagerIs.fileExists(atPath: docPath)){
-                        let docFileEqualToBundleFile = fileManagerIs.contentsEqual(atPath: docPath, andPath: bundlePath)
-                        
-                        if(docFileEqualToBundleFile == false){
-                            let fileTemp = "\(tempPath)/\(filename)";
-                            try? fileManagerIs.copyItem(atPath: bundlePath, toPath: fileTemp)
-                            
-                            // fileManagerIs.replaceitem(URL(string: docPath)!, withItemAt: URL(string: tempPath)!)
-                            let replace = try fileManagerIs.replaceItemAt(URL(string: docPath)!, withItemAt: URL(string: fileTemp)!, backupItemName: "BU.gws", options: []);
-                            if(replace != nil){
-                                print("Lv \(filename) NOT equal. Replacing with original.")
-                            }
-                        }
-                    }else{
-                        try? fileManagerIs.copyItem(atPath: bundlePath, toPath: docPath)
-                        print("Copying \(pathFromBundle)/\(filename) to \(pathDestDocs)/\(filename)")
-                    }
-                    
-                }
-            } catch let error as NSError{
-                print("\nError \(error.localizedDescription)\n")
-            }
-        }
-        
-        
-        copyFolders()
-        
-        
-        
         campaignLevelSelectView = CampaignLevelSelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         campaignLevelSelectView.campaignLevelSelectDelegate = self;
         
@@ -115,7 +64,7 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         switchToView(newView: .Menu)
     }
     
-    func switchToView(newView : View){
+    func switchToView(newView : View, transitionTime : CGFloat = transitionTime){
         func removeView(view: UIView, after: CGFloat){
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(transitionTime), execute: {
                 view.removeFromSuperview()
@@ -124,7 +73,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         
         switch currentView {
         case .Menu:
-            menuView.removeFromSuperview()
+            menuView.animateOut()
+            removeView(view: menuView, after: transitionTime)
             break;
         case .PlaySelect:
             playSelectView.animateOut(time: transitionTime)
@@ -137,6 +87,7 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             break;
         case .LevelPlay:
             //TODO animate
+            levelView.animateOut()
             removeView(view: levelView, after: transitionTime)
             break;
         case .CreateSelect:
@@ -152,15 +103,16 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
             
         }
         
-        currentView = newView;
         
         switch newView {
         case .Menu:
             self.view.addSubview(menuView);
+            menuView.animateIn()
             break;
         case .LevelPlay:
-            levelView = LevelView(_level: currentLevel)//, _resetToLevel: currentLevel)
+            levelView = LevelView(_level: currentLevel, _parentView: currentView)//, _resetToLevel: currentLevel)
             levelView.levelViewDelegate = self;
+            levelView.animateIn()
             self.view.addSubview(levelView)
             break;
         case .PlaySelect:
@@ -183,6 +135,8 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         default: break
             
         }
+        
+        currentView = newView;
     }
 //
 //    func testLevel() -> Level{
@@ -249,8 +203,13 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
     }
     
     func level_pressMenu() {
-        //TODO, respective location
-        switchToView(newView: .Menu)
+        var t : CGFloat = transitionTime;
+        
+        //TOOD: do this better, no transition time ONLY if going back from level play to level create
+        if(levelView.parentView == .LevelCreate){
+            t = 0;
+        }
+        switchToView(newView: levelView.parentView, transitionTime: t)
     }
     
     func createLevelSelect_pressBack() {
@@ -262,15 +221,25 @@ class ViewController: UIViewController, MenuViewDelegate, PlaySelectViewDelegate
         switchToView(newView: .LevelCreate)
     }
     
-    func createLevelView_pressBack() {
-        switchToView(newView: .CreateSelect)
-    }
-    
     func createLevelSelect_createNew() {
         print("CREATE NEW LEVEL")
         currentLevel = Level(_levelData: CreateLevelView.BlankLevel())
         switchToView(newView: .LevelCreate)
     }
+    
+    
+    func createLevelView_pressBack() {
+        switchToView(newView: .CreateSelect)
+    }
+    
+    func createLevelView_playLv() {
+        currentLevel = Level(_levelData: createLevelView.levelData)
+//        levelView = LevelView(_level: Level(_levelData: createLevelView.levelData), _parentView: .LevelCreate)//, _resetToLevel: currentLevel)
+//        levelView.levelViewDelegate = self;
+//        self.view.addSubview(levelView)
+        switchToView(newView: .LevelPlay, transitionTime: 0)
+    }
+    
     
     override var prefersStatusBarHidden: Bool {
         return true;

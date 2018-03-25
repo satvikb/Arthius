@@ -63,13 +63,22 @@ class LevelSelector : UIScrollView {
             //            }
         }
         
-        self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1-(yMiddlePadding))).size
-
+        self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
+        print("\(self.contentSize) \(self.frame)")
     }
     
     func propToRectSelf(prop: CGRect) -> CGRect {
         let screen = self.bounds
         return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
+    }
+    
+    //TODO Animate
+    func animateIn(){
+        
+    }
+    
+    func animateOut(){
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -87,6 +96,8 @@ class LevelSelectTile : UIView {
     init(frame: CGRect, _level: LevelData){
         level = _level;
         super.init(frame: frame);
+        self.isUserInteractionEnabled = true;
+
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -110,6 +121,7 @@ class LevelSelectTile : UIView {
         }
         return false
     }
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

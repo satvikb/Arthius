@@ -20,6 +20,7 @@ class PlaySelectView: UIView {
     weak var playSelectDelegate:PlaySelectViewDelegate?
     var titleLabel : Label!;
 
+    var backButton : Button!;
     var campaignButton : Button!;
     var globalLevelSelectButton : Button!;
     var savedLevelsSelectButton : Button!;
@@ -34,11 +35,11 @@ class PlaySelectView: UIView {
         titleLabel.textAlignment = .right
         self.addSubview(titleLabel)
 
-        let button = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
-        button.pressed = {
+        backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
+        backButton.pressed = {
             self.playSelectDelegate?.playSelect_pressBack()
         }
-        self.addSubview(button)
+        self.addSubview(backButton)
 
         
         campaignButton = Button(propFrame: CGRect(x: 0.1, y: 0.25, width: 0.8, height: 0.15), text: "Campaign", fontSize: 60)
@@ -72,10 +73,19 @@ class PlaySelectView: UIView {
     func animateIn(time: CGFloat){
         titleLabel.animateIn(time: time)
         
+        backButton.animateIn()
+        campaignButton.animateIn()
+        globalLevelSelectButton.animateIn()
+        savedLevelsSelectButton.animateIn()
     }
     
     func animateOut(time : CGFloat){
         titleLabel.animateOut(time: time)
+        
+        backButton.animateOut()
+        campaignButton.animateOut()
+        globalLevelSelectButton.animateOut()
+        savedLevelsSelectButton.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {

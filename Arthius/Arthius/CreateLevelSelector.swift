@@ -25,7 +25,8 @@ class CreateLevelSelectView : UIView, LevelSelectorDelegate {
     
     var levelSelectScroll : LevelSelector!;
     
-    var createLevelBtn : Button!;
+    var backButton : Button!;
+    var createButton : Button!;
     
     init(startPosition: CGPoint){
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
@@ -37,13 +38,13 @@ class CreateLevelSelectView : UIView, LevelSelectorDelegate {
         titleLabel.textAlignment = .right
         self.addSubview(titleLabel)
         
-        let backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
+        backButton = Button(propFrame: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15), text: "back")
         backButton.pressed = {
             self.createLevelSelectDelegate?.createLevelSelect_pressBack()
         }
         self.addSubview(backButton)
         
-        let createButton = Button(propFrame: CGRect(x: 0, y: 0.25, width: 1, height: 0.15), text: "New")
+        createButton = Button(propFrame: CGRect(x: 0, y: 0.25, width: 1, height: 0.15), text: "New")
         createButton.pressed = {
             self.createLevelSelectDelegate?.createLevelSelect_createNew()
         }
@@ -70,11 +71,16 @@ class CreateLevelSelectView : UIView, LevelSelectorDelegate {
     
     func animateIn(time: CGFloat){
         titleLabel.animateIn(time: time)
-        
+        backButton.animateIn()
+        createButton.animateIn()
+        levelSelectScroll.animateIn();
     }
     
     func animateOut(time : CGFloat){
         titleLabel.animateOut(time: time)
+        backButton.animateOut()
+        createButton.animateOut()
+        levelSelectScroll.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {
