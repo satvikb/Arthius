@@ -71,10 +71,47 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         self.addSubview(backBtn)
         self.addSubview(playBtn)
 
+
+//        do {
+//
+//            try Disk.save(existingLevel, to: .documents, as: CAMPAIGN_LEVEL_FOLDER+"/2.gws")
+////
+//            let file = "\(CAMPAIGN_LEVEL_FOLDER)/2.gws" //this is the file. we will write to and read from it
+////
+//            var text = "some text" //just a text
+////
+//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//
+//                let fileURL = dir.appendingPathComponent(file)
+//                print(fileURL.path)
+//
+//                //reading
+//                do {
+//                    text = try String(contentsOf: fileURL, encoding: .utf8)
+//                    print(text)
+//                }
+//                catch let error as NSError{/* error handling here */
+//                    print("read error "+error.localizedDescription)
+//                }
+//            }
+//        } catch let error as NSError {
+//            print("""
+//                NO SAVE TEST
+//                Domain: \(error.domain)
+//                Code: \(error.code)
+//                Description: \(error.localizedDescription)
+//                Failure Reason: \(error.localizedFailureReason ?? "")
+//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                """)
+//        }
+
+
     }
     
     static func BlankLevel() -> LevelData{
-        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
+        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
+        
+//        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
 
     }
     
@@ -118,13 +155,14 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func createStartAndEnd(){
+        //TODO: MULTIPLE LINES, EDITABLE
         //show simple rectangle for now for start points
-        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.startPosition.x-0.05, y: levelData.startPosition.y-0.05, width: 0.1, height: 0.1)))
+        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.lineData[0].startPosition.x-0.05, y: levelData.lineData[0].startPosition.y-0.05, width: 0.1, height: 0.1)))
         startPointView.backgroundColor = UIColor.green;
         stageView.addSubview(startPointView);
         
         //show the end frame
-        endPointView = UIView(frame: propToRect(prop: levelData.endPosition))
+        endPointView = UIView(frame: propToRect(prop: levelData.endPoints[0].outerFrame))
         endPointView.backgroundColor = UIColor.black;
         stageView.addSubview(endPointView);
     }
@@ -134,7 +172,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let colorChangeBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 0.1), within: toolbox.frame))
         colorChangeBtn.backgroundColor = UIColor.yellow;
         colorChangeBtn.pressed = {
-            let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.startColor, rightColor: self.levelData.startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
+            let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.lineData[0].startColor, rightColor: self.levelData.lineData[0].startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
             self.addColorBoxToView(d: colorBoxData)
             self.levelData.colorBoxData.append(colorBoxData)
 

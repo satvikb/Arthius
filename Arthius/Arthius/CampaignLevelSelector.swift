@@ -29,7 +29,7 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
         super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
         self.isUserInteractionEnabled = true;
         
-        titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.5, y: 0.05, width: 0.6, height: 0.15)), text: "Campaign", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
+        titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.25, y: 0.05, width: 0.65, height: 0.15)), text: "Campaign", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
         titleLabel.font = UIFont(name: "SFProText-Heavy", size: Screen.fontSize(propFontSize: 70))
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textAlignment = .right

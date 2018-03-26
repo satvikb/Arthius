@@ -73,19 +73,21 @@ class ColorBox :  BaseLevelRectangle {
         
         
         //editable
-        panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-        self.addGestureRecognizer(panGesture)
-        
-//        TODO box (done)
-        frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
-        frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
-            //in case
-            if(self.editable == true){
-                self.handleFrameChangePan(pan: pan)
-            }
-        }
         if(editable){
-            self.addSubview(frameChangeKnob)
+            panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+            self.addGestureRecognizer(panGesture)
+            
+    //        TODO box (done)
+            frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
+            frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
+                //in case
+                if(self.editable == true){
+                    self.handleFrameChangePan(pan: pan)
+                }
+            }
+            if(editable){
+                self.addSubview(frameChangeKnob)
+            }
         }
     }
     
@@ -127,7 +129,6 @@ class ColorBox :  BaseLevelRectangle {
     var preFrame : CGRect = CGRect.zero
 
     func handleFrameChangePan(pan: UIPanGestureRecognizer){
-        print("pan")
 
         if pan.state == .began {
             preFrame = self.frame

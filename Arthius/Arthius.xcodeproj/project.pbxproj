@@ -215,6 +215,7 @@
 				40A41FB02065A696000E4634 /* SF-Pro-Text-Light.otf */,
 				40A41FA920659E41000E4634 /* Label.swift */,
 				40EDDB9C206447A6006FF6ED /* Button.swift */,
+				4016787F20683F0700D8A5EF /* TextField.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -226,7 +227,6 @@
 				40E544D12062FA44006505D5 /* GravityWell.swift */,
 				40A41FBC2066B647000E4634 /* ColorBox.swift */,
 				40B035212067290200A4D8FB /* MiscElements.swift */,
-				4016787F20683F0700D8A5EF /* TextField.swift */,
 			);
 			name = LevelElements;
 			sourceTree = "<group>";

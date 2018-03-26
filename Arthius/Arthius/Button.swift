@@ -34,6 +34,7 @@ class Button : UIView{
         self.text.text = text;
         self.text.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
         self.text.textColor = UIColor.white
+        self.text.adjustsFontSizeToFitWidth = true;
         
         self.addSubview(self.text)
 //        heldDownFrame = Screen.propToRect(prop:propFrame)

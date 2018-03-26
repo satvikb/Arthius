@@ -115,7 +115,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             break;
         case .LevelCreate:
             //TODO animate
-//            createLevelView.animateOut(time: transitionTime)
+            createLevelView.animateOut()
             removeView(view: createLevelView, after: transitionTime)
             break;
         default: break
@@ -152,6 +152,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         case .LevelCreate:
             createLevelView = CreateLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), existingLevel: currentLevel.levelData)
             createLevelView.delegate = self;
+            createLevelView.animateIn()
             self.view.addSubview(createLevelView)
             break;
         default: break

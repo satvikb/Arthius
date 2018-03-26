@@ -12,6 +12,110 @@ protocol LevelViewDelegate: class {
     func level_pressMenu()
 }
 
+class Line : CAShapeLayer{
+    
+    var startPosition : CGPoint!;
+    var startVelocity : CGVector!;
+    var startColor : Color!;
+    
+    var currentPoint: CGPoint!
+    var linePath : UIBezierPath!;
+//    var lineShape : CAShapeLayer!;
+    var lineVelocity: CGVector!;
+    var lineColor : Color!;
+    
+    var lineMass : CGFloat = 1; //no effect for now?
+    var tempLineForces : CGVector! = CGVector.zero;
+
+    var madeItToEnd : Bool = false;
+    
+//    var startView : UIView!; //For editable
+    
+    //TODO: frame: should be just the screen bounds, or should it be level bounds (sizes bigger than screen)?
+    init(frame: CGRect, _startPoint : CGPoint, _startVelocity : CGVector, _startColor : Color) {
+        startPosition = _startPoint;
+        startVelocity = _startVelocity;
+        startColor = _startColor;
+        
+        lineColor = startColor;
+        currentPoint = startPosition;
+        lineVelocity = startVelocity;
+        linePath = UIBezierPath();
+
+        super.init()
+        
+        linePath.move(to: startPosition)
+        self.frame = frame;
+        self.path = linePath.cgPath;
+        self.lineCap = kCALineCapRound;
+        self.fillColor = UIColor.clear.cgColor;
+        self.lineWidth = 10;
+        updateStrokeColor()
+        self.zPosition = 100;
+        
+        reset()
+    }
+    
+    func reset(){
+        currentPoint = startPosition;
+        lineVelocity = startVelocity;
+        lineColor = startColor;
+        
+        linePath = UIBezierPath();
+        linePath.move(to: currentPoint)
+        path = nil;
+        updateStrokeColor()
+    }
+    
+    func newLocation(p: CGPoint){
+        linePath.addLine(to: p);
+        path = linePath.cgPath;
+        didChangeValue(forKey: "path")
+        currentPoint = p;
+    }
+    
+    func changeLineColor(to: Color){
+        lineColor = to;
+        updateStrokeColor()
+    }
+    
+    func updateStrokeColor(){
+        self.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor
+    }
+    
+    override init(layer: Any) {
+        super.init(layer: layer)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+//        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class LevelEnd : UIView{
+    var innerView : UIView!;
+    var color : Color!;
+    
+    var endView : UIView!; //For editable
+    
+    init(_outerFrame : CGRect, _innerFrame : CGRect, _color : Color) {
+        super.init(frame: _outerFrame)
+        color = _color
+        
+        self.backgroundColor = ColorBox.ColorToUIColor(col: _color)
+        
+        innerView = UIView(frame: _innerFrame)
+        innerView.backgroundColor = UIColor.black
+        
+        self.addSubview(innerView)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class LevelView : UIView, UIScrollViewDelegate {
     
     var level : Level!; //The current level, up to date with user created items.
@@ -23,22 +127,10 @@ class LevelView : UIView, UIScrollViewDelegate {
 
     weak var levelViewDelegate:LevelViewDelegate?
 
+    var lines : [Line] = []
+    var endPoints : [LevelEnd] = []
     
-    var lastPoint: CGPoint!
-    
-    var endRectScaled : CGRect!;
-    var endColor : Color!; //Dont really need a variable b/c you can access directly from levelData, but conveinence
-    
-    var linePath : UIBezierPath!;
-    var lineShape : CAShapeLayer!;
-    
-    var lineVelocity: CGVector!;
-    var lineColor : Color!;
-    
-    var tempLineForces : CGVector! = CGVector.zero;
-    var lineMass : CGFloat = 1; //no effect for now?
     let G : CGFloat = 1;
-    
     
     var playResetBtn : Button!;
     var homeBtn : Button!;
@@ -49,27 +141,20 @@ class LevelView : UIView, UIScrollViewDelegate {
     var scaledGravityWells : [GravityWell] = []
     var scaledColorBoxes : [ColorBox] = []
     
-    
     var displayLink : CADisplayLink!
-    
-    
     var paused = true;
-    
     
     init(_level: Level, _parentView: View){
         level = _level;
         parentView = _parentView;
         super.init(frame: UIScreen.main.bounds)
 
-        lastPoint = propToPoint(prop: level.levelData.startPosition);
-        lineVelocity = propToVector(prop: level.levelData.startVelocity);
-        endRectScaled = propToRect(prop: level.levelData.endPosition);
-        lineColor = level.levelData.startColor;
-        endColor = level.levelData.endColor;
+        
+        
         
         setupLevelView()
-        setupLine()
-        setupLevelEnd()
+        setupLines()
+        setupLevelEnds()
         setupGestureRecognizers()
         createLevelElementsFromLevel()
         createUIButtons()
@@ -118,25 +203,27 @@ class LevelView : UIView, UIScrollViewDelegate {
         stageView.addGestureRecognizer(singleTap)
     }
     
-    func setupLine(){
-        linePath = UIBezierPath();
-        linePath.move(to: self.lastPoint);
-
-        lineShape = CAShapeLayer();
-        lineShape.frame = levelView.frame
-        lineShape.path = linePath.cgPath;
-        lineShape.lineCap = kCALineCapRound;
-        lineShape.fillColor = UIColor.clear.cgColor;
-        lineShape.lineWidth = 10;
-        lineShape.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor;
-        lineShape.zPosition = 100;
-        self.stageView.layer.addSublayer(lineShape)
+    func setupLines(){
+        for line in level.levelData.lineData {
+            let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor)
+            lines.append(newLine)
+            self.stageView.layer.addSublayer(newLine)
+        }
+        
     }
     
-    func setupLevelEnd(){
-        let endRect = UIView(frame: endRectScaled)
-        endRect.backgroundColor = ColorBox.ColorToUIColor(col: level.levelData.endColor)
-        self.stageView.addSubview(endRect)
+    func setupLevelEnds(){
+        
+        for end in level.levelData.endPoints{
+            let outerFrame = propToRect(prop: end.outerFrame)
+            let newEnd = LevelEnd(_outerFrame: outerFrame, _innerFrame: propToRect(prop: end.coreFrame, within: outerFrame), _color: end.endColor)
+            endPoints.append(newEnd)
+            self.stageView.addSubview(newEnd)
+        }
+        
+//        let endRect = UIView(frame: endRectScaled)
+//        endRect.backgroundColor = ColorBox.ColorToUIColor(col: level.levelData.endColor)
+//        self.stageView.addSubview(endRect)
     }
     
     func createUIButtons(){
@@ -149,7 +236,7 @@ class LevelView : UIView, UIScrollViewDelegate {
             }else if(self.paused == false){
                 //currently playing, pause and reset level
                 self.paused = true;
-                self.resetLine()
+                self.resetLines()
             }
         }
         
@@ -183,17 +270,12 @@ class LevelView : UIView, UIScrollViewDelegate {
         }
     }
     
-    func resetLine(){
+    func resetLines(){
+        for line in lines {
+            line.reset()
+        }
         
-        lastPoint = propToPoint(prop: level.levelData.startPosition);//CGPoint(x: 120, y: UIScreen.main.bounds.size.height)
-        lineVelocity = propToVector(prop: level.levelData.startVelocity);
-        lineColor = level.levelData.startColor;
-            
-        self.linePath = UIBezierPath();
-        self.lineShape.path = nil;
         self.playResetBtn.text.text = ">"
-        linePath.move(to: self.lastPoint);
-        lineShape.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor
     }
     
     var longTapInital : CGPoint = CGPoint.zero;
@@ -261,116 +343,126 @@ class LevelView : UIView, UIScrollViewDelegate {
         }
         levelSave!.levelData.gravityWells = gravityWellData;
     }
-    
-    func newMoveLocation(p: CGPoint){
-        //TODO only call once at init
-//        linePath.move(to: self.lastPoint);
 
-        linePath.addLine(to: p)
-        
-        lineShape.path = linePath.cgPath;
-        lineShape.didChangeValue(forKey: "path")
-        
-        self.lastPoint = p;
-    }
-    
-    func changeLineColor(to: Color){
-        lineColor = to;
-        lineShape.strokeColor = ColorBox.ColorToUIColor(col: to).cgColor
-    }
     
     @objc func update(){
         if(paused == false){
-            tempLineForces = CGVector.zero;
             
-            for gravWell in scaledGravityWells{
-                let distFromGravityCenter = distance(a: lastPoint, b: gravWell.center)
-                if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
-                    let f = (G * gravWell.mass * lineMass) / (distFromGravityCenter*distFromGravityCenter)
-                    
-                    let p2 = gravWell.center;
-                    let p1 = lastPoint!;
-                    let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)
-                    
-                    let fx = f*cos(angleRad)
-                    let fy = f*sin(angleRad)
-                    tempLineForces = tempLineForces + (CGVector(dx: fx, dy: fy))
-                }
-            }
-            
-            //pemdas
-            let dV = tempLineForces / lineMass
-            lineVelocity = lineVelocity + dV
-            
-            let deltaVel = lineVelocity!// * CGFloat(displayLink.duration)
-            let pos = lastPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
-            newMoveLocation(p: pos);
-            
-            if(endRectScaled.contains(lastPoint)){
-                if(lineColor == endColor){
-                    //finish level
-                    print("GAME")
-                }
-            }
-            
-            for cBox in scaledColorBoxes {
+            for line in lines{
+                line.tempLineForces = CGVector.zero;
                 
-                if(cBox.pointInRect(locInMain: lastPoint)){
-                    
-                    if(cBox.pointInLeftRect(locInMain: lastPoint)){
+                for gravWell in scaledGravityWells{
+                    let distFromGravityCenter = distance(a: line.currentPoint, b: gravWell.center)
+                    if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
+                        let f = (G * gravWell.mass * line.lineMass) / (distFromGravityCenter*distFromGravityCenter)
                         
-                        if(cBox.step1 == false){
-                            //coming from outside world into left side changer
-                            if(cBox.leftColor == lineColor){
-                                cBox.step1 = true;
-                            }
-                        }else if(cBox.step1 == true){
-                            //coming from right side to this side
-                            if(lineColor == cBox.rightColor){
-                                cBox.step2 = true;
-                            }
-                        }
+                        let p2 = gravWell.center;
+                        let p1 = line.currentPoint!;
+                        let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)
                         
-                        
-                        if(cBox.step2 == true){
-                            changeLineColor(to: cBox.leftColor)
-                            cBox.step1 = false;
-                            cBox.step2 = false;
-                        }
+                        let fx = f*cos(angleRad)
+                        let fy = f*sin(angleRad)
+                        line.tempLineForces = line.tempLineForces + (CGVector(dx: fx, dy: fy))
+                    }
+                }
+                
+                
+                //pemdas
+                let dV = line.tempLineForces / line.lineMass
+                line.lineVelocity = line.lineVelocity + dV
+                
+                let deltaVel = line.lineVelocity!
+                let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+                line.newLocation(p: pos)
 
+                for endView in endPoints{
+                    if(endView.innerView.frame.contains(line.currentPoint)){
+                        print("INNER")
+                        if(line.lineColor == endView.color){
+                            line.madeItToEnd = true;
+                        }
+                    }
+                }
+                
+                for cBox in scaledColorBoxes {
+                    if(cBox.pointInRect(locInMain: line.currentPoint)){
+                        if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
+                            
+                            if(cBox.step1 == false){
+                                //coming from outside world into left side changer
+                                if(cBox.leftColor == line.lineColor){
+                                    cBox.step1 = true;
+                                }
+                            }else if(cBox.step1 == true){
+                                //coming from right side to this side
+                                if(line.lineColor == cBox.rightColor){
+                                    cBox.step2 = true;
+                                }
+                            }
+                            
+                            
+                            if(cBox.step2 == true){
+                                line.changeLineColor(to: cBox.leftColor)
+//                                changeLineColor(to: cBox.leftColor)
+                                cBox.step1 = false;
+                                cBox.step2 = false;
+                            }
+                            
+                        }
+                        
+                        if(cBox.pointInRightRect(locInMain: line.currentPoint)){
+                            
+                            if(cBox.step1 == false){
+                                //coming from outside world into right side changer
+                                if(cBox.rightColor == line.lineColor){
+                                    cBox.step1 = true;
+                                }
+                            }else if(cBox.step1 == true){
+                                //coming from left side to this side
+                                if(line.lineColor == cBox.leftColor){
+                                    cBox.step2 = true;
+                                    
+                                }
+                            }
+                            
+                            if(cBox.step2 == true){
+                                line.changeLineColor(to: cBox.rightColor)
+//                                changeLineColor(to: cBox.rightColor)
+                                cBox.step1 = false;
+                                cBox.step2 = false;
+                            }
+                            
+                        }
+                        
+                    }else{
+                        cBox.step1 = false;
+                        cBox.step2 = false;
                     }
                     
-                    if(cBox.pointInRightRect(locInMain: lastPoint)){
-                        
-                        if(cBox.step1 == false){
-                            //coming from outside world into right side changer
-                            if(cBox.rightColor == lineColor){
-                                cBox.step1 = true;
-                            }
-                        }else if(cBox.step1 == true){
-                            //coming from left side to this side
-                            if(lineColor == cBox.leftColor){
-                                cBox.step2 = true;
-
-                            }
-                        }
-                        
-                        if(cBox.step2 == true){
-                            changeLineColor(to: cBox.rightColor)
-                            cBox.step1 = false;
-                            cBox.step2 = false;
-                        }
-                        
-                    }
-                
-                }else{
-                    cBox.step1 = false;
-                    cBox.step2 = false;
+                    
                 }
                 
-                
+            }
+            
+           
+        }
+        
+        if(testAllLines() == true){
+            paused = true;
+            //TODO
+            // let arecfadfas = LevelBeatView
+        }
+    }
+    
+    //TODO possible to combine into update function where line is looped there? the variable is being updated there...maybe not possible
+    func testAllLines() -> Bool{
+        var levelDone = true
+        for line in lines{
+            if line.madeItToEnd == false {
+                levelDone = false
             }
         }
+        return levelDone
     }
     
     func distance(a: CGPoint, b: CGPoint) -> CGFloat {
