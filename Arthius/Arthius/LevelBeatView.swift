@@ -36,6 +36,7 @@ class LevelBeatView : UIView {
       
         overlayView = UIView(frame: Screen.propToRect(prop: CGRect(x: 0.1, y: 0.1, width: 0.8, height: 0.8), within: frame))
         overlayView.layer.cornerRadius = overlayView.frame.width*0.1;
+        overlayView.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
         self.addSubview(overlayView)
         
         homeBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.8, width: 0.2, height: 0.2), within: overlayView.frame), text: "home", fontSize: Screen.fontSize(propFontSize: 10), outPos: propToPoint(prop: CGPoint(x: -1, y: 0)))
@@ -53,9 +54,11 @@ class LevelBeatView : UIView {
     
     func animateIn(){
         homeBtn.animateIn()
+        nextLevelBtn.animateIn()
     }
     
     func animateOut(){
+        homeBtn.animateIn()
         nextLevelBtn.animateOut()
     }
     

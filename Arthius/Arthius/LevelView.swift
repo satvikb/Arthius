@@ -10,6 +10,7 @@ import UIKit
 
 protocol LevelViewDelegate: class {
     func level_pressMenu()
+    func level_nextLevel()
 }
 
 class Line : CAShapeLayer{
@@ -103,10 +104,10 @@ class LevelEnd : UIView{
         super.init(frame: _outerFrame)
         color = _color
         
-        self.backgroundColor = ColorBox.ColorToUIColor(col: _color)
+        self.backgroundColor = UIColor.black
         
         innerView = UIView(frame: _innerFrame)
-        innerView.backgroundColor = UIColor.black
+        innerView.backgroundColor = ColorBox.ColorToUIColor(col: _color)
         
         self.addSubview(innerView)
     }
@@ -135,6 +136,8 @@ class LevelView : UIView, UIScrollViewDelegate {
     var playResetBtn : Button!;
     var homeBtn : Button!;
 
+    var beatLevel : Bool = false;
+    
     //Create scaled arrays to store the level elements that are scaled up to the current device size. TODO: Do this for all the other level elements.
     //This is created because the GravityWellData in LevelData stores the proportional sizes. Instead of converting from prop to real in the update look, it's easier to just store the scaled wells as well.
     //This is what is used for calculations, GravityWellData is what is used to save.
@@ -287,11 +290,16 @@ class LevelView : UIView, UIScrollViewDelegate {
             longTapInital = recognizer.location(in: recognizer.view)
             currentGravityWellCreated = createGravityWell(point: longTapInital, core: propToFloat(prop: 0.015, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.05, scaleWithX: true), mass: 100, new: true)
             print("Creating gravity well")
+            
+            
         }else if(recognizer.state == .changed){
             let p = recognizer.location(in: recognizer.view)
-            let d : CGFloat = CGFloat(sqrtf(Float(pow(p.x-longTapInital.x, 2) + pow(p.y-longTapInital.y, 2))))
+            var d : CGFloat = CGFloat(sqrtf(Float(pow(p.x-longTapInital.x, 2) + pow(p.y-longTapInital.y, 2))))
             
-//            print(d)
+            if(d < propToFloat(prop: 0.03, scaleWithX: true)){
+                d = 0
+            }
+            
             currentGravityWellCreated.areaOfEffectDiameter = d*2;
             currentGravityWellCreated.coreDiameter = d/2; // 1/4 ratio
             //TODO
@@ -300,6 +308,10 @@ class LevelView : UIView, UIScrollViewDelegate {
         }else if(recognizer.state == .ended){
             print("Created well of radius \(currentGravityWellCreated.areaOfEffectDiameter/2)")
             justCreatedWell = true;
+            
+            if(currentGravityWellCreated.areaOfEffectDiameter/2 == 0){
+                self.removeGravityWell(well: currentGravityWellCreated)
+            }
         }
     }
     
@@ -310,10 +322,7 @@ class LevelView : UIView, UIScrollViewDelegate {
         
         newWell.touched = {
             if(self.justCreatedWell == false){
-                print("del")
-                newWell.removeFromSuperview()
-                self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: newWell)!)
-//                self.justCreatedWell = false;
+                self.removeGravityWell(well: newWell)
             }
             self.justCreatedWell = false
         }
@@ -322,6 +331,11 @@ class LevelView : UIView, UIScrollViewDelegate {
         scaledGravityWells.append(newWell)
         
         return newWell;
+    }
+    
+    func removeGravityWell(well : GravityWell){
+        well.removeFromSuperview()
+        self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: well)!)
     }
     
     func createColorBox(frame : CGRect, rotation : CGFloat, box : Bool, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
@@ -349,109 +363,134 @@ class LevelView : UIView, UIScrollViewDelegate {
         if(paused == false){
             
             for line in lines{
-                line.tempLineForces = CGVector.zero;
-                
-                for gravWell in scaledGravityWells{
-                    let distFromGravityCenter = distance(a: line.currentPoint, b: gravWell.center)
-                    if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
-                        let f = (G * gravWell.mass * line.lineMass) / (distFromGravityCenter*distFromGravityCenter)
+                if(line.madeItToEnd == false){
+                    line.tempLineForces = CGVector.zero;
+                    
+                    for endView in endPoints{
                         
-                        let p2 = gravWell.center;
-                        let p1 = line.currentPoint!;
-                        let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)
-                        
-                        let fx = f*cos(angleRad)
-                        let fy = f*sin(angleRad)
-                        line.tempLineForces = line.tempLineForces + (CGVector(dx: fx, dy: fy))
-                    }
-                }
-                
-                
-                //pemdas
-                let dV = line.tempLineForces / line.lineMass
-                line.lineVelocity = line.lineVelocity + dV
-                
-                let deltaVel = line.lineVelocity!
-                let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
-                line.newLocation(p: pos)
+                        var forces = calculateGravityForcesForLine(line: line)
+                        line.tempLineForces = CGVector.zero;
 
-                for endView in endPoints{
-                    if(endView.innerView.frame.contains(line.currentPoint)){
-                        print("INNER")
-                        if(line.lineColor == endView.color){
-                            line.madeItToEnd = true;
+                        if(endView.frame.contains(line.currentPoint)){
+                            forces = CGVector.zero;
+
+//                            [subview convertPoint:pointInSuperview fromView:superview];
+                            //TODO compatibility test conversion
+//                            let endViewPos = endView.convert(line.currentPoint, from: stageView)
+//                            let innerViewPos = endView.innerView.convert(endViewPos, from: endView)
+                            let innerFrame : CGRect = stageView.convert(endView.innerView.frame, from:endView)
+
+//                            if(endView.innerView.frame.contains(innerViewPos)){
+                            if(innerFrame.contains(line.currentPoint)){
+                                print("INNER")
+                                if(line.lineColor == endView.color){
+                                    line.madeItToEnd = true;
+                                }
+                            }
+                        }
+                        
+                        
+                        //pemdas
+                        let dV = forces / line.lineMass
+                        line.lineVelocity = line.lineVelocity + dV
+                        
+                        let deltaVel = line.lineVelocity!
+                        let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+                        line.newLocation(p: pos)
+                    }
+                    
+                    //handle collisions
+                    
+                    for cBox in scaledColorBoxes {
+                        if(cBox.pointInRect(locInMain: line.currentPoint)){
+                            if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
+                                
+                                if(cBox.step1 == false){
+                                    //coming from outside world into left side changer
+                                    if(cBox.leftColor == line.lineColor){
+                                        cBox.step1 = true;
+                                    }
+                                }else if(cBox.step1 == true){
+                                    //coming from right side to this side
+                                    if(line.lineColor == cBox.rightColor){
+                                        cBox.step2 = true;
+                                    }
+                                }
+                                
+                                
+                                if(cBox.step2 == true){
+                                    line.changeLineColor(to: cBox.leftColor)
+                                    cBox.step1 = false;
+                                    cBox.step2 = false;
+                                }
+                            }
+                            
+                            if(cBox.pointInRightRect(locInMain: line.currentPoint)){
+                                
+                                if(cBox.step1 == false){
+                                    //coming from outside world into right side changer
+                                    if(cBox.rightColor == line.lineColor){
+                                        cBox.step1 = true;
+                                    }
+                                }else if(cBox.step1 == true){
+                                    //coming from left side to this side
+                                    if(line.lineColor == cBox.leftColor){
+                                        cBox.step2 = true;
+                                    }
+                                }
+                                
+                                if(cBox.step2 == true){
+                                    line.changeLineColor(to: cBox.rightColor)
+                                    cBox.step1 = false;
+                                    cBox.step2 = false;
+                                }
+                            }
+                        }else{
+                            cBox.step1 = false;
+                            cBox.step2 = false;
                         }
                     }
                 }
-                
-                for cBox in scaledColorBoxes {
-                    if(cBox.pointInRect(locInMain: line.currentPoint)){
-                        if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
-                            
-                            if(cBox.step1 == false){
-                                //coming from outside world into left side changer
-                                if(cBox.leftColor == line.lineColor){
-                                    cBox.step1 = true;
-                                }
-                            }else if(cBox.step1 == true){
-                                //coming from right side to this side
-                                if(line.lineColor == cBox.rightColor){
-                                    cBox.step2 = true;
-                                }
-                            }
-                            
-                            
-                            if(cBox.step2 == true){
-                                line.changeLineColor(to: cBox.leftColor)
-//                                changeLineColor(to: cBox.leftColor)
-                                cBox.step1 = false;
-                                cBox.step2 = false;
-                            }
-                            
-                        }
-                        
-                        if(cBox.pointInRightRect(locInMain: line.currentPoint)){
-                            
-                            if(cBox.step1 == false){
-                                //coming from outside world into right side changer
-                                if(cBox.rightColor == line.lineColor){
-                                    cBox.step1 = true;
-                                }
-                            }else if(cBox.step1 == true){
-                                //coming from left side to this side
-                                if(line.lineColor == cBox.leftColor){
-                                    cBox.step2 = true;
-                                    
-                                }
-                            }
-                            
-                            if(cBox.step2 == true){
-                                line.changeLineColor(to: cBox.rightColor)
-//                                changeLineColor(to: cBox.rightColor)
-                                cBox.step1 = false;
-                                cBox.step2 = false;
-                            }
-                            
-                        }
-                        
-                    }else{
-                        cBox.step1 = false;
-                        cBox.step2 = false;
-                    }
-                    
-                    
-                }
-                
             }
-            
-           
         }
         
-        if(testAllLines() == true){
+        if(testAllLines() == true && beatLevel == false){
             paused = true;
+            beatLevel = true;
             //TODO
-            // let arecfadfas = LevelBeatView
+            let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: 0, timePlayed: 0))
+            levelBeat.homePressed = {
+                self.levelViewDelegate?.level_pressMenu()
+            }
+            levelBeat.nextLevelPressed = {
+                self.levelViewDelegate?.level_nextLevel()
+            }
+            
+            //TODO animate
+            self.addSubview(levelBeat)
+            levelBeat.animateIn()
         }
+    }
+    
+    func calculateGravityForcesForLine(line : Line) -> CGVector{
+        line.tempLineForces = CGVector.zero;
+
+        //DOES CHANGING THIS line CHANGE THE LINE IN ARRAY??????
+        for gravWell in scaledGravityWells{
+            let distFromGravityCenter = distance(a: line.currentPoint, b: gravWell.center)
+            if(distFromGravityCenter < gravWell.areaOfEffectDiameter/2){
+                let f = (G * gravWell.mass * line.lineMass) / (distFromGravityCenter*distFromGravityCenter)
+                
+                let p2 = gravWell.center;
+                let p1 = line.currentPoint!;
+                let angleRad = atan2(p2.y - p1.y, p2.x - p1.x)
+                
+                let fx = f*cos(angleRad)
+                let fy = f*sin(angleRad)
+                line.tempLineForces = line.tempLineForces + (CGVector(dx: fx, dy: fy))
+            }
+        }
+        return line.tempLineForces
     }
     
     //TODO possible to combine into update function where line is looped there? the variable is being updated there...maybe not possible

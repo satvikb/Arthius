@@ -255,6 +255,10 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: levelView.parentView, transitionTime: t)
     }
     
+    func level_nextLevel() {
+        print("NEXT LEVEL")
+    }
+    
     func createLevelSelect_pressBack() {
         switchToView(newView: .Menu)
     }
