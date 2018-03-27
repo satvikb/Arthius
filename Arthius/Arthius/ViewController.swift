@@ -9,9 +9,11 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 let transitionTime : CGFloat = 0.2;
 let db = Firestore.firestore()
+let storage = Storage.storage()
 
 enum View {
     case Splash
@@ -275,7 +277,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     
-    func createLevelView_pressBack() {
+    func createLevelView_pressMenu() {
         switchToView(newView: .CreateSelect)
     }
     
@@ -287,6 +289,48 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: .LevelPlay, transitionTime: 0)
     }
     
+    
+    func createLevelView_publishLv() {
+        if(account_isLoggedIn()){
+            currentLevel = Level(_levelData: createLevelView.levelData)
+            let levelId = currentLevel.levelData.levelMetadata.levelUUID;
+            let userId = Auth.auth().currentUser?.uid
+            
+            let data : [String : Any] = [
+                "LevelID" : levelId,
+                "UserID" : userId
+            ]
+            
+            db.collection("levels").addDocument(data: data, completion: {(error) in
+                print("Add document")
+                self.uploadCustomMadeFile(userId: userId!, levelUUID: levelId)
+            })
+        }
+    }
+    
+    func uploadCustomMadeFile(userId : String, levelUUID : String){
+        let storageRef = storage.reference()
+        
+        let levelRef = storageRef.child("\(userId)/\(levelUUID).gws")
+        
+        let localFile = File.getLevelPath(uuid: levelUUID, type: .UserMade)
+
+        let metadata = StorageMetadata()
+        metadata.contentType = "level/gws"
+
+        
+        // Upload the file to the path "images/rivers.jpg"
+        let uploadTask = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
+            if let error = error {
+                // Uh-oh, an error occurred!
+                print("error uploading \(error.localizedDescription)")
+            } else {
+                // Metadata contains file metadata such as size, content-type, and download URL.
+                let downloadURL = metadata!.downloadURL()
+                print(downloadURL?.path)
+            }
+        }
+    }
     
     override var prefersStatusBarHidden: Bool {
         return true;

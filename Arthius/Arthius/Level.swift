@@ -76,6 +76,7 @@ struct ColorBoxData: Codable, Equatable {
 }
 
 struct RockData: Codable {
+//    var frame: CGRect;
     
 }
 

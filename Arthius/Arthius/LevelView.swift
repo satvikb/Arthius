@@ -401,55 +401,12 @@ class LevelView : UIView, UIScrollViewDelegate {
                     
                     //handle collisions
                     
-                    for cBox in scaledColorBoxes {
-                        if(cBox.pointInRect(locInMain: line.currentPoint)){
-                            if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
-                                
-                                if(cBox.step1 == false){
-                                    //coming from outside world into left side changer
-                                    if(cBox.leftColor == line.lineColor){
-                                        cBox.step1 = true;
-                                    }
-                                }else if(cBox.step1 == true){
-                                    //coming from right side to this side
-                                    if(line.lineColor == cBox.rightColor){
-                                        cBox.step2 = true;
-                                    }
-                                }
-                                
-                                
-                                if(cBox.step2 == true){
-                                    line.changeLineColor(to: cBox.leftColor)
-                                    cBox.step1 = false;
-                                    cBox.step2 = false;
-                                }
-                            }
-                            
-                            if(cBox.pointInRightRect(locInMain: line.currentPoint)){
-                                
-                                if(cBox.step1 == false){
-                                    //coming from outside world into right side changer
-                                    if(cBox.rightColor == line.lineColor){
-                                        cBox.step1 = true;
-                                    }
-                                }else if(cBox.step1 == true){
-                                    //coming from left side to this side
-                                    if(line.lineColor == cBox.leftColor){
-                                        cBox.step2 = true;
-                                    }
-                                }
-                                
-                                if(cBox.step2 == true){
-                                    line.changeLineColor(to: cBox.rightColor)
-                                    cBox.step1 = false;
-                                    cBox.step2 = false;
-                                }
-                            }
-                        }else{
-                            cBox.step1 = false;
-                            cBox.step2 = false;
-                        }
-                    }
+                    
+                    
+                    
+                    
+                    
+                    handleColorBoxesForLine(line: line)
                 }
             }
         }
@@ -491,6 +448,58 @@ class LevelView : UIView, UIScrollViewDelegate {
             }
         }
         return line.tempLineForces
+    }
+    
+    func handleColorBoxesForLine(line : Line){
+        for cBox in scaledColorBoxes {
+            if(cBox.pointInRect(locInMain: line.currentPoint)){
+                if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
+                    
+                    if(cBox.step1 == false){
+                        //coming from outside world into left side changer
+                        if(cBox.leftColor == line.lineColor){
+                            cBox.step1 = true;
+                        }
+                    }else if(cBox.step1 == true){
+                        //coming from right side to this side
+                        if(line.lineColor == cBox.rightColor){
+                            cBox.step2 = true;
+                        }
+                    }
+                    
+                    
+                    if(cBox.step2 == true){
+                        line.changeLineColor(to: cBox.leftColor)
+                        cBox.step1 = false;
+                        cBox.step2 = false;
+                    }
+                }
+                
+                if(cBox.pointInRightRect(locInMain: line.currentPoint)){
+                    
+                    if(cBox.step1 == false){
+                        //coming from outside world into right side changer
+                        if(cBox.rightColor == line.lineColor){
+                            cBox.step1 = true;
+                        }
+                    }else if(cBox.step1 == true){
+                        //coming from left side to this side
+                        if(line.lineColor == cBox.leftColor){
+                            cBox.step2 = true;
+                        }
+                    }
+                    
+                    if(cBox.step2 == true){
+                        line.changeLineColor(to: cBox.rightColor)
+                        cBox.step1 = false;
+                        cBox.step2 = false;
+                    }
+                }
+            }else{
+                cBox.step1 = false;
+                cBox.step2 = false;
+            }
+        }
     }
     
     //TODO possible to combine into update function where line is looped there? the variable is being updated there...maybe not possible

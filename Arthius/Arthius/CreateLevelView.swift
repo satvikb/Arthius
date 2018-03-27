@@ -9,8 +9,9 @@
 import UIKit
 
 protocol CreateLevelViewDelegate: class {
-    func createLevelView_pressBack()
+    func createLevelView_pressMenu()
     func createLevelView_playLv()
+    func createLevelView_publishLv()
 }
 
 enum ToolbarItems {
@@ -24,7 +25,8 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     weak var delegate : CreateLevelViewDelegate?;
     
     var toolbox : UIScrollView!;
-    var backBtn : Button!;
+    var menuBtn : Button!;
+    var publishBtn : Button!;//TODO, menu
     var playBtn : Button!;
 
     var levelView : LevelScrollView!;
@@ -41,10 +43,16 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         levelData = existingLevel;
         
-        backBtn = Button(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 0.1, height: 0.1)), text: "back", fontSize: Screen.fontSize(propFontSize: 20))
-        backBtn.pressed = {
+        menuBtn = Button(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 0.1, height: 0.1)), text: "menu", fontSize: Screen.fontSize(propFontSize: 20))
+        menuBtn.pressed = {
             self.saveLevel()
-            self.delegate?.createLevelView_pressBack()
+            self.delegate?.createLevelView_pressMenu()
+        }
+        
+        publishBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0, width: 0.2, height: 0.1)), text: "publish", fontSize: Screen.fontSize(propFontSize: 20))
+        publishBtn.pressed = {
+            self.saveLevel()
+            self.publish()
         }
         
         playBtn = Button(frame: propToRect(prop: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1)), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
@@ -68,8 +76,9 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         addItemsToToolbox()
         
         self.addSubview(toolbox)
-        self.addSubview(backBtn)
+        self.addSubview(menuBtn)
         self.addSubview(playBtn)
+        self.addSubview(publishBtn)
 
 
 //        do {
@@ -113,6 +122,11 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
 //        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
 
+    }
+    
+    func publish(){
+        
+        self.delegate?.createLevelView_publishLv()
     }
     
     func saveLevel(){
@@ -202,13 +216,15 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func animateIn(){
-        backBtn.animateIn()
+        menuBtn.animateIn()
         playBtn.animateIn()
+        publishBtn.animateIn()
     }
     
     func animateOut(){
-        backBtn.animateOut()
+        menuBtn.animateOut()
         playBtn.animateOut()
+        publishBtn.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {

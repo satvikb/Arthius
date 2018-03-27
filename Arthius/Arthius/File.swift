@@ -64,6 +64,13 @@ class File {
         return levels;
     }
     
+    static func getLevelPath(uuid: String, type : LevelType) -> URL{
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(self.getFolderForLevelType(type: type), isDirectory: true).appendingPathComponent("\(uuid).gws")
+        print("got lv "+documentsURL.path)
+        return documentsURL
+    }
+    
 //    static func getAllCampaignLevels() -> [LevelData]{
 //        var levels : [LevelData] = []
 //

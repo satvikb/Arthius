@@ -39,13 +39,13 @@ class LevelBeatView : UIView {
         overlayView.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
         self.addSubview(overlayView)
         
-        homeBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.8, width: 0.2, height: 0.2), within: overlayView.frame), text: "home", fontSize: Screen.fontSize(propFontSize: 10), outPos: propToPoint(prop: CGPoint(x: -1, y: 0)))
+        homeBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.8, width: 0.2, height: 0.1), within: overlayView.frame), text: "home", fontSize: Screen.fontSize(propFontSize: 10), outPos: propToPoint(prop: CGPoint(x: -1, y: 0)))
         homeBtn.pressed = {
             self.homePressed()
         }
         overlayView.addSubview(homeBtn)
         
-        nextLevelBtn = Button(frame: propToRect(prop: CGRect(x: 0.6, y: 0.8, width: 0.2, height: 0.2), within: overlayView.frame), text: "next", fontSize: Screen.fontSize(propFontSize: 10), outPos: propToPoint(prop: CGPoint(x: -1, y: 0)))
+        nextLevelBtn = Button(frame: propToRect(prop: CGRect(x: 0.6, y: 0.8, width: 0.2, height: 0.1), within: overlayView.frame), text: "next", fontSize: Screen.fontSize(propFontSize: 10), outPos: propToPoint(prop: CGPoint(x: -1, y: 0)))
         nextLevelBtn.pressed = {
             self.nextLevelPressed()
         }

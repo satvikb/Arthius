@@ -10,6 +10,7 @@
 		4016787C2068398200D8A5EF /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016787B2068398200D8A5EF /* AccountView.swift */; };
 		4016787E20683E2400D8A5EF /* FirebaseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016787D20683E2400D8A5EF /* FirebaseHandler.swift */; };
 		4016788020683F0700D8A5EF /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016787F20683F0700D8A5EF /* TextField.swift */; };
+		4016788220699A5D00D8A5EF /* Rock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4016788120699A5D00D8A5EF /* Rock.swift */; };
 		401998852061A52E00411CB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401998842061A52E00411CB8 /* AppDelegate.swift */; };
 		401998872061A52E00411CB8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401998862061A52E00411CB8 /* ViewController.swift */; };
 		4019988A2061A52E00411CB8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 401998882061A52E00411CB8 /* Main.storyboard */; };
@@ -71,6 +72,7 @@
 		4016787B2068398200D8A5EF /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		4016787D20683E2400D8A5EF /* FirebaseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseHandler.swift; sourceTree = "<group>"; };
 		4016787F20683F0700D8A5EF /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
+		4016788120699A5D00D8A5EF /* Rock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rock.swift; sourceTree = "<group>"; };
 		401998812061A52E00411CB8 /* Arthius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arthius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401998842061A52E00411CB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		401998862061A52E00411CB8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				40E544D12062FA44006505D5 /* GravityWell.swift */,
 				40A41FBC2066B647000E4634 /* ColorBox.swift */,
 				40B035212067290200A4D8FB /* MiscElements.swift */,
+				4016788120699A5D00D8A5EF /* Rock.swift */,
 			);
 			name = LevelElements;
 			sourceTree = "<group>";
@@ -441,6 +444,7 @@
 				40E544D820633D04006505D5 /* LevelView.swift in Sources */,
 				40A41F9D20647124000E4634 /* Disk+Helpers.swift in Sources */,
 				40EDDB9D206447A6006FF6ED /* Button.swift in Sources */,
+				4016788220699A5D00D8A5EF /* Rock.swift in Sources */,
 				401998872061A52E00411CB8 /* ViewController.swift in Sources */,
 				40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */,
 				40A41F9E20647124000E4634 /* Disk+VolumeInformation.swift in Sources */,
