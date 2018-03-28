@@ -10,7 +10,7 @@ import UIKit
 
 
 //The core rectangle class used by ColorBox and SpeedBoost, detects line collisions
-class BaseLevelRectangle : UIView {
+class BaseLevelRectangle : GameUIElement {
     
     
     var lineEnter = {}

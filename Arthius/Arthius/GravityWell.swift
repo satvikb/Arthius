@@ -16,9 +16,17 @@ class GravityWell: UIView {
     var coreDiameter : CGFloat!;
     var areaOfEffectDiameter : CGFloat!;
     
-    var mass : CGFloat = 100000;
+    var mass : CGFloat = 100;
     
     var touched = {}
+    
+    
+    
+    var editable : Bool! = false;
+    var panGesture : UIPanGestureRecognizer!;
+    var frameChanged = {}
+    var frameChangeKnob : KnobEdit!;
+    
     
     
     init(corePoint: CGPoint, coreDiameter: CGFloat, areaOfEffectDiameter: CGFloat, mass: CGFloat) {
@@ -43,6 +51,23 @@ class GravityWell: UIView {
         
         self.addSubview(coreView)
         
+        //editable
+//        if(editable){
+            panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+            self.addGestureRecognizer(panGesture)
+            
+//            frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
+//            frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
+//                //in case
+//                if(self.editable == true){
+//                    self.handleFrameChangePan(pan: pan)
+//                }
+//            }
+//            if(editable){
+//                self.addSubview(frameChangeKnob)
+//            }
+//        }
+        
     }
     
     func updateSize(){
@@ -64,7 +89,19 @@ class GravityWell: UIView {
 //    }
     
     
+    var boxCenter = CGPoint.zero
     
+    @objc func handlePan(_ pan : UIPanGestureRecognizer){
+        if pan.state == .began {
+            boxCenter = self.center // store old button center
+        } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
+            //            self.center = boxCenter // restore button center
+        } else {
+            let location = pan.translation(in: superview) // get pan location
+            self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
+            frameChanged()
+        }
+    }
     
     
     var heldDown = false

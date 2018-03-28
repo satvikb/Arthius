@@ -117,7 +117,7 @@ class LevelEnd : UIView{
     }
 }
 
-class LevelView : UIView, UIScrollViewDelegate {
+class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     var level : Level!; //The current level, up to date with user created items.
     var parentView : View!;
@@ -185,6 +185,8 @@ class LevelView : UIView, UIScrollViewDelegate {
         stageView.layer.borderWidth = 3;
         stageView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         levelView.addSubview(stageView)
+        
+        
     }
     
     func increaseRect(rect: CGRect, byPercentage percentage: CGFloat) -> CGRect {
@@ -200,11 +202,19 @@ class LevelView : UIView, UIScrollViewDelegate {
         let singleTap = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         singleTap.cancelsTouchesInView = false
         //        singleTap.numberOfTapsRequired = 1
-        //        singleTap.delegate = self;
+                singleTap.delegate = self;
         singleTap.minimumPressDuration = 0.1;
         singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
         stageView.addGestureRecognizer(singleTap)
     }
+    
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        
+//    }
+//    
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        <#code#>
+//    }
     
     func setupLines(){
         for line in level.levelData.lineData {

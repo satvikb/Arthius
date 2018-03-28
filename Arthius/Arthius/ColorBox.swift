@@ -114,7 +114,6 @@ class ColorBox :  BaseLevelRectangle {
     var boxCenter = CGPoint.zero
 
     @objc func handlePan(_ pan : UIPanGestureRecognizer){
-        print("mpan")
         if pan.state == .began {
             boxCenter = self.center // store old button center
         } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
