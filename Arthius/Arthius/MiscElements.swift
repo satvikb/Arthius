@@ -17,9 +17,10 @@ class KnobEdit : UIView {
     override init(frame: CGRect) {
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: frame.width))
         
+        self.tag = lineStartTag+1;
         self.layer.cornerRadius = frame.width/2
         self.backgroundColor = UIColor.gray;
-        
+        self.isUserInteractionEnabled = true;
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         self.addGestureRecognizer(panGesture)
     }

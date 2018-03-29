@@ -33,6 +33,7 @@ class LevelScrollView : UIScrollView{
 
         if(shouldCancelTouch(result: result!)){
             self.isScrollEnabled = false;
+            self.killScroll()
         }else{
             self.isScrollEnabled = true;
         }
@@ -40,6 +41,16 @@ class LevelScrollView : UIScrollView{
 
         return super.hitTest(point, with: event)// [super hitTest:point withEvent:event];
     }
+    
+    func killScroll(){
+        let offset = self.contentOffset;
+        self.setContentOffset(offset, animated: false)
+    }
+//    - (void)killScroll
+//    {
+//    CGPoint offset = scrollView.contentOffset;
+//    [scrollView setContentOffset:offset animated:NO];
+//    }
     
     func shouldCancelTouch(result : UIView) -> Bool{
         let hitWell = testIfASuperViewIsType(subview: result, type: GravityWell.self)
@@ -53,13 +64,13 @@ class LevelScrollView : UIScrollView{
         
         var currentView : UIView? = subview
         while currentView != nil {
-            print("\(String(describing: currentView.self))")
+//            print("\(String(describing: currentView.self)) \(String(describing: currentView?.tag))")
             if(currentView?.isKind(of: type))!{
                 return true;
             }
             currentView = currentView?.superview
         }
-        print("\n")
+//        print("\n")
 
         return false
         

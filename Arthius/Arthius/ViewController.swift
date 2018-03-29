@@ -15,6 +15,8 @@ let transitionTime : CGFloat = 0.2;
 let db = Firestore.firestore()
 let storage = Storage.storage()
 
+let lineStartTag = 1020;
+
 enum View {
     case Splash
     case Menu

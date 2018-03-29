@@ -16,6 +16,19 @@ func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
+func *(lhs: CGFloat, rhs: CGPoint) -> CGPoint {
+    return CGPoint(x: lhs * rhs.x, y: lhs * rhs.y)
+}
+
+public func / (left: CGPoint, right: CGPoint) -> CGPoint {
+    return CGPoint(x: left.x / right.x, y: left.y / right.y)
+}
+
+public extension CGPoint {
+    public func length() -> CGFloat {
+        return sqrt(x*x + y*y)
+    }
+}
 
 public extension UIView {
     public func propToPoint(prop: CGPoint) -> CGPoint {
