@@ -10,15 +10,7 @@ import UIKit
 
 //TODO: what is the point of this lol its literlly just a container for LevelData (unnecessary)
 class Level : NSObject{
-    
     var levelData : LevelData!;
-    
-//    init(_metadata : LevelMetadata, _propFrame : CGRect, _startPosition : CGPoint, _endPosition : CGRect, _startVelocity : CGVector, _startColor : Color, _endColor : Color, _gravityWells : [GravityWellData], _colorBoxData : [ColorBoxData], _rockData : [RockData], _speedBoostData : [SpeedBoostData]) {
-//        super.init()
-//
-//        let lD = LevelData(levelMetadata: _metadata, propFrame: _propFrame, startPosition: _startPosition, endPosition: _endPosition, startVelocity: _startVelocity, startColor: _startColor, endColor: _endColor, gravityWells: _gravityWells, colorBoxData: _colorBoxData, rockData: _rockData, speedBoostData: _speedBoostData)
-//        levelData = lD;
-//    }
     
     init(_levelData : LevelData){
         super.init();
@@ -29,6 +21,7 @@ class Level : NSObject{
 
 struct LevelData : Codable {
     var levelMetadata : LevelMetadata;
+//    var c : CampaignData;
     var propFrame : CGRect;
     var endPoints : [EndData];
     var lineData : [LineData]
@@ -38,7 +31,11 @@ struct LevelData : Codable {
     var speedBoostData : [SpeedBoostData]
 }
 
-struct LineData : Codable{
+struct LineData : Codable, Equatable{
+//    static func ==(lhs: LineData, rhs: LineData) -> Bool {
+//        return lhs.startPosition == rhs.startPosition && lhs.startVelocity == rhs.startVelocity && lhs.startColor == rhs.startColor
+//    }
+    
     var startPosition : CGPoint;
     var startVelocity : CGVector;
     var startColor : Color;
@@ -59,6 +56,10 @@ struct LevelMetadata : Codable {
 }
 
 struct GravityWellData : Codable, Equatable{
+//    static func ==(lhs: GravityWellData, rhs: GravityWellData) -> Bool {
+//        return lhs.position == rhs.position && lhs.mass == rhs.mass && lhs.coreDiameter == rhs.coreDiameter && lhs.areaOfEffectDiameter == rhs.areaOfEffectDiameter
+//    }
+    
     var position: CGPoint;
     var mass : CGFloat;
     var coreDiameter : CGFloat;
@@ -66,6 +67,10 @@ struct GravityWellData : Codable, Equatable{
 }
 
 struct ColorBoxData: Codable, Equatable {
+//    static func ==(lhs: ColorBoxData, rhs: ColorBoxData) -> Bool {
+//        return lhs.frame == rhs.frame && lhs.rotation == rhs.rotation && lhs.box == rhs.box && lhs.leftColor == rhs.leftColor && lhs.rightColor == rhs.rightColor && lhs.backgroundColor == rhs.backgroundColor && lhs.middlePropWidth == rhs.middlePropWidth;
+//    }
+    
     var frame : CGRect;
     var rotation : CGFloat;
     var box : Bool;
@@ -88,6 +93,10 @@ struct SpeedBoostData: Codable {
 
 // 0-1 values
 struct Color : Codable, Equatable{
+//    static func ==(lhs: Color, rhs: Color) -> Bool {
+//        return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == lhs.b && lhs.a == rhs.a
+//    }
+    
     var r : CGFloat;
     var g : CGFloat;
     var b : CGFloat;

@@ -16,6 +16,8 @@ protocol CreateLevelViewDelegate: class {
 
 enum ToolbarItems {
     case ColorBox
+    case LineStart
+    case LevelEnd
 }
 
 //like LevelView, but this time, YOU create the levels!
@@ -34,7 +36,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     var levelData : LevelData!;
     
-    var startPointView : UIView!;
+    var startPointView : LineStart!;
     var endPointView : UIView!;
     
     
@@ -63,7 +65,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         createLevelScrollView()
         
-        toolbox = UIScrollView(frame: propToRect(prop: CGRect(x: 0, y: 0.1, width: 0.2, height: 0.8)))
+        toolbox = UIScrollView(frame: propToRect(prop: CGRect(x: 0, y: 0.2, width: 0.2, height: 0.7)))
         toolbox.showsHorizontalScrollIndicator = false;
 //        toolbox.showsVerticalScrollIndicator = false;
         toolbox.contentSize = propToRect(prop: CGRect(x: 0, y: 0, width: 0.2, height: 1)).size
@@ -171,9 +173,15 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     func createStartAndEnd(){
         //TODO: MULTIPLE LINES, EDITABLE
         //show simple rectangle for now for start points
-        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.lineData[0].startPosition.x-0.05, y: levelData.lineData[0].startPosition.y-0.05, width: 0.1, height: 0.1)))
-        startPointView.backgroundColor = UIColor.green;
-        stageView.addSubview(startPointView);
+//        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.lineData[0].startPosition.x-0.05, y: levelData.lineData[0].startPosition.y-0.05, width: 0.1, height: 0.1)))
+//        startPointView.backgroundColor = UIColor.green;
+//        stageView.addSubview(startPointView);
+        
+        for lineData in levelData.lineData {
+//            startPointView = LineStart(frame: propToRect(prop: CGRect(origin: lineData.startPosition, size: CGSize(width: 0.1, height: 0.1))), _startVelocity: lineData.startVelocity, _lineColor: lineData.startColor, _editable: true)
+            self.addStartLineToView(d: lineData)
+            
+        }
         
         //show the end frame
         endPointView = UIView(frame: propToRect(prop: levelData.endPoints[0].outerFrame))
@@ -183,7 +191,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func addItemsToToolbox(){
         //TODO: make box
-        let colorChangeBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 0.1), within: toolbox.frame))
+        let colorChangeBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0.1, width: 1, height: 0.1), within: toolbox.frame))
         colorChangeBtn.backgroundColor = UIColor.yellow;
         colorChangeBtn.pressed = {
             let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.lineData[0].startColor, rightColor: self.levelData.lineData[0].startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
@@ -192,6 +200,17 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 
         }
         toolbox.addSubview(colorChangeBtn)
+        
+        
+        let lineStartBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0.3, width: 1, height: 0.1), within: toolbox.frame))
+        lineStartBtn.backgroundColor = UIColor.yellow;
+        lineStartBtn.pressed = {
+            let startLineData : LineData = LineData(startPosition: CGPoint(x: 0.5, y: 0.5), startVelocity: CGVector(dx: 0.001, dy: 0), startColor: Color(r: 0, g: 0, b: 0, a: 1))
+            self.addStartLineToView(d: startLineData)
+            self.levelData.lineData.append(startLineData)
+            
+        }
+        toolbox.addSubview(lineStartBtn)
     }
     
     func addColorBoxToView(d : ColorBoxData){
@@ -213,6 +232,27 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 //        colorBox.panGesture.delegate = self;
         colorBox.frameChangeKnob.panGesture.delegate = self
         stageView.addSubview(colorBox)
+    }
+    
+    func addStartLineToView(d : LineData){
+        var data = d
+        let lineStart = LineStart(frame: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _editable: true)
+        
+        //before the change, find the element in level data
+        //delete element
+        //add new changed element
+        lineStart.frameChanged = {
+            self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
+            //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
+            data.startPosition = self.pointToProp(point: lineStart.frame.origin)
+            self.levelData.lineData.append(data)
+            //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
+            //            print("")
+        }
+        
+        //        colorBox.panGesture.delegate = self;
+        lineStart.frameChangeKnob.panGesture.delegate = self
+        stageView.addSubview(lineStart)
     }
     
     func animateIn(){

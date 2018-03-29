@@ -29,30 +29,37 @@ class LevelScrollView : UIScrollView{
         
         
         let result = super.hitTest(point, with: event)
-        let hitWell = testIfASuperViewIsType(subview: result!, type: GravityWell.self)
-        print("HIT \(hitWell)")
+//        print("HIT \(hitWell)")
 
-        if(hitWell){
+        if(shouldCancelTouch(result: result!)){
             self.isScrollEnabled = false;
         }else{
             self.isScrollEnabled = true;
         }
-        
-        return super.hitTest(point, with: event)// [super hitTest:point withEvent:event];
+//        self.isScrollEnabled = false;
 
+        return super.hitTest(point, with: event)// [super hitTest:point withEvent:event];
+    }
+    
+    func shouldCancelTouch(result : UIView) -> Bool{
+        let hitWell = testIfASuperViewIsType(subview: result, type: GravityWell.self)
+        let hitKnob = testIfASuperViewIsType(subview: result, type: LineStart.self)
+
+        
+        return hitWell || hitKnob;
     }
     
     func testIfASuperViewIsType(subview: UIView, type : AnyClass) -> Bool{
         
         var currentView : UIView? = subview
         while currentView != nil {
-//            print("\(String(describing: currentView.self))")
+            print("\(String(describing: currentView.self))")
             if(currentView?.isKind(of: type))!{
                 return true;
             }
             currentView = currentView?.superview
         }
-//        print("\n")
+        print("\n")
 
         return false
         

@@ -32,7 +32,7 @@ class LevelBeatView : UIView {
         
         super.init(frame: frame)
         
-        self.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        self.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
       
         overlayView = UIView(frame: Screen.propToRect(prop: CGRect(x: 0.1, y: 0.1, width: 0.8, height: 0.8), within: frame))
         overlayView.layer.cornerRadius = overlayView.frame.width*0.1;

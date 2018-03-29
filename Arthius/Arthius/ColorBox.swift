@@ -85,9 +85,7 @@ class ColorBox :  BaseLevelRectangle {
                     self.handleFrameChangePan(pan: pan)
                 }
             }
-            if(editable){
-                self.addSubview(frameChangeKnob)
-            }
+            self.addSubview(frameChangeKnob)
         }
     }
     
@@ -177,8 +175,8 @@ class ColorBox :  BaseLevelRectangle {
         return UIColor(red: col.r, green: col.g, blue: col.b, alpha: col.a)
     }
     
-    static func UIColorToColor(col : UIColor) -> Color{
-        let components = col.colorComponents!;
-        return Color(r: components.red, g: components.green, b: components.blue, a: components.alpha)
-    }
+//    static func UIColorToColor(col : UIColor) -> Color{
+//        let components = col.colorComponents!;
+//        return Color(r: components.red, g: components.green, b: components.blue, a: components.alpha)
+//    }
 }

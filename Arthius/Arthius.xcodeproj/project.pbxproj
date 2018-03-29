@@ -17,6 +17,8 @@
 		4019988A2061A52E00411CB8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 401998882061A52E00411CB8 /* Main.storyboard */; };
 		4019988C2061A52E00411CB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4019988B2061A52E00411CB8 /* Assets.xcassets */; };
 		4019988F2061A52E00411CB8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */; };
+		4064286E206C7AFD000B18A3 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* Progress.swift */; };
+		40642870206C823E000B18A3 /* LineStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286F206C823E000B18A3 /* LineStart.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
 		40A41F9920647124000E4634 /* Disk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8F20647123000E4634 /* Disk.swift */; };
 		40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9020647123000E4634 /* Disk+Data.swift */; };
@@ -82,6 +84,8 @@
 		4019988B2061A52E00411CB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4019988E2061A52E00411CB8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		401998902061A52E00411CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4064286D206C7AFD000B18A3 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
+		4064286F206C823E000B18A3 /* LineStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStart.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
 		40A41F8E20647123000E4634 /* Disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disk.h; sourceTree = "<group>"; };
 		40A41F8F20647123000E4634 /* Disk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disk.swift; sourceTree = "<group>"; };
@@ -233,6 +237,7 @@
 				40B035212067290200A4D8FB /* MiscElements.swift */,
 				4016788120699A5D00D8A5EF /* Rock.swift */,
 				40167883206B128300D8A5EF /* GameUIElement.swift */,
+				4064286F206C823E000B18A3 /* LineStart.swift */,
 			);
 			name = LevelElements;
 			sourceTree = "<group>";
@@ -245,6 +250,7 @@
 				40A41FB82065C96A000E4634 /* File.swift */,
 				40E544D5206336FA006505D5 /* Level.swift */,
 				4016787D20683E2400D8A5EF /* FirebaseHandler.swift */,
+				4064286D206C7AFD000B18A3 /* Progress.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -440,9 +446,11 @@
 				40E544D22062FA44006505D5 /* GravityWell.swift in Sources */,
 				40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */,
 				4016787E20683E2400D8A5EF /* FirebaseHandler.swift in Sources */,
+				4064286E206C7AFD000B18A3 /* Progress.swift in Sources */,
 				40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */,
 				40A41F9B20647124000E4634 /* Disk+Codable.swift in Sources */,
 				40A41FA720659C33000E4634 /* PlaySelect.swift in Sources */,
+				40642870206C823E000B18A3 /* LineStart.swift in Sources */,
 				40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */,
 				40E544D820633D04006505D5 /* LevelView.swift in Sources */,
 				40A41F9D20647124000E4634 /* Disk+Helpers.swift in Sources */,

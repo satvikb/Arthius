@@ -203,15 +203,15 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         singleTap.cancelsTouchesInView = false
         //        singleTap.numberOfTapsRequired = 1
                 singleTap.delegate = self;
-        singleTap.minimumPressDuration = 0.1;
+        singleTap.minimumPressDuration = 0.3;
         singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
         stageView.addGestureRecognizer(singleTap)
     }
     
 //    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        
+//
 //    }
-//    
+//
 //    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 //        <#code#>
 //    }
@@ -306,7 +306,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             let p = recognizer.location(in: recognizer.view)
             var d : CGFloat = CGFloat(sqrtf(Float(pow(p.x-longTapInital.x, 2) + pow(p.y-longTapInital.y, 2))))
             
-            if(d < propToFloat(prop: 0.03, scaleWithX: true)){
+            if(d < propToFloat(prop: 0.1, scaleWithX: true)){
                 d = 0
             }
             
@@ -425,18 +425,22 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             paused = true;
             beatLevel = true;
             //TODO
-            let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: 0, timePlayed: 0))
-            levelBeat.homePressed = {
-                self.levelViewDelegate?.level_pressMenu()
-            }
-            levelBeat.nextLevelPressed = {
-                self.levelViewDelegate?.level_nextLevel()
-            }
-            
-            //TODO animate
-            self.addSubview(levelBeat)
-            levelBeat.animateIn()
+            didBeatLevel()
         }
+    }
+    
+    func didBeatLevel(){
+        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: 0, timePlayed: 0))
+        levelBeat.homePressed = {
+            self.levelViewDelegate?.level_pressMenu()
+        }
+        levelBeat.nextLevelPressed = {
+            self.levelViewDelegate?.level_nextLevel()
+        }
+        
+        //TODO animate
+        self.addSubview(levelBeat)
+        levelBeat.animateIn()
     }
     
     func calculateGravityForcesForLine(line : Line) -> CGVector{
@@ -577,6 +581,9 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        
+        print(scrollView.zoomScale)
+        
         centerScroll()
     }
 
