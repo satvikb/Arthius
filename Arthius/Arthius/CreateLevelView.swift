@@ -120,6 +120,9 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func publish(){
         
+        
+        
+        
         self.delegate?.createLevelView_publishLv()
     }
     

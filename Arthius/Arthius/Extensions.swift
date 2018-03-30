@@ -111,6 +111,16 @@ public extension Float {
     }
 }
 
+extension UIImage {
+    convenience init(view: UIView) {
+        UIGraphicsBeginImageContext(view.frame.size)
+        view.layer.render(in:UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.init(cgImage: image!.cgImage!)
+    }
+}
+
 public extension CGFloat {
     
     /// Randomly returns either 1.0 or -1.0.

@@ -307,7 +307,45 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                 print("Add document")
                 self.uploadCustomMadeFile(userId: userId!, levelUUID: levelId)
             })
+            uploadLevelImage(userId: userId!, level: currentLevel)
         }
+    }
+    
+    func uploadLevelImage(userId: String, level: Level){
+        //test image
+        
+        let levelView = LevelView(_level: level, _parentView: .LevelCreate)
+        let image = UIImage(view: levelView)
+        let imageData : Data = UIImagePNGRepresentation(image)!
+        
+        let storageRef = storage.reference()
+        let levelRef = storageRef.child("\(userId)/\(level.levelData.levelMetadata.levelUUID)_thumb.png")
+        
+
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "level/png"
+        
+        
+        print("UPLOADING IMAGE")
+        let _ = levelRef.putData(imageData, metadata: metadata) { metadata, error in
+            let downloadURL = metadata?.downloadURL()
+            print(downloadURL?.path)
+        }
+        
+        // Upload the file to the path "images/rivers.jpg"
+//        let _ = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
+//            if let error = error {
+//                // Uh-oh, an error occurred!
+//                print("error uploading \(error.localizedDescription)")
+//            } else {
+//                // Metadata contains file metadata such as size, content-type, and download URL.
+//
+//                //                let downloadURL = metadata!.downloadURL()
+//                //                print(downloadURL?.path)
+//            }
+//        }
+        
     }
     
     func uploadCustomMadeFile(userId : String, levelUUID : String){
@@ -322,7 +360,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
 
         
         // Upload the file to the path "images/rivers.jpg"
-        let _ = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
+        let _ = levelRef.putFile(from: localFile, metadata: metadata) { metadata, error in
             if let error = error {
                 // Uh-oh, an error occurred!
                 print("error uploading \(error.localizedDescription)")
@@ -333,6 +371,16 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
 //                print(downloadURL?.path)
             }
         }
+        
+        
+        
+        
+       
+        
+        
+        
+        
+        
     }
     
     override var prefersStatusBarHidden: Bool {

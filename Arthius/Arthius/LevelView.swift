@@ -699,18 +699,39 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
 //
-//    - (void)centerContent
+//    - (IBAction) renderScrollViewToImage
 //    {
-//    CGFloat top = 0, left = 0;
-//    if (self.scrollView.contentSize.width < self.scrollView.bounds.size.width) {
-//    left = (self.scrollView.bounds.size.width-self.scrollView.contentSize.width) * 0.5f;
+//        UIImage* image = nil;
+//
+//        UIGraphicsBeginImageContext(_scrollView.contentSize);
+//        {
+//            CGPoint savedContentOffset = _scrollView.contentOffset;
+//            CGRect savedFrame = _scrollView.frame;
+//
+//            _scrollView.contentOffset = CGPointZero;
+//            _scrollView.frame = CGRectMake(0, 0, _scrollView.contentSize.width, _scrollView.contentSize.height);
+//
+//            [_scrollView.layer renderInContext: UIGraphicsGetCurrentContext()];
+//            image = UIGraphicsGetImageFromCurrentImageContext();
+//
+//            _scrollView.contentOffset = savedContentOffset;
+//            _scrollView.frame = savedFrame;
+//        }
+//        UIGraphicsEndImageContext();
+//
+//        if (image != nil) {
+//            [UIImagePNGRepresentation(image) writeToFile: @"/tmp/test.png" atomically: YES];
+//            system("open /tmp/test.png");
+//        }
 //    }
-//    if (self.scrollView.contentSize.height < self.scrollView.bounds.size.height) {
-//    top = (self.scrollView.bounds.size.height-self.scrollView.contentSize.height) * 0.5f;
+//
+//    
+//    func scrollViewToImage(){
+//        var image : UIImage = nil
+//        
+//        UIGraphicsBeginImageContext()
 //    }
-//    self.scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
-//    }
-    
+//    
     func animateIn(){
         homeBtn.animateIn()
         playResetBtn.animateIn()
