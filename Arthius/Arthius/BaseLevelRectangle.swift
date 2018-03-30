@@ -8,10 +8,8 @@
 
 import UIKit
 
-
 //The core rectangle class used by ColorBox and SpeedBoost, detects line collisions
 class BaseLevelRectangle : GameUIElement {
-    
     
     var lineEnter = {}
     
@@ -21,19 +19,10 @@ class BaseLevelRectangle : GameUIElement {
         super.init(frame: frame)
         self.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.transform = CGAffineTransform(rotationAngle: rotation);
-
-        
     }
     
     //doesnt work for rotation
     func pointInRect(locInMain : CGPoint) -> Bool{
-//        let f = self.frame
-//
-//        if(point.x > f.origin.x && point.x < f.origin.x+f.size.width && point.y > f.origin.y && point.y < f.origin.y+f.size.height){
-//            return true
-//        }
-//        return false
-        
         let locInSub = self.convert(locInMain, from: superview)
         
         if(self.bounds.contains(locInSub)){

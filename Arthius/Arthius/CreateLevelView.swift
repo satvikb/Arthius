@@ -83,47 +83,39 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         self.addSubview(publishBtn)
 
 
-        do {
-
-            try Disk.save(existingLevel, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
+//        do {
+//            try Disk.save(existingLevel, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
+//            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
+//            var text = "s"
 //
-            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)" //this is the file. we will write to and read from it
+//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
 //
-            var text = "s" //just a text
+//                let fileURL = dir.appendingPathComponent(file)
+//                print(fileURL.path)
 //
-            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-
-                let fileURL = dir.appendingPathComponent(file)
-                print(fileURL.path)
-
-                //reading
-                do {
-                    text = try String(contentsOf: fileURL, encoding: .utf8)
-                    print(text)
-                }
-                catch let error as NSError{/* error handling here */
-                    print("read error "+error.localizedDescription)
-                }
-            }
-        } catch let error as NSError {
-            print("""
-                NO SAVE TEST
-                Domain: \(error.domain)
-                Code: \(error.code)
-                Description: \(error.localizedDescription)
-                Failure Reason: \(error.localizedFailureReason ?? "")
-                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-                """)
-        }
-
-
+//                //reading
+//                do {
+//                    text = try String(contentsOf: fileURL, encoding: .utf8)
+//                    print(text)
+//                }
+//                catch let error as NSError{/* error handling here */
+//                    print("read error "+error.localizedDescription)
+//                }
+//            }
+//        } catch let error as NSError {
+//            print("""
+//                NO SAVE TEST
+//                Domain: \(error.domain)
+//                Code: \(error.code)
+//                Description: \(error.localizedDescription)
+//                Failure Reason: \(error.localizedFailureReason ?? "")
+//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                """)
+//        }
     }
     
     static func BlankLevel() -> LevelData{
         return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
-        
-//        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
-
     }
     
     func publish(){
@@ -146,8 +138,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         levelView.showsVerticalScrollIndicator = false;
         levelView.showsHorizontalScrollIndicator = false;
         levelView.delaysContentTouches = false;
-//        levelView.contentSize = propToRect(prop: level.levelData.propFrame).size
-        //        levelView.contentOffset = propToRect(prop: increaseRect(rect: level.levelData.propFrame, byPercentage: 0.1)).origin
+
         levelView.delegate = self;
         levelView.minimumZoomScale = 0.5
         levelView.maximumZoomScale = 3;
@@ -166,23 +157,20 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         //load all the current items already in data
         for cBox in levelData.colorBoxData {
             addColorBoxToView(d: cBox)
-//            let cBoxView = ColorBox(frame: cBox.frame, rotation: cBox.rotation, box: cBox.box, _leftColor: cBox.leftColor, _rightColor: cBox.rightColor, backgroundColor: cBox.backgroundColor, _middlePropWidth: cBox.middlePropWidth, _stageView: stageView)
         }
     }
     
     func createStartAndEnd(){
-        //TODO: MULTIPLE LINES, EDITABLE
         //show simple rectangle for now for start points
-//        startPointView = UIView(frame: propToRect(prop: CGRect(x: levelData.lineData[0].startPosition.x-0.05, y: levelData.lineData[0].startPosition.y-0.05, width: 0.1, height: 0.1)))
-//        startPointView.backgroundColor = UIColor.green;
-//        stageView.addSubview(startPointView);
         
         for lineData in levelData.lineData {
-//            startPointView = LineStart(frame: propToRect(prop: CGRect(origin: lineData.startPosition, size: CGSize(width: 0.1, height: 0.1))), _startVelocity: lineData.startVelocity, _lineColor: lineData.startColor, _editable: true)
             self.addStartLineToView(d: lineData)
             
         }
         
+        
+        //TODO: MULTIPLE ENDS? yes ofc, allows for one end of each colors for ex.
+
         //show the end frame
         endPointView = UIView(frame: propToRect(prop: levelData.endPoints[0].outerFrame))
         endPointView.backgroundColor = UIColor.black;
@@ -217,47 +205,29 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         var data = d
         let colorBox = ColorBox(frame: propToRect(prop: data.frame), rotation: data.rotation, box: data.box, _leftColor: data.leftColor, _rightColor: data.rightColor, backgroundColor: data.backgroundColor, _middlePropWidth: data.middlePropWidth, _stageView: stageView, _editable: true)
         
-        //before the change, find the element in level data
-        //delete element
-        //add new changed element
         colorBox.frameChanged = {
             self.levelData.colorBoxData.remove(at: self.levelData.colorBoxData.index(of: data)!)
-//            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
             data.frame = self.rectToProp(rect: colorBox.frame)
             self.levelData.colorBoxData.append(data)
-//            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
-//            print("")
         }
         
-//        colorBox.panGesture.delegate = self;
         colorBox.frameChangeKnob.panGesture.delegate = self
         stageView.addSubview(colorBox)
     }
     
     func addStartLineToView(d : LineData){
         var data = d
-        let maxPropStartVeclocity : CGFloat = 0.002//self.propToFloat(prop: 0.3, scaleWithX: true) //TODO per level, global?
+        let maxPropStartVeclocity : CGFloat = 0.002 //TODO per level, global?
 
         let lineStart = LineStart(frame: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
         
-        //before the change, find the element in level data
-        //delete element
-        //add new changed element
         lineStart.frameChanged = {
             self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
             data.startPosition = self.pointToProp(point: lineStart.center)
-            print("45_\(data.startPosition) \(lineStart.center) \(lineStart.frame.origin)")
-
             data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity
-            
             self.levelData.lineData.append(data)
-            
-            
-            //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
-            //            print("")
         }
         
-        //        colorBox.panGesture.delegate = self;
         lineStart.frameChangeKnob.panGesture.delegate = self
         stageView.addSubview(lineStart)
     }
@@ -299,7 +269,6 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let offsetX = max((levelView.bounds.width - levelView.contentSize.width) * 0.5, 0)
         let offsetY = max((levelView.bounds.height - levelView.contentSize.height) * 0.5, 0)
         self.levelView.contentInset = UIEdgeInsetsMake(offsetY, offsetX, 0, 0)
-        //        self.levelView.center = CGPoint(x: levelView.contentSize.width * 0.5 + offsetX, y: levelView.contentSize.height * 0.5 + offsetY)
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
@@ -317,7 +286,6 @@ class ToolboxButton : UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //            print("end \(touches.count) \(heldDown) \(touchInBtn(point: (touches.first?.location(in: self.superview))!))")
         if(touches.count > 0){
             if(heldDown == true && touchInBtn(point: touches.first!.location(in: self.superview))){
                 heldDown = false
@@ -327,7 +295,7 @@ class ToolboxButton : UIView {
     }
     
     func touchInBtn(point : CGPoint) -> Bool{
-        let f = self.frame//heldDown == true ? heldDownFrame! : heldUpFrame!
+        let f = self.frame
         
         if(point.x > f.origin.x && point.x < f.origin.x+f.size.width && point.y > f.origin.y && point.y < f.origin.y+f.size.height){
             return true

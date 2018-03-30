@@ -67,7 +67,6 @@ class File {
     static func getLevelPath(uuid: String, type : LevelType) -> URL{
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(self.getFolderForLevelType(type: type), isDirectory: true).appendingPathComponent("\(uuid).\(levelExtensionForType(type: type))")
-        print("got lv "+documentsURL.path)
         return documentsURL
     }
     

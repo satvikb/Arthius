@@ -8,20 +8,11 @@
 
 import UIKit
 
-
 /*
  This will be:
     Simple touch by line to change color
     Split into two sides, required and new color depends on entry side
 */
-
-//enum CurrentLineState {
-//    case OutOfLine
-//    case InOneSide
-//    case InOtherSide
-//    case ExitedLine
-//    case ColorSwitched
-//}
 
 class ColorBox :  BaseLevelRectangle {
     
@@ -32,13 +23,8 @@ class ColorBox :  BaseLevelRectangle {
     var leftView : UIView!;
     var rightView : UIView!;
     
-//    var lineEnterLeft = {}
-//    var lineEnterRight = {}
-    
-    
     var step1 : Bool = false;
     var step2 : Bool = false;
-//    var allowColorChange : Bool = true;
     
     var stageView : UIView;
     

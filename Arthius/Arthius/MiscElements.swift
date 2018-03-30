@@ -28,15 +28,6 @@ class KnobEdit : UIView {
     var boxCenter = CGPoint.zero
     
     @objc func handlePan(_ pan : UIPanGestureRecognizer){
-//        if pan.state == .began {
-//            boxCenter = self.center // store old button center
-//        } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
-//            //            self.center = boxCenter // restore button center
-//        } else {
-//            let location = pan.translation(in: superview) // get pan location
-//            self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y) // set button to where finger is
-//            frameChanged()
-//        }
         panned(pan);
     }
     

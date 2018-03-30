@@ -55,7 +55,8 @@ class GravityWell: UIView {
 //        if(editable){
             panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
             self.addGestureRecognizer(panGesture)
-            
+        
+        //TODO Use knob for INNER CORE size, PINCH to change outer size
 //            frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
 //            frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
 //                //in case
@@ -82,20 +83,14 @@ class GravityWell: UIView {
         //TODO
         //change mass proportional to diameter
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        print(corePoint)
-//        touched();
-//    }
-    
-    
+
     var boxCenter = CGPoint.zero
     
     @objc func handlePan(_ pan : UIPanGestureRecognizer){
         if pan.state == .began {
             boxCenter = self.center // store old button center
         } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
-            //            self.center = boxCenter // restore button center
+
         } else {
             let location = pan.translation(in: superview) // get pan location
             self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
@@ -111,7 +106,6 @@ class GravityWell: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //            print("end \(touches.count) \(heldDown) \(touchInBtn(point: (touches.first?.location(in: self.superview))!))")
         if(touches.count > 0){
             if(heldDown == true && touchInBtn(point: touches.first!.location(in: self.superview))){
                 heldDown = false
@@ -121,7 +115,7 @@ class GravityWell: UIView {
     }
     
     func touchInBtn(point : CGPoint) -> Bool{
-        let f = self.frame//heldDown == true ? heldDownFrame! : heldUpFrame!
+        let f = self.frame
         
         if(point.x > f.origin.x && point.x < f.origin.x+f.size.width && point.y > f.origin.y && point.y < f.origin.y+f.size.height){
             return true
@@ -135,10 +129,6 @@ class GravityWell: UIView {
 }
 
 extension GravityWell {
-//    var data : GravityWellData {
-//        return GravityWellData(position: corePoint, mass: self.mass, coreDiameter: self.coreDiameter, areaOfEffectDiameter: self.areaOfEffectDiameter)
-//    }
-    
     var data : GravityWellData {
         return GravityWellData(position: pointToProp(point: self.corePoint), mass: self.mass, coreDiameter: floatToProp(float: self.coreDiameter, scaleWithX: true), areaOfEffectDiameter: floatToProp(float: self.areaOfEffectDiameter, scaleWithX: true))
     }

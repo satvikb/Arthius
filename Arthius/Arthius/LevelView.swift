@@ -413,9 +413,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         if(recognizer.state == .began){
             longTapInital = recognizer.location(in: recognizer.view)
             currentGravityWellCreated = createGravityWell(point: longTapInital, core: propToFloat(prop: 0.015, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.05, scaleWithX: true), mass: 100, new: true)
-            print("Creating gravity well")
-            
-            
+//            print("Creating gravity well")
         }else if(recognizer.state == .changed){
             let p = recognizer.location(in: recognizer.view)
             var d : CGFloat = CGFloat(sqrtf(Float(pow(p.x-longTapInital.x, 2) + pow(p.y-longTapInital.y, 2))))
@@ -430,7 +428,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             //currentGravityWellCreated.mass =
             currentGravityWellCreated.updateSize()
         }else if(recognizer.state == .ended){
-            print("Created well of radius \(currentGravityWellCreated.areaOfEffectDiameter/2)")
+//            print("Created well of radius \(currentGravityWellCreated.areaOfEffectDiameter/2)")
             justCreatedWell = true;
             
             if(currentGravityWellCreated.areaOfEffectDiameter/2 == 0){
@@ -506,7 +504,6 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
 
 //                            if(endView.innerView.frame.contains(innerViewPos)){
                             if(innerFrame.contains(line.currentPoint)){
-                                print("INNER")
                                 if(line.lineColor == endView.color){
                                     line.madeItToEnd = true;
                                 }
@@ -691,16 +688,14 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         let offsetX = max((levelView.bounds.width - levelView.contentSize.width) * 0.5, 0)
         let offsetY = max((levelView.bounds.height - levelView.contentSize.height) * 0.5, 0)
         self.levelView.contentInset = UIEdgeInsetsMake(offsetY, offsetX, 0, 0)
-//        self.levelView.center = CGPoint(x: levelView.contentSize.width * 0.5 + offsetX, y: levelView.contentSize.height * 0.5 + offsetY)
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         
-//        print(scrollView.zoomScale)
         if(scrollView.zoomScale <= 1){
-            stageView.layer.borderWidth = 0;
-        }else{
             stageView.layer.borderWidth = 3;
+        }else{
+            stageView.layer.borderWidth = 0;
         }
         centerScroll()
     }

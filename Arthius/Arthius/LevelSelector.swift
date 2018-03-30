@@ -55,16 +55,9 @@ class LevelSelector : UIScrollView {
             
             self.addSubview(levelTile)
             i += 1;
-            
-            
-            //            if(i == Int(xTiles*yTiles)){
-            //                //start next page
-            //                startX += 1;
-            //            }
         }
         
         self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
-        print("\(self.contentSize) \(self.frame)")
     }
     
     func propToRectSelf(prop: CGRect) -> CGRect {

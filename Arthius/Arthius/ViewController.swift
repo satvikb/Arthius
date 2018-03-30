@@ -300,7 +300,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             
             let data : [String : Any] = [
                 "LevelID" : levelId,
-                "UserID" : userId
+                "UserID" : userId ?? "" //TODO handle no user id?
             ]
             
             db.collection("levels").addDocument(data: data, completion: {(error) in
@@ -322,14 +322,15 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
 
         
         // Upload the file to the path "images/rivers.jpg"
-        let uploadTask = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
+        let _ = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
             if let error = error {
                 // Uh-oh, an error occurred!
                 print("error uploading \(error.localizedDescription)")
             } else {
                 // Metadata contains file metadata such as size, content-type, and download URL.
-                let downloadURL = metadata!.downloadURL()
-                print(downloadURL?.path)
+                
+//                let downloadURL = metadata!.downloadURL()
+//                print(downloadURL?.path)
             }
         }
     }
@@ -338,10 +339,3 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         return true;
     }
 }
-
-//extension ViewController: MenuViewDelegate {
-//    func didFinishTask(sender: ViewController) {
-//        // do stuff like updating the UI
-//    }
-//}
-

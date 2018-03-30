@@ -37,25 +37,6 @@ class Button : UIView{
         self.text.adjustsFontSizeToFitWidth = true;
         
         self.addSubview(self.text)
-//        heldDownFrame = Screen.propToRect(prop:propFrame)
-//        heldUpFrame = Screen.propToRect(prop: propFrame).offsetBy(dx: viewOffsetX, dy: viewOffsetX)
-//
-//        pressView = ButtonPressView(heldDownFrame: heldDownFrame, heldUpFrame: heldUpFrame, text: text)
-//        pressView.touchDown = {
-//            self.pressView.frame = self.heldDownFrame
-//        }
-//
-//        pressView.touchUp = {
-//            self.moveUp()
-//            self.rawPressed()
-//        }
-//
-//        pressView.touchMoveOutside = {
-//            self.moveUp()
-//        }
-        
-//        backgroundView = UIView(frame: )
-//        backgroundView.backgroundColor = .gray
     }
     
     required init?(coder aDecoder: NSCoder) {

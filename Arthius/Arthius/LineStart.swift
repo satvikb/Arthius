@@ -93,18 +93,16 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     func handleFrameChangePan(pan: UIPanGestureRecognizer){
         
         if pan.state == .began {
-            preLoc = self.frameChangeKnob.center//centerLocation/CGPoint(x: 2, y: 2)//CGPoint(x: self.frame.midX, y: self.frame.midY)//self.frameChangeKnob.frame.origin
-            print(preLoc)
+            preLoc = self.frameChangeKnob.center
+//            print(preLoc)
         } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
-            //            self.center = boxCenter // restore button center
+
         } else {
             panTranslation = pan.translation(in: frameChangeKnob) // get pan location
             let newCenter = preLoc + panTranslation
-            //            var originOffset = CGPoint.zero;
+
             let centerOfLine = centerLocation!
-            
             let distFrom = newCenter - centerOfLine
-//            print(newCenter - centerOfLine)
             
             imaginaryCenter = newCenter
 
@@ -114,46 +112,19 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
             }else{
                 
                 //TODO figure out why subtracting centerOfLine in the vector then adding it to the final point works
-                let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerOfLine.x, dy: imaginaryCenter.y-centerOfLine.y).normalized()*maxVectorRadius//getCurrentKnobVectorNormalized()*maxVectorRadius//CGVector(dx: distFrom.x, dy: distFrom.y).normalized()*maxVectorRadius
+                let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerOfLine.x, dy: imaginaryCenter.y-centerOfLine.y).normalized()*maxVectorRadius
                 let boundedCenterRaw = CGPoint(x: newBoundedCenter.dx, y: newBoundedCenter.dy)
                 frameChangeKnob.center = boundedCenterRaw + centerOfLine
                 print("2_\(getCurrentKnobVectorNormalized())")
             }
-            
-////            let newX = preLoc.x+change.x
-////            let newY = preLoc.y+change.y
-////            let newPoint = CGPoint(x: newX, y: newY)
-//            let r = frame.size.width
-////
-//            let p = newCenter
-//            let c = centerLocation!
-////
-//            let vX : CGFloat = p.x - c.x;
-//            let vY : CGFloat = p.y - c.y;
-//            let magV : CGFloat = sqrt(vX*vX + vY*vY);
-//            let aX = c.x + vX / magV * r;
-//            let aY = c.y + vY / magV * r;
-//
-//            let clippedPoint : CGPoint = CGPoint(x: aX, y: aY) //TODO this has chance to be nan
-//            print(preLoc, clippedPoint, change, p, c, p - c)
-//            self.frameChangeKnob.center = (clippedPoint + centerOfLine) - CGPoint(x: self.frame.size.width/2, y: self.frame.size.height/2)
-            
-            
             
             frameChanged()
         }
     }
     
     func getCurrentKnobVectorNormalized() -> CGVector{
-//        let distFrom = (self.frameChangeKnob.center+(usePanTranslation ? panTranslation : CGPoint.zero)) - centerLocation
-//
-//        return CGVector(dx: distFrom.x, dy: distFrom.y).normalized()
-        
-        
-        
         let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerLocation.x, dy: imaginaryCenter.y-centerLocation.y).normalized()
         return newBoundedCenter
-//        print("2_\(getCurrentKnobVectorNormalized())")
     }
     
     func getKnobPointFromVector(velocityVector : CGVector) -> CGPoint{

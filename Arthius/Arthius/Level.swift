@@ -19,28 +19,12 @@ class Level : NSObject{
     
 }
 
-//struct CampaignLevelData : Codable {
-//    var levelMetadata : LevelMetadata;
-//    var informationTexts : CampaignTexts;
-//    var propFrame : CGRect;
-//    var endPoints : [EndData];
-//    var lineData : [LineData]
-//    var gravityWells : [GravityWellData]
-//    var colorBoxData : [ColorBoxData]
-//    var rockData : [RockData]
-//    var speedBoostData : [SpeedBoostData]
-//}
-//
 enum LevelTextTriggers : String, Codable {
     case none = ""
     case tap = "Tap"
     case pressPlay = "Play"
     //TODO based on these, a lot of customization is possbible, but too bad its only text
 }
-
-//struct LevelTexts : Codable {
-//    var texts : [LevelText]
-//}
 
 struct LevelText : Codable {
     var id: Int
