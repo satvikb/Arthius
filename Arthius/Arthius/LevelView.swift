@@ -265,68 +265,89 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func setupLevelTexts(){
         
-        var startText : String = ""
-        var startHidden : Bool = true;
+//        var startText : String = ""
+//        var startHidden : Bool = true;
+//        var startPropFrame : CGRect = CGRect.zero
+//        var textColor : UIColor = UIColor.clear;
+//        var fontSize : CGFloat = 0;
         
-        if(level.levelData.texts.count > 0){
-            let first : LevelText? = getFirstText()
-            if(first != nil){
-                currentText = first
-                startText = (first?.text)!
-                startHidden = false
-            }
-        }
-        currentTextsLabel = LevelTextsLabel(frame: propToRect(prop: CGRect(x: 0.1, y: 0.7, width: 0.8, height: 0.2), within: self.frame), text: startText, _outPos: propToPoint(prop: CGPoint(x: -1, y: 0.7)), textColor: UIColor.white, valign: VAlign.Default, _insets: false, hidden: startHidden)
+        currentTextsLabel = LevelTextsLabel(frame: propToRect(prop: CGRect.zero, within: self.frame), text: "", _outPos: propToPoint(prop: CGPoint(x: -1, y: 0.7)), textColor: UIColor.white, valign: VAlign.Default, _insets: true, hidden: false)
+//        currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
+
+        
+//        if(level.levelData.texts.count > 0){
+//            let first : LevelText? = getFirstText()
+//            if(first != nil){
+//                currentText = first
+////                startText = currentText.text
+////                startHidden = false
+////                startPropFrame = currentText.propFrame;
+////                textColor = currentText.fontColor.uiColor()
+////                fontSize = currentText.fontSize
+//            }
+//        }
+        
         currentTextsLabel.tapped = {
-            if(self.currentText.triggerOn == .tap){
-                self.nextText(oldText: self.currentText)
-            }
+            self.levelTextTriggerOccured(trigger: .tap)
         }
-        
-        updateLevelText(text: currentText)
         
         self.addSubview(currentTextsLabel)
         self.bringSubview(toFront: currentTextsLabel)
-        currentTextsLabel.animateIn()
+//        currentTextsLabel.animateIn()
+        
+        
+        levelTextTriggerOccured(trigger: .start)
     }
     
-//    func updateCurrentLevelText(newLevelText : LevelText){
-//        currentText = newLevelText
-//
-//        currentTextsLabel.text = newLevelText.text
-//        currentTextsLabel.
-//    }
+    func getPropOutPosForText(propOrigin:CGPoint) -> CGPoint{
+        return CGPoint(x: -1, y: propOrigin.y)
+    }
+    
+    func levelTextTriggerOccured(trigger : LevelTextTriggers){
+        let next : LevelText? = getLevelTextWithId(id: currentText?.nextText)
+        if(next != nil){
+            if(next!.triggerOn == trigger){
+                self.nextText(oldText: self.currentText)
+            }
+        }else{
+            self.nextText(oldText: nil)
+        }
+    }
     
     var completedText : [Int] = []
     
-    func nextText(oldText : LevelText){
-        completedText.append(oldText.id)
-        let next : LevelText? = getLevelTextWithId(id: oldText.nextText)
+    func nextText(oldText : LevelText?){
+        
+        var next : LevelText?;
+        var animateOutCurrent = false;
+        var animateOutTime : CGFloat = 0
+        
+        if(oldText != nil){
+            completedText.append(oldText!.id)
+            next = getLevelTextWithId(id: oldText!.nextText)
+            animateOutCurrent = oldText!.animateOut
+            animateOutTime = oldText!.animateTime
+        }else{
+            next = getFirstText()
+        }
+        
         if(next != nil){
-            if(!completedText.contains((next?.id)!)){
+            if(!completedText.contains(next!.id)){
                 //valid new text
                 currentText = next;
                 
-                if(oldText.animateOut){
-                    currentTextsLabel.animateOut()
+                if(animateOutCurrent){
+                    currentTextsLabel.animateOut(time: animateOutTime)
                     //TODO wait for animation to complete here/put following code in completion block
                     //start block
                     
-//                    self.currentTextsLabel.isHidden = true; //if going to use .hidden, do it after animateOut completes
-
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(transitionTime), execute: {
-                        self.currentTextsLabel.text = next?.text;
-//                        self.currentTextsLabel.isHidden = false;
-
-                        self.currentTextsLabel.frame.origin = self.propToPoint(prop: CGPoint(x: -1, y: 0.7)) //TODO create variable for this out of screen point
-
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(animateOutTime), execute: {
                         self.updateLevelText(text: next)
-                        self.currentTextsLabel.animateIn()
+                        self.currentTextsLabel.animateIn(time: self.currentText.animateTime)
                     })
-//
-                    //end block
-                    
+                }else{
+                    self.updateLevelText(text: next)
+                    self.currentTextsLabel.animateIn(time: self.currentText.animateTime)
                 }
             }else{
                 levelTextsAllComplete() //more secure, all id's used
@@ -342,18 +363,34 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func updateLevelText(text : LevelText!){
         if(text != nil){
-            if(text.triggerOn != .tap){
-                currentTextsLabel.tapToContinueView.text = ""
-                currentTextsLabel.tapToContinueView.isHidden = true;
-            }else{
+            //does everything but animate in/out
+            let nextText = getLevelTextWithId(id: text.nextText)
+            if(nextText?.triggerOn == .tap){
                 currentTextsLabel.tapToContinueView.text = "Tap to continue."
-                currentTextsLabel.tapToContinueView.isHidden = false;
+//                currentTextsLabel.tapToContinueView.isHidden = false;
+            }else{
+                currentTextsLabel.tapToContinueView.text = ""
+//                currentTextsLabel.tapToContinueView.isHidden = true;
             }
             currentTextsLabel.text = text.text
+            
+            let frame = propToRect(prop: text.propFrame, within: self.frame)
+            let outPos = getPropOutPosForText(propOrigin: text.propFrame.origin)
+            if(text.animateIn){
+                currentTextsLabel.frame = CGRect(origin: propToPoint(prop: outPos), size: frame.size)
+                currentTextsLabel.inPos = frame.origin
+            }else{
+                currentTextsLabel.frame = frame
+                currentTextsLabel.inPos = frame.origin
+            }
+            
+            currentTextsLabel.textColor = text.fontColor.uiColor()
+            currentTextsLabel.updateTapToContinueView()
+            currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: text.fontSize))
         }
     }
     
-    func getLevelTextWithId(id : Int) -> LevelText? {
+    func getLevelTextWithId(id : Int?) -> LevelText? {
         for text in level.levelData.texts {
             if(text.id == id){
                 return text
@@ -366,7 +403,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         //make it pick a random one of the showFirsts, u know, in case OPUT (Other people use this), and prevent crash i guess
         var firstTexts : [LevelText] = []
         for text in level.levelData.texts{
-            if(text.showFirst){
+            if(text.triggerOn == .start){
                 firstTexts.append(text)
             }
         }

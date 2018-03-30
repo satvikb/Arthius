@@ -25,7 +25,16 @@ class LevelTextsLabel : Label {
         self.layer.zPosition = 1000
         self.isUserInteractionEnabled = true
         tapToContinueView = Label(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.2, height: 0.2), within: self.frame), text: "", _outPos: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0, height: 0), within: self.frame).origin, textColor: textColor, valign: valign, _insets: _insets)
+        updateTapToContinueView()
         self.addSubview(tapToContinueView)
+    }
+    
+    func updateTapToContinueView(){
+        tapToContinueView.frame = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.2, height: 0.2), within: self.frame)
+        tapToContinueView.outPos = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0, height: 0), within: self.frame).origin
+        tapToContinueView.textColor = self.textColor
+        tapToContinueView.vAlign = self.vAlign
+        tapToContinueView.insets = self.insets
     }
     
     required init?(coder aDecoder: NSCoder) {

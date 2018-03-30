@@ -21,6 +21,7 @@ class Level : NSObject{
 
 enum LevelTextTriggers : String, Codable {
     case none = ""
+    case start = "Start"
     case tap = "Tap"
     case pressPlay = "Play"
     //TODO based on these, a lot of customization is possbible, but too bad its only text
@@ -28,12 +29,17 @@ enum LevelTextTriggers : String, Codable {
 
 struct LevelText : Codable {
     var id: Int
-    var showFirst: Bool;
+//    var showFirst: Bool;
     var text: String;
     var triggerOn: LevelTextTriggers;
     var nextText: Int;
+    var animateTime: CGFloat;
+    var animateIn: Bool;
     var animateOut: Bool; //animates out the current one, after animation FINISHES new one comes in (its after cuz i dont want to keep track of 2+ LevelTextLabels)
     //TODO animation time
+    var propFrame : CGRect;
+    var fontSize : CGFloat;
+    var fontColor: Color;
 }
 
 struct LevelData : Codable {
@@ -118,4 +124,8 @@ struct Color : Codable, Equatable{
     var g : CGFloat;
     var b : CGFloat;
     var a : CGFloat
+    
+    func uiColor() -> UIColor{
+        return UIColor(red: r, green: g, blue: b, alpha: a)
+    }
 }
