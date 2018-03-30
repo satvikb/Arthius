@@ -83,44 +83,44 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         self.addSubview(publishBtn)
 
 
-//        do {
+        do {
+
+            try Disk.save(existingLevel, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
 //
-//            try Disk.save(existingLevel, to: .documents, as: CAMPAIGN_LEVEL_FOLDER+"/2.gws")
-////
-//            let file = "\(CAMPAIGN_LEVEL_FOLDER)/2.gws" //this is the file. we will write to and read from it
-////
-//            var text = "some text" //just a text
-////
-//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)" //this is the file. we will write to and read from it
 //
-//                let fileURL = dir.appendingPathComponent(file)
-//                print(fileURL.path)
+            var text = "s" //just a text
 //
-//                //reading
-//                do {
-//                    text = try String(contentsOf: fileURL, encoding: .utf8)
-//                    print(text)
-//                }
-//                catch let error as NSError{/* error handling here */
-//                    print("read error "+error.localizedDescription)
-//                }
-//            }
-//        } catch let error as NSError {
-//            print("""
-//                NO SAVE TEST
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+                let fileURL = dir.appendingPathComponent(file)
+                print(fileURL.path)
+
+                //reading
+                do {
+                    text = try String(contentsOf: fileURL, encoding: .utf8)
+                    print(text)
+                }
+                catch let error as NSError{/* error handling here */
+                    print("read error "+error.localizedDescription)
+                }
+            }
+        } catch let error as NSError {
+            print("""
+                NO SAVE TEST
+                Domain: \(error.domain)
+                Code: \(error.code)
+                Description: \(error.localizedDescription)
+                Failure Reason: \(error.localizedFailureReason ?? "")
+                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+                """)
+        }
 
 
     }
     
     static func BlankLevel() -> LevelData{
-        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
+        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
         
 //        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), startPosition: CGPoint(x: 0, y: 0.5), endPosition: CGRect(x: 0.9, y: 0.45, width: 0.1, height: 0.1), startVelocity: CGVector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 0.2, b: 1, a: 1), endColor: Color(r: 0, g: 0.2, b: 1, a: 1), gravityWells: [], colorBoxData: [], rockData: [], speedBoostData: [])
 
@@ -133,7 +133,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func saveLevel(){
         do {
-            try Disk.save(levelData, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).gws")
+            try Disk.save(levelData, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).\(File.levelExtensionForType(type: .UserMade))")
         }catch let error as NSError{
             print("Error saving user made level \(error.localizedDescription)")
         }

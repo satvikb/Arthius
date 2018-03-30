@@ -9,10 +9,10 @@
 import Foundation
 
 struct CampaignProgress {
-    var progress : [CampaignData];
+    var progress : [CampaignProgressData];
 }
 
-struct CampaignData : Codable {
+struct CampaignProgressData : Codable {
     var uuid : String
     var completed : Bool
     var stars : Int

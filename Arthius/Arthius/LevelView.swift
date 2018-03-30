@@ -147,6 +147,11 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     var displayLink : CADisplayLink!
     var paused = true;
     
+    
+    var currentTextsLabel : LevelTextsLabel!;
+    var currentText : LevelText!;
+//    var currentTrigger : LevelTextTriggers!; // Within currentText
+    
     init(_level: Level, _parentView: View){
         level = _level;
         parentView = _parentView;
@@ -161,7 +166,9 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         setupGestureRecognizers()
         createLevelElementsFromLevel()
         createUIButtons()
-
+        setupLevelTexts()
+        
+        
         start()
     }
     
@@ -207,14 +214,6 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         singleTap.allowableMovement = propToFloat(prop: 0.7, scaleWithX: true) //pretty much maximum size well that can be created when initally created
         stageView.addGestureRecognizer(singleTap)
     }
-    
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//
-//    }
-//
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        <#code#>
-//    }
     
     func setupLines(){
         for line in level.levelData.lineData {
@@ -262,6 +261,121 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         
         self.addSubview(playResetBtn);
         self.addSubview(homeBtn);
+    }
+    
+    func setupLevelTexts(){
+        
+        var startText : String = ""
+        var startHidden : Bool = true;
+        
+        if(level.levelData.texts.count > 0){
+            let first : LevelText? = getFirstText()
+            if(first != nil){
+                currentText = first
+                startText = (first?.text)!
+                startHidden = false
+            }
+        }
+        currentTextsLabel = LevelTextsLabel(frame: propToRect(prop: CGRect(x: 0.1, y: 0.7, width: 0.8, height: 0.2), within: self.frame), text: startText, _outPos: propToPoint(prop: CGPoint(x: -1, y: 0.7)), textColor: UIColor.white, valign: VAlign.Default, _insets: false, hidden: startHidden)
+        currentTextsLabel.tapped = {
+            if(self.currentText.triggerOn == .tap){
+                self.nextText(oldText: self.currentText)
+            }
+        }
+        
+        updateLevelText(text: currentText)
+        
+        self.addSubview(currentTextsLabel)
+        self.bringSubview(toFront: currentTextsLabel)
+        currentTextsLabel.animateIn()
+    }
+    
+//    func updateCurrentLevelText(newLevelText : LevelText){
+//        currentText = newLevelText
+//
+//        currentTextsLabel.text = newLevelText.text
+//        currentTextsLabel.
+//    }
+    
+    var completedText : [Int] = []
+    
+    func nextText(oldText : LevelText){
+        completedText.append(oldText.id)
+        let next : LevelText? = getLevelTextWithId(id: oldText.nextText)
+        if(next != nil){
+            if(!completedText.contains((next?.id)!)){
+                //valid new text
+                currentText = next;
+                
+                if(oldText.animateOut){
+                    currentTextsLabel.animateOut()
+                    //TODO wait for animation to complete here/put following code in completion block
+                    //start block
+                    
+//                    self.currentTextsLabel.isHidden = true; //if going to use .hidden, do it after animateOut completes
+
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(transitionTime), execute: {
+                        self.currentTextsLabel.text = next?.text;
+//                        self.currentTextsLabel.isHidden = false;
+
+                        self.currentTextsLabel.frame.origin = self.propToPoint(prop: CGPoint(x: -1, y: 0.7)) //TODO create variable for this out of screen point
+
+                        self.updateLevelText(text: next)
+                        self.currentTextsLabel.animateIn()
+                    })
+//
+                    //end block
+                    
+                }
+            }else{
+                levelTextsAllComplete() //more secure, all id's used
+            }
+        }else{
+            levelTextsAllComplete() //less secure, can be nil b/c of read error or sth instead of actually going through all texts
+        }
+    }
+    
+    func levelTextsAllComplete(){
+        currentTextsLabel.animateOut()
+    }
+    
+    func updateLevelText(text : LevelText!){
+        if(text != nil){
+            if(text.triggerOn != .tap){
+                currentTextsLabel.tapToContinueView.text = ""
+                currentTextsLabel.tapToContinueView.isHidden = true;
+            }else{
+                currentTextsLabel.tapToContinueView.text = "Tap to continue."
+                currentTextsLabel.tapToContinueView.isHidden = false;
+            }
+            currentTextsLabel.text = text.text
+        }
+    }
+    
+    func getLevelTextWithId(id : Int) -> LevelText? {
+        for text in level.levelData.texts {
+            if(text.id == id){
+                return text
+            }
+        }
+        return nil
+    }
+    
+    func getFirstText() -> LevelText? {
+        //make it pick a random one of the showFirsts, u know, in case OPUT (Other people use this), and prevent crash i guess
+        var firstTexts : [LevelText] = []
+        for text in level.levelData.texts{
+            if(text.showFirst){
+                firstTexts.append(text)
+            }
+        }
+        if(firstTexts.count > 0){
+            let randomIndex = Int(arc4random_uniform(UInt32(firstTexts.count))) //TODO a better way
+            return firstTexts[randomIndex]
+        }else{
+            return nil
+        }
     }
     
     func createLevelElementsFromLevel(){
@@ -582,8 +696,12 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         
-        print(scrollView.zoomScale)
-        
+//        print(scrollView.zoomScale)
+        if(scrollView.zoomScale <= 1){
+            stageView.layer.borderWidth = 0;
+        }else{
+            stageView.layer.borderWidth = 3;
+        }
         centerScroll()
     }
 

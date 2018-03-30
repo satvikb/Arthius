@@ -14,7 +14,7 @@ let PUBLIC_LEVELS_FOLDER = "PublicLevels"
 let USER_LEVELS_FOLDER = "UserLevels"
 let USER_SAVES_FOLDER = "UserSave"
 
-let LEVEL_EXTENSION = ".gws"
+//let LEVEL_EXTENSION = ".gws"
 enum LevelType : String{
     case Campaign
     case CampaignSave
@@ -38,7 +38,7 @@ class File {
             // process files
             for url in fileURLs {
                 
-                if(url.pathExtension == "gws"){
+                if(url.pathExtension == levelExtensionForType(type: type)){
                     let fileName = url.lastPathComponent
                     let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: LevelData.self)
                     levels.append(level)
@@ -66,91 +66,14 @@ class File {
     
     static func getLevelPath(uuid: String, type : LevelType) -> URL{
         let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(self.getFolderForLevelType(type: type), isDirectory: true).appendingPathComponent("\(uuid).gws")
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(self.getFolderForLevelType(type: type), isDirectory: true).appendingPathComponent("\(uuid).\(levelExtensionForType(type: type))")
         print("got lv "+documentsURL.path)
         return documentsURL
     }
     
-//    static func getAllCampaignLevels() -> [LevelData]{
-//        var levels : [LevelData] = []
-//
-//        //get all files in CampaignLevels
-//        let fileManager = FileManager.default
-//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(CAMPAIGN_LEVEL_FOLDER, isDirectory: true)
-//
-//        do {
-//            let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
-//            // process files
-//            for url in fileURLs {
-//
-//                if(url.pathExtension == "gws"){
-//                    let fileName = url.lastPathComponent
-//                    let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: .Campaign)+"/\(fileName)", from: .documents, as: LevelData.self)
-//                    levels.append(level)
-//
-//                    let attr = try fileManager.attributesOfItem(atPath: url.path);
-//                    print("Loaded campaign level: \(url.lastPathComponent) \(attr[FileAttributeKey.size] as! UInt64) bytes")
-//                }
-//            }
-//
-//        } catch let error as NSError {
-//            //            print("Error Loading Campaign Levels")
-//
-//            print("""
-//                ERROR GETTING CAMPAIGN LEVELS
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
-//
-//        return levels;
-//    }
-//
-//    static func getAllUserCreatedLevels() -> [LevelData]{
-//        var levels : [LevelData] = []
-//
-//        //get all files in CampaignLevels
-//        let fileManager = FileManager.default
-//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(USER_LEVELS_FOLDER, isDirectory: true)
-//
-//        do {
-//            let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
-//            // process files
-//            for url in fileURLs {
-//
-//                if(url.pathExtension == "gws"){
-//                    let fileName = url.lastPathComponent
-//                    let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: .UserMade)+"/\(fileName)", from: .documents, as: LevelData.self)
-//                    levels.append(level)
-//
-//                    let attr = try fileManager.attributesOfItem(atPath: url.path);
-//                    print("Loaded created level: \(url.lastPathComponent) \(attr[FileAttributeKey.size] as! UInt64) bytes")
-//                }
-//            }
-//
-//        } catch let error as NSError {
-//            //            print("Error Loading Campaign Levels")
-//            
-//            print("""
-//                ERROR GETTING CREATED LEVELS
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
-//
-//        return levels;
-//    }
-    
-    
     static func saveLevel(level: LevelData, levelType : LevelType) {
         do {
-            try Disk.save(level, to: .documents, as: self.getFolderForLevelType(type: levelType)+"/"+level.levelMetadata.levelUUID+LEVEL_EXTENSION)
+            try Disk.save(level, to: .documents, as: self.getFolderForLevelType(type: levelType)+"/"+level.levelMetadata.levelUUID+levelExtensionForType(type: levelType))
         } catch let error as NSError {
             print("""
                 ERROR SAVING LEVEL
@@ -160,6 +83,15 @@ class File {
                 Failure Reason: \(error.localizedFailureReason ?? "")
                 Suggestions: \(error.localizedRecoverySuggestion ?? "")
                 """)
+        }
+    }
+    
+    static func levelExtensionForType(type : LevelType) -> String {
+        switch type {
+        case .Campaign:
+            return "cgws"
+        default:
+            return "gws"
         }
     }
     
@@ -215,7 +147,7 @@ class File {
                             try? fileManagerIs.copyItem(atPath: bundlePath, toPath: fileTemp)
                             
                             // fileManagerIs.replaceitem(URL(string: docPath)!, withItemAt: URL(string: tempPath)!)
-                            let replace = try fileManagerIs.replaceItemAt(URL(string: docPath)!, withItemAt: URL(string: fileTemp)!, backupItemName: "BU.gws", options: []);
+                            let replace = try fileManagerIs.replaceItemAt(URL(string: docPath)!, withItemAt: URL(string: fileTemp)!, backupItemName: "BU.cgws", options: []);
                             if(replace != nil){
                                 print("Lv \(filename) NOT equal. Replacing with original.")
                             }

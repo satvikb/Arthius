@@ -19,9 +19,42 @@ class Level : NSObject{
     
 }
 
+//struct CampaignLevelData : Codable {
+//    var levelMetadata : LevelMetadata;
+//    var informationTexts : CampaignTexts;
+//    var propFrame : CGRect;
+//    var endPoints : [EndData];
+//    var lineData : [LineData]
+//    var gravityWells : [GravityWellData]
+//    var colorBoxData : [ColorBoxData]
+//    var rockData : [RockData]
+//    var speedBoostData : [SpeedBoostData]
+//}
+//
+enum LevelTextTriggers : String, Codable {
+    case none = ""
+    case tap = "Tap"
+    case pressPlay = "Play"
+    //TODO based on these, a lot of customization is possbible, but too bad its only text
+}
+
+//struct LevelTexts : Codable {
+//    var texts : [LevelText]
+//}
+
+struct LevelText : Codable {
+    var id: Int
+    var showFirst: Bool;
+    var text: String;
+    var triggerOn: LevelTextTriggers;
+    var nextText: Int;
+    var animateOut: Bool; //animates out the current one, after animation FINISHES new one comes in (its after cuz i dont want to keep track of 2+ LevelTextLabels)
+    //TODO animation time
+}
+
 struct LevelData : Codable {
     var levelMetadata : LevelMetadata;
-//    var c : CampaignData;
+    var texts : [LevelText];
     var propFrame : CGRect;
     var endPoints : [EndData];
     var lineData : [LineData]
