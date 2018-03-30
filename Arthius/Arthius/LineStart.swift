@@ -22,7 +22,8 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     
     var centerLocation : CGPoint!
     var maxVectorRadius : CGFloat!
-    
+    var imaginaryCenter : CGPoint = CGPoint.zero;
+
     init(frame: CGRect, _startVelocity : CGVector, _lineColor : Color, _maxPropStartVelocity : CGVector){
         
         self.lineColor = _lineColor
@@ -30,7 +31,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
 //        self.editable = _editable
         self.maxPropStartVelocity = _maxPropStartVelocity;
         
-        super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: frame.width))
+        super.init(frame: CGRect(x: frame.origin.x-frame.width/2, y: frame.origin.y-frame.width/2, width: frame.width, height: frame.width))
         
         self.tag = lineStartTag
         
@@ -43,6 +44,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         self.isUserInteractionEnabled = true
         
         maxVectorRadius = self.frame.width
+        imaginaryCenter = self.center
         
         if(editable){
             
@@ -52,8 +54,9 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
             self.addGestureRecognizer(panGesture)
             
             //        TODO box (done)
-            let knobFrame = propToRect(prop: CGRect(x:0.5, y: 0.5, width: 0.5, height: 0.5), within: self.frame)
+            var knobFrame = propToRect(prop: CGRect(x:0.5, y: 0.5, width: 0.5, height: 0.5), within: self.frame)
             centerLocation = knobFrame.origin
+            knobFrame.origin = getKnobPointFromVector(velocityVector: _startVelocity) + centerLocation
             frameChangeKnob = KnobEdit(frame: knobFrame)
             frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
                 //in case
@@ -86,6 +89,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     var preLoc : CGPoint = CGPoint.zero
     var panTranslation : CGPoint = CGPoint.zero
     
+    
     func handleFrameChangePan(pan: UIPanGestureRecognizer){
         
         if pan.state == .began {
@@ -102,16 +106,19 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
             let distFrom = newCenter - centerOfLine
 //            print(newCenter - centerOfLine)
             
-            
+            imaginaryCenter = newCenter
+
             if((distFrom.x*distFrom.x + distFrom.y*distFrom.y) < maxVectorRadius*maxVectorRadius){
                 frameChangeKnob.center = newCenter
-            
+                print("1_\(getCurrentKnobVectorNormalized())")
             }else{
-                let newBoundedCenter = getCurrentKnobVectorNormalized()*maxVectorRadius//CGVector(dx: distFrom.x, dy: distFrom.y).normalized()*maxVectorRadius
+                
+                //TODO figure out why subtracting centerOfLine in the vector then adding it to the final point works
+                let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerOfLine.x, dy: imaginaryCenter.y-centerOfLine.y).normalized()*maxVectorRadius//getCurrentKnobVectorNormalized()*maxVectorRadius//CGVector(dx: distFrom.x, dy: distFrom.y).normalized()*maxVectorRadius
                 let boundedCenterRaw = CGPoint(x: newBoundedCenter.dx, y: newBoundedCenter.dy)
                 frameChangeKnob.center = boundedCenterRaw + centerOfLine
+                print("2_\(getCurrentKnobVectorNormalized())")
             }
-            
             
 ////            let newX = preLoc.x+change.x
 ////            let newY = preLoc.y+change.y
@@ -138,17 +145,33 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     }
     
     func getCurrentKnobVectorNormalized() -> CGVector{
-        let distFrom = (self.frameChangeKnob.center+panTranslation) - centerLocation
+//        let distFrom = (self.frameChangeKnob.center+(usePanTranslation ? panTranslation : CGPoint.zero)) - centerLocation
+//
+//        return CGVector(dx: distFrom.x, dy: distFrom.y).normalized()
         
-        return CGVector(dx: distFrom.x, dy: distFrom.y).normalized()
+        
+        
+        let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerLocation.x, dy: imaginaryCenter.y-centerLocation.y).normalized()
+        return newBoundedCenter
+//        print("2_\(getCurrentKnobVectorNormalized())")
     }
     
-    func getPointFromVector(vector : CGVector){
+    func getKnobPointFromVector(velocityVector : CGVector) -> CGPoint{
 //        vector/maxPropStartVelocity
         
         //used to load the knob at the right point based on start velocity
-        //TODO
+        //TODO - SLIGHTLY OFF, maybe because frame offsets not taken into account like above, and velocityVector has to be broken down/reversed based on above function to take into account that offset, gl.
         
+        // start = normalized * max
+        let vector : CGVector = (velocityVector/maxPropStartVelocity)*maxVectorRadius
+        
+        print(vector)
+        
+//        normal = vector/vector.length
+        // vector = normal * length = normal * (
+        
+        
+        return CGPoint(x: vector.dx, y: vector.dy)
     }
     
     func pointAbs(_ point: CGPoint) -> CGPoint{

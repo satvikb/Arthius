@@ -245,9 +245,9 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         //add new changed element
         lineStart.frameChanged = {
             self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
-            //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
-            data.startPosition = self.pointToProp(point: lineStart.frame.origin)
-            
+            data.startPosition = self.pointToProp(point: lineStart.center)
+            print("45_\(data.startPosition) \(lineStart.center) \(lineStart.frame.origin)")
+
             data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity
             
             self.levelData.lineData.append(data)
