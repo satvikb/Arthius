@@ -219,5 +219,16 @@ public extension CGVector{
         vector = vector / scalar
     }
     
+    public func length() -> CGFloat {
+        return sqrt(dx*dx + dy*dy)
+    }
     
+    /**
+     * Normalizes the vector described by the CGVector to length 1.0 and returns
+     * the result as a new CGVector.
+     public  */
+    public func normalized() -> CGVector {
+        let len = length()
+        return len>0 ? self / len : CGVector.zero
+    }
 }

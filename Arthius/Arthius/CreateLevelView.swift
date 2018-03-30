@@ -236,7 +236,9 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func addStartLineToView(d : LineData){
         var data = d
-        let lineStart = LineStart(frame: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _editable: true)
+        let maxPropStartVeclocity : CGFloat = 0.002//self.propToFloat(prop: 0.3, scaleWithX: true) //TODO per level, global?
+
+        let lineStart = LineStart(frame: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
         
         //before the change, find the element in level data
         //delete element
@@ -245,7 +247,12 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
             self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
             //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
             data.startPosition = self.pointToProp(point: lineStart.frame.origin)
+            
+            data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity
+            
             self.levelData.lineData.append(data)
+            
+            
             //            print("\(data.frame) \(String(describing: self.levelData.colorBoxData.index(of: data)))")
             //            print("")
         }

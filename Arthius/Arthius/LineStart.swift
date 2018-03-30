@@ -13,7 +13,9 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     var lineColor : Color!;
     var lineVelocity : CGVector!;
     
-    var editable : Bool = false;
+    var maxPropStartVelocity : CGVector!;
+    
+    var editable : Bool = true; //TODO needed? always editable...
     var panGesture : UIPanGestureRecognizer!;
     var frameChanged = {}
     var frameChangeKnob : KnobEdit!;
@@ -21,11 +23,12 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     var centerLocation : CGPoint!
     var maxVectorRadius : CGFloat!
     
-    init(frame: CGRect, _startVelocity : CGVector, _lineColor : Color, _editable : Bool){
+    init(frame: CGRect, _startVelocity : CGVector, _lineColor : Color, _maxPropStartVelocity : CGVector){
         
         self.lineColor = _lineColor
         self.lineVelocity = _startVelocity;
-        self.editable = _editable
+//        self.editable = _editable
+        self.maxPropStartVelocity = _maxPropStartVelocity;
         
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: frame.width))
         
@@ -81,56 +84,71 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     
     
     var preLoc : CGPoint = CGPoint.zero
+    var panTranslation : CGPoint = CGPoint.zero
     
     func handleFrameChangePan(pan: UIPanGestureRecognizer){
         
         if pan.state == .began {
-            preLoc = centerLocation/CGPoint(x: 2, y: 2)//CGPoint(x: self.frame.midX, y: self.frame.midY)//self.frameChangeKnob.frame.origin
+            preLoc = self.frameChangeKnob.center//centerLocation/CGPoint(x: 2, y: 2)//CGPoint(x: self.frame.midX, y: self.frame.midY)//self.frameChangeKnob.frame.origin
             print(preLoc)
         } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
             //            self.center = boxCenter // restore button center
         } else {
-            let change = pan.translation(in: frameChangeKnob) // get pan location
+            panTranslation = pan.translation(in: frameChangeKnob) // get pan location
+            let newCenter = preLoc + panTranslation
             //            var originOffset = CGPoint.zero;
+            let centerOfLine = centerLocation!
             
-            let newX = preLoc.x+change.x
-            let newY = preLoc.y+change.y
-            let newPoint = CGPoint(x: newX, y: newY)
-//            var d = sqrt(pow(newX, 2) + pow(newY, 2))
-            let r = frame.size.width
-//            var t = atan2(newY - preLoc.y, newX - preLoc.x)
+            let distFrom = newCenter - centerOfLine
+//            print(newCenter - centerOfLine)
+            
+            
+            if((distFrom.x*distFrom.x + distFrom.y*distFrom.y) < maxVectorRadius*maxVectorRadius){
+                frameChangeKnob.center = newCenter
+            
+            }else{
+                let newBoundedCenter = getCurrentKnobVectorNormalized()*maxVectorRadius//CGVector(dx: distFrom.x, dy: distFrom.y).normalized()*maxVectorRadius
+                let boundedCenterRaw = CGPoint(x: newBoundedCenter.dx, y: newBoundedCenter.dy)
+                frameChangeKnob.center = boundedCenterRaw + centerOfLine
+            }
+            
+            
+////            let newX = preLoc.x+change.x
+////            let newY = preLoc.y+change.y
+////            let newPoint = CGPoint(x: newX, y: newY)
+//            let r = frame.size.width
+////
+//            let p = newCenter
+//            let c = centerLocation!
+////
+//            let vX : CGFloat = p.x - c.x;
+//            let vY : CGFloat = p.y - c.y;
+//            let magV : CGFloat = sqrt(vX*vX + vY*vY);
+//            let aX = c.x + vX / magV * r;
+//            let aY = c.y + vY / magV * r;
 //
-//            if(d > r){
-//                newX = r*cos(t) + preLoc.x;
-//                newY = r*sin(t) + preLoc.y;
-//            }
-//
-//            self.frameChangeKnob.frame = CGRect(origin: CGPoint(x: newX, y: newY), size: self.frameChangeKnob.frame.size)
-////            updateSubViewsWithNewFrame()
+//            let clippedPoint : CGPoint = CGPoint(x: aX, y: aY) //TODO this has chance to be nan
+//            print(preLoc, clippedPoint, change, p, c, p - c)
+//            self.frameChangeKnob.center = (clippedPoint + centerOfLine) - CGPoint(x: self.frame.size.width/2, y: self.frame.size.height/2)
             
-            
-//            https://math.stackexchange.com/questions/127613/closest-point-on-circle-edge-from-point-outside-inside-the-circle
-//            https://stackoverflow.com/questions/300871/best-way-to-find-a-point-on-a-circle-closest-to-a-given-point
-            // C⃗ =A⃗ +r(B⃗ −A⃗ )||B⃗ −A⃗ ||
-//            let o = preLoc //origin
-//            let clippedPoint = o + (r * (newPoint - o)/((newPoint-o).length()))
-            let p = newPoint
-            let c = preLoc
-            
-            let vX : CGFloat = p.x - c.x;
-            let vY : CGFloat = p.y - c.y;
-            let magV : CGFloat = sqrt(vX*vX + vY*vY);
-            let aX = c.x + vX / magV * r;
-            let aY = c.y + vY / magV * r;
-            
-            let clippedPoint : CGPoint = CGPoint(x: aX, y: aY) //TODO this has chance to be nan
-            print(clippedPoint, newPoint, change)
-            self.frameChangeKnob.frame = CGRect(origin: clippedPoint/*-CGPoint(x: self.frameChangeKnob.frame.origin.x, y: self.frameChangeKnob.frame.origin.y)*/, size: self.frameChangeKnob.frame.size)
-
             
             
             frameChanged()
         }
+    }
+    
+    func getCurrentKnobVectorNormalized() -> CGVector{
+        let distFrom = (self.frameChangeKnob.center+panTranslation) - centerLocation
+        
+        return CGVector(dx: distFrom.x, dy: distFrom.y).normalized()
+    }
+    
+    func getPointFromVector(vector : CGVector){
+//        vector/maxPropStartVelocity
+        
+        //used to load the knob at the right point based on start velocity
+        //TODO
+        
     }
     
     func pointAbs(_ point: CGPoint) -> CGPoint{
@@ -138,19 +156,6 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        // Convert the point to the target view's coordinate system.
-        // The target view isn't necessarily the immediate subview
-//        CGPoint pointForTargetView = [self.targetView convertPoint:point fromView:self];
-//
-//        if (CGRectContainsPoint(self.targetView.bounds, pointForTargetView)) {
-//
-//            // The target view may have its view hierarchy,
-//            // so call its hitTest method to return the right hit-test view
-//            return [self.targetView hitTest:pointForTargetView withEvent:event];
-//        }
-//
-//        return [super hitTest:point withEvent:event];
-        
         let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
         if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
             return self.frameChangeKnob//.hitTest(point, with:event)
