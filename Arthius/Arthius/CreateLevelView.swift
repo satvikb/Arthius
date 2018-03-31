@@ -121,7 +121,8 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         levelView.animateIn()
         
         levelView.menuPressed = {
-            let levelLeaveConfirmation = LevelLeaveConfirmation(frame: self.frame, confirmationText: "Save changes?")
+            let levelLeaveConfirmation = LevelLeaveConfirmation(frame: self.frame, confirmationText: "Save changes?", confirmText: "Yes", denyText:"No")
+            levelLeaveConfirmation.animateIn()
             
             levelLeaveConfirmation.confimed = {
                 self.saveLevel()
@@ -402,6 +403,10 @@ class LevelCreateMenu : UIView {
             self.menuPressed()
         }
         backgroundView.addSubview(menuButton)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.resumePressed()
     }
     
     func animateIn(){

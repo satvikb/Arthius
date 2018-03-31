@@ -40,7 +40,7 @@ public extension Disk {
             let data = try encoder.encode(value)
             try createSubfoldersBeforeCreatingFile(at: url)
             try data.write(to: url, options: .atomic)
-            print("SAVE: "+url.absoluteString)
+//            print("SAVE: "+url.absoluteString)
         } catch {
             throw error
         }

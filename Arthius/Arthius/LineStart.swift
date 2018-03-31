@@ -108,14 +108,14 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
 
             if((distFrom.x*distFrom.x + distFrom.y*distFrom.y) < maxVectorRadius*maxVectorRadius){
                 frameChangeKnob.center = newCenter
-                print("1_\(getCurrentKnobVectorNormalized())")
+//                print("1_\(getCurrentKnobVectorNormalized())")
             }else{
                 
                 //TODO figure out why subtracting centerOfLine in the vector then adding it to the final point works
                 let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerOfLine.x, dy: imaginaryCenter.y-centerOfLine.y).normalized()*maxVectorRadius
                 let boundedCenterRaw = CGPoint(x: newBoundedCenter.dx, y: newBoundedCenter.dy)
                 frameChangeKnob.center = boundedCenterRaw + centerOfLine
-                print("2_\(getCurrentKnobVectorNormalized())")
+//                print("2_\(getCurrentKnobVectorNormalized())")
             }
             
             frameChanged()
@@ -136,7 +136,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         // start = normalized * max
         let vector : CGVector = (velocityVector/maxPropStartVelocity)*maxVectorRadius
         
-        print(vector)
+        print("TODO Prop Vector To Knob Position: \(vector)")
         
 //        normal = vector/vector.length
         // vector = normal * length = normal * (

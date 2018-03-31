@@ -20,7 +20,7 @@ class LevelLeaveConfirmation : UIView {
     var denyButton : Button!
     var cancelledButton : Button!
 
-    init(frame: CGRect, confirmationText : String) {
+    init(frame: CGRect, confirmationText : String, confirmText : String, denyText : String) {
         super.init(frame: frame)
     
         self.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
@@ -33,11 +33,13 @@ class LevelLeaveConfirmation : UIView {
         
         //TODO animations, outPos not right
         confirmationLabel = Label(frame: propToRect(prop: CGRect(x: 0.05, y: 0.05, width: 0.9, height: 0.5), within: backgroundView.frame), text: confirmationText, _outPos: propToRect(prop: CGRect(x: -1, y: 0.4, width: 0, height: 0), within: self.frame).origin, textColor: UIColor.black, valign: VAlign.Default, _insets: false)
-        
+        confirmationLabel.font = UIFont(name: "SFProText-Heavy", size: Screen.fontSize(propFontSize: 20))
+        confirmationLabel.textAlignment = .center
         backgroundView.addSubview(confirmationLabel)
         
         
-        confirmButton = Button(frame: propToRect(prop: CGRect(x: 0.6, y: 0.55, width: 0.3, height: 0.4), within: backgroundView.frame), text: "confirm", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.4, width: 0, height: 0), within: self.frame).origin)
+        confirmButton = Button(frame: propToRect(prop: CGRect(x: 0.6, y: 0.55, width: 0.3, height: 0.4), within: backgroundView.frame), text: confirmText, fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.4, width: 0, height: 0), within: self.frame).origin)
+        confirmButton.layer.cornerRadius = backgroundView.frame.height/10
         confirmButton.pressed = {
             self.confimed()
         }
@@ -45,7 +47,8 @@ class LevelLeaveConfirmation : UIView {
         
         
         
-        denyButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.55, width: 0.3, height: 0.4), within: backgroundView.frame), text: "cancel", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.4, width: 0, height: 0), within: self.frame).origin)
+        denyButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.55, width: 0.3, height: 0.4), within: backgroundView.frame), text: denyText, fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.4, width: 0, height: 0), within: self.frame).origin)
+        denyButton.layer.cornerRadius = backgroundView.frame.height/10
         denyButton.pressed = {
             self.denied()
         }
@@ -62,11 +65,13 @@ class LevelLeaveConfirmation : UIView {
     }
     
     func animateIn(){
+        confirmationLabel.animateIn()
         confirmButton.animateIn()
         denyButton.animateIn()
     }
     
     func animateOut(){
+        confirmationLabel.animateOut()
         confirmButton.animateOut()
         denyButton.animateOut()
     }

@@ -309,7 +309,8 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                     //"Thumbnail" : thumbnailStoragePath //no need to actually store, can be remade with /{userId}/thumb/{levelUUID}.png
                 ]
                 
-                db.collection("levels").addDocument(data: data, completion: {(error) in
+                
+                db.collection("levels").document(levelId).setData(data, completion: {(error) in
                     print("Add document")
                     self.uploadCustomMadeFile(userId: userId, levelUUID: levelId)
                 })
@@ -331,14 +332,16 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         metadata.contentType = "level/png"
         
         
-        print("UPLOADING IMAGE")
-        let _ = levelRef.putData(imageData, metadata: metadata) { metadata, error in
-            let downloadURL = metadata?.downloadURL()
-            
-            print(error?.localizedDescription)
-            
-            print(downloadURL?.path)
-        }
+//        print("UPLOADING IMAGE")
+//        let _ = levelRef.putData(imageData, metadata: metadata) { metadata, error in
+//            let downloadURL = metadata?.downloadURL()
+//            
+//            print(error?.localizedDescription)
+//            
+//            print(downloadURL?.path)
+//        }
+        
+        levelRef.putData(imageData)
         
         // Upload the file to the path "images/rivers.jpg"
 //        let _ = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
