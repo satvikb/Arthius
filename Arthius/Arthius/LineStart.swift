@@ -76,7 +76,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
             let offset = CGPoint(x: self.frame.width/2, y: self.frame.width/2)
 
             frameChangeKnob.center = getKnobPointFromVector(velocityVector: scaledStart) + offset
-            print("S \(frameChangeKnob.center)")
+//            print("S \(frameChangeKnob.center)")
             frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
                 //in case
                 if(self.editable == true){
@@ -105,7 +105,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         } else {
             let location = pan.translation(in: superview) // get pan location
             self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
-            self.updateKnobPosition(panTranslation: CGPoint.zero)
+//            self.updateKnobPosition(panTranslation: CGPoint.zero)
             frameChanged()
         }
     }
@@ -163,8 +163,15 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         //TODO from knob to vector doesnt work well either - fix Vector to knob first though
 //        let newBoundedCenter = CGVector(dx: imaginaryCenter.x-centerLocation.x, dy: imaginaryCenter.y-centerLocation.y).normalized()
         let offset = CGPoint(x: self.frame.width/2, y: self.frame.width/2)
-        let newBoundedCenter = CGVector(dx: frameChangeKnob.center.x-offset.x/*-self.center.x*/, dy: frameChangeKnob.center.y-offset.y/*-self.center.y*/).normalized()
-        print(frameChangeKnob.center, offset, self.center, newBoundedCenter)
+        
+        let x = frameChangeKnob.center.x
+        let y = frameChangeKnob.center.y
+        let nx = frameChangeKnob.center.x-offset.x
+        let ny = frameChangeKnob.center.y-offset.y
+        let d = sqrt(x*x + y*y)
+        let s = (d/(maxVectorRadius))
+        let newBoundedCenter = CGVector(dx: nx, dy: ny).normalized() * (s > 1 ? 1 : s)//(CGVector(dx: frameChangeKnob.center.x-offset.x, dy: frameChangeKnob.center.y-offset.y))//* (CGVector(dx: (frameChangeKnob.center.x-offset.x)/maxVectorRadius, dy: (frameChangeKnob.center.y-offset.y)/maxVectorRadius))
+        print("T",newBoundedCenter, maxVectorRadius, d)
         return newBoundedCenter
     }
     
@@ -174,8 +181,8 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         //used to load the knob at the right point based on start velocity
         //TODO - SLIGHTLY OFF, maybe because frame offsets not taken into account like above, and velocityVector has to be broken down/reversed based on above function to take into account that offset, gl.
         
-        // start = normalized * max
-        let vector : CGVector = (velocityVector/maxPropStartVelocity)*maxVectorRadius
+//        data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)
+        let vector : CGVector = (velocityVector/maxPropStartVelocity)*(maxVectorRadius/1.5)
         
         print("TODO Prop Vector To Knob Position: \(vector)_\(velocityVector) \(velocityVector/maxPropStartVelocity)")
         

@@ -22,7 +22,7 @@ class LevelTextsLabel : Label {
         self.layer.borderWidth = 2
         self.backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 0.7)
         self.textAlignment = .center
-        self.layer.zPosition = 1000
+//        self.layer.zPosition = 0
         self.isUserInteractionEnabled = true
         tapToContinueView = Label(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.2, height: 0.2), within: self.frame), text: "", _outPos: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0, height: 0), within: self.frame).origin, textColor: textColor, valign: valign, _insets: _insets)
         updateTapToContinueView()
