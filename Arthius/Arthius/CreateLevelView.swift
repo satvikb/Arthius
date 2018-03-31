@@ -9,9 +9,10 @@
 import UIKit
 
 protocol CreateLevelViewDelegate: class {
+    func account_isLoggedIn() -> Bool
     func createLevelView_pressMenu()
     func createLevelView_playLv()
-    func createLevelView_publishLv()
+    func createLevelView_publishLv(title: String, description: String, thumbnail: UIImage)
 }
 
 enum ToolbarItems {
@@ -28,7 +29,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     var toolbox : UIScrollView!;
     var menuBtn : Button!;
-    var publishBtn : Button!;//TODO, menu
+//    var publishBtn : Button!;//TODO, menu
     var playBtn : Button!;
 
     var levelView : LevelScrollView!;
@@ -47,15 +48,16 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         menuBtn = Button(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 0.1, height: 0.1)), text: "menu", fontSize: Screen.fontSize(propFontSize: 20))
         menuBtn.pressed = {
-            self.saveLevel()
-            self.delegate?.createLevelView_pressMenu()
+            self.showMenu()
+//            self.saveLevel()
+//            self.delegate?.createLevelView_pressMenu()
         }
         
-        publishBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0, width: 0.2, height: 0.1)), text: "publish", fontSize: Screen.fontSize(propFontSize: 20))
-        publishBtn.pressed = {
-            self.saveLevel()
-            self.publish()
-        }
+//        publishBtn = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0, width: 0.2, height: 0.1)), text: "publish", fontSize: Screen.fontSize(propFontSize: 20))
+//        publishBtn.pressed = {
+//            self.saveLevel()
+//            self.publish()
+//        }
         
         playBtn = Button(frame: propToRect(prop: CGRect(x: 0.9, y: 0, width: 0.1, height: 0.1)), text: ">", fontSize: Screen.fontSize(propFontSize: 20))
         playBtn.pressed = {
@@ -80,7 +82,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         self.addSubview(toolbox)
         self.addSubview(menuBtn)
         self.addSubview(playBtn)
-        self.addSubview(publishBtn)
+//        self.addSubview(publishBtn)
 
 
 //        do {
@@ -114,16 +116,64 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 //        }
     }
     
+    func showMenu(){
+        let levelView = LevelCreateMenu(frame: self.frame)
+        levelView.animateIn()
+        
+        levelView.menuPressed = {
+            let levelLeaveConfirmation = LevelLeaveConfirmation(frame: self.frame, confirmationText: "Save changes?")
+            
+            levelLeaveConfirmation.confimed = {
+                self.saveLevel()
+                self.delegate?.createLevelView_pressMenu()
+            }
+            
+            levelLeaveConfirmation.denied = {
+                self.delegate?.createLevelView_pressMenu()
+            }
+            
+            levelLeaveConfirmation.cancelled = {
+                levelLeaveConfirmation.removeFromSuperview()
+            }
+            
+            self.addSubview(levelLeaveConfirmation)
+        }
+        
+        levelView.resumePressed = {
+            levelView.removeFromSuperview()
+        }
+        
+        levelView.publishPressed = {
+            self.saveLevel()
+            
+            if(self.delegate?.account_isLoggedIn())!{
+                self.publishView()
+            }else{
+                print("Not signed in! Can't show publish view")
+            }
+        }
+        
+        self.addSubview(levelView)
+    }
+    
     static func BlankLevel() -> LevelData{
         return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
     }
     
-    func publish(){
+    func publishView(){
         
+        let publishView = PublishLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), level: levelData)
         
+        publishView.publishBtnPressed = { (title : String, description : String, thumbnail: UIImage) in
+            self.delegate?.createLevelView_publishLv(title: title, description: description, thumbnail: thumbnail)
+        }
         
+        publishView.cancelled = {
+            publishView.removeFromSuperview()
+        }
         
-        self.delegate?.createLevelView_publishLv()
+        self.addSubview(publishView)
+        publishView.animateIn()
     }
     
     func saveLevel(){
@@ -238,13 +288,13 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     func animateIn(){
         menuBtn.animateIn()
         playBtn.animateIn()
-        publishBtn.animateIn()
+//        publishBtn.animateIn()
     }
     
     func animateOut(){
         menuBtn.animateOut()
         playBtn.animateOut()
-        publishBtn.animateOut()
+//        publishBtn.animateOut()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -305,6 +355,69 @@ class ToolboxButton : UIView {
         }
         return false
     }
+}
+
+class LevelCreateMenu : UIView {
     
-   
+    var resumePressed = {}
+    var menuPressed = {}
+    var publishPressed = {}
+    
+    var backgroundView : UIView!;
+    var resumeButton : Button!;
+    var publishButton : Button!;
+    var menuButton : Button!
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        self.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        
+        backgroundView = UIView(frame: propToRect(prop: CGRect(x: 0.25, y: 0.3, width: 0.5, height: 0.5), within: self.frame))
+        backgroundView.backgroundColor = UIColor.white
+        backgroundView.layer.cornerRadius = backgroundView.frame.height/10
+        self.addSubview(backgroundView)
+
+        
+        
+        resumeButton = Button(frame: propToRect(prop: CGRect(x: 0.05, y: 0.075, width: 0.9, height: 0.25), within: backgroundView.frame), text: "resume", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.05, width: 0, height: 0), within: self.frame).origin)
+        resumeButton.layer.cornerRadius = resumeButton.frame.height/10
+        resumeButton.pressed = {
+            self.resumePressed()
+        }
+        backgroundView.addSubview(resumeButton)
+        
+        publishButton = Button(frame: propToRect(prop: CGRect(x: 0.05, y: 0.375, width: 0.9, height: 0.25), within: backgroundView.frame), text: "publish", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.05, width: 0, height: 0), within: self.frame).origin)
+        publishButton.layer.cornerRadius = resumeButton.frame.height/10
+        publishButton.pressed = {
+            self.publishPressed()
+        }
+        backgroundView.addSubview(publishButton)
+        
+        menuButton = Button(frame: propToRect(prop: CGRect(x: 0.05, y: 0.675, width: 0.9, height: 0.25), within: backgroundView.frame), text: "home", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.05, width: 0, height: 0), within: self.frame).origin)
+        menuButton.backgroundColor = UIColor(red: 0.5, green: 0.1, blue: 0.1, alpha: 1)
+        menuButton.layer.cornerRadius = resumeButton.frame.height/10
+
+        menuButton.pressed = {
+            self.menuPressed()
+        }
+        backgroundView.addSubview(menuButton)
+    }
+    
+    func animateIn(){
+        resumeButton.animateIn()
+        publishButton.animateIn()
+        menuButton.animateIn()
+    }
+    
+    func animateOut(){
+        resumeButton.animateOut()
+        publishButton.animateOut()
+        menuButton.animateOut()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }

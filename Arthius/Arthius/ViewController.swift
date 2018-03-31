@@ -292,36 +292,40 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     
-    func createLevelView_publishLv() {
+    func createLevelView_publishLv(title: String, description: String, thumbnail: UIImage){
         if(account_isLoggedIn()){
             currentLevel = Level(_levelData: createLevelView.levelData)
             let levelId = currentLevel.levelData.levelMetadata.levelUUID;
-            let userId = Auth.auth().currentUser?.uid
+            let userId = Auth.auth().currentUser?.uid ?? ""
             
-            let data : [String : Any] = [
-                "LevelID" : levelId,
-                "UserID" : userId ?? "" //TODO handle no user id?
-            ]
-            
-            db.collection("levels").addDocument(data: data, completion: {(error) in
-                print("Add document")
-                self.uploadCustomMadeFile(userId: userId!, levelUUID: levelId)
-            })
-            uploadLevelImage(userId: userId!, level: currentLevel)
+            if(userId != ""){
+                let thumbnailStoragePath = "\(userId)/thumb/\(currentLevel.levelData.levelMetadata.levelUUID).png"
+                
+                let data : [String : Any] = [
+                    "LevelID" : levelId,
+                    "UserID" : userId, //TODO handle no user id?
+                    "Title" : title,
+                    "Description" : description,
+                    //"Thumbnail" : thumbnailStoragePath //no need to actually store, can be remade with /{userId}/thumb/{levelUUID}.png
+                ]
+                
+                db.collection("levels").addDocument(data: data, completion: {(error) in
+                    print("Add document")
+                    self.uploadCustomMadeFile(userId: userId, levelUUID: levelId)
+                })
+                
+                uploadLevelImage(storagePath: thumbnailStoragePath, userId: userId, thumbnail: thumbnail)
+            }
         }
     }
     
-    func uploadLevelImage(userId: String, level: Level){
+    func uploadLevelImage(storagePath: String, userId: String, thumbnail: UIImage){
         //test image
         
-        let levelView = LevelView(_level: level, _parentView: .LevelCreate)
-        let image = UIImage(view: levelView)
-        let imageData : Data = UIImagePNGRepresentation(image)!
+        let imageData : Data = UIImagePNGRepresentation(thumbnail)!
         
         let storageRef = storage.reference()
-        let levelRef = storageRef.child("\(userId)/\(level.levelData.levelMetadata.levelUUID)_thumb.png")
-        
-
+        let levelRef = storageRef.child(storagePath)
         
         let metadata = StorageMetadata()
         metadata.contentType = "level/png"
@@ -330,6 +334,9 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         print("UPLOADING IMAGE")
         let _ = levelRef.putData(imageData, metadata: metadata) { metadata, error in
             let downloadURL = metadata?.downloadURL()
+            
+            print(error?.localizedDescription)
+            
             print(downloadURL?.path)
         }
         

@@ -32,6 +32,7 @@ class Line : CAShapeLayer{
     
 //    var startView : UIView!; //For editable
     
+    
     //TODO: frame: should be just the screen bounds, or should it be level bounds (sizes bigger than screen)?
     init(frame: CGRect, _startPoint : CGPoint, _startVelocity : CGVector, _startColor : Color) {
         startPosition = _startPoint;
@@ -152,12 +153,14 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     var currentText : LevelText!;
 //    var currentTrigger : LevelTextTriggers!; // Within currentText
     
+    var changeBordersBasedOnZoom : Bool = true
+
     init(_level: Level, _parentView: View){
         level = _level;
         parentView = _parentView;
         super.init(frame: UIScreen.main.bounds)
 
-        
+        self.backgroundColor = UIColor.white
         
         
         setupLevelView()
@@ -174,6 +177,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func setupLevelView(){
         levelView = LevelScrollView(frame: UIScreen.main.bounds)
+        levelView.backgroundColor = UIColor.white
         levelView.isUserInteractionEnabled = true;
         levelView.bounces = false;
         levelView.showsVerticalScrollIndicator = false;
@@ -750,10 +754,12 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         
-        if(scrollView.zoomScale <= 1){
-            stageView.layer.borderWidth = 3;
-        }else{
-            stageView.layer.borderWidth = 0;
+        if(changeBordersBasedOnZoom){
+            if(scrollView.zoomScale <= 1){
+                stageView.layer.borderWidth = 3;
+            }else{
+                stageView.layer.borderWidth = 0;
+            }
         }
         centerScroll()
     }
