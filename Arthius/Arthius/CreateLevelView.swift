@@ -273,12 +273,13 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         var data = d
         let maxPropStartVeclocity : CGFloat = 0.002 //TODO per level, global?
 
-        let lineStart = LineStart(frame: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
+        let lineStart = LineStart(f: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
         
         lineStart.frameChanged = {
             self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
             data.startPosition = self.pointToProp(point: lineStart.center)
-            data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity
+            data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)
+            print(data.startVelocity, data.startVelocity/CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height))
             self.levelData.lineData.append(data)
         }
         

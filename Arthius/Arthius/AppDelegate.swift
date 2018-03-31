@@ -22,6 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         GADMobileAds.configure(withApplicationID: "ca-app-pub-2889096611002538~2676874001")
         
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = ViewController()
+        self.window?.backgroundColor = UIColor.white
+        self.window?.makeKeyAndVisible()
+        
+        
         return true
     }
 

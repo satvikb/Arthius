@@ -193,7 +193,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         
         stageView = UIView(frame: propToRect(prop: CGRect(origin: CGPoint.zero, size: level.levelData.propFrame.size)))
         stageView.layer.borderColor = UIColor.black.cgColor;
-        stageView.layer.borderWidth = 3;
+        stageView.layer.borderWidth = 0;
         stageView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         levelView.addSubview(stageView)
         
@@ -224,6 +224,8 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor)
             lines.append(newLine)
             self.stageView.layer.addSublayer(newLine)
+            
+            
         }
         
     }
@@ -278,18 +280,6 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         currentTextsLabel = LevelTextsLabel(frame: propToRect(prop: CGRect.zero, within: self.frame), text: "", _outPos: propToPoint(prop: CGPoint(x: -1, y: 0.7)), textColor: UIColor.white, valign: VAlign.Default, _insets: true, hidden: false)
 //        currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
 
-        
-//        if(level.levelData.texts.count > 0){
-//            let first : LevelText? = getFirstText()
-//            if(first != nil){
-//                currentText = first
-////                startText = currentText.text
-////                startHidden = false
-////                startPropFrame = currentText.propFrame;
-////                textColor = currentText.fontColor.uiColor()
-////                fontSize = currentText.fontSize
-//            }
-//        }
         
         currentTextsLabel.tapped = {
             self.levelTextTriggerOccured(trigger: .tap)

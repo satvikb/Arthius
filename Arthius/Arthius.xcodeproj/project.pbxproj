@@ -15,7 +15,6 @@
 		40167884206B128300D8A5EF /* GameUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40167883206B128300D8A5EF /* GameUIElement.swift */; };
 		401998852061A52E00411CB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401998842061A52E00411CB8 /* AppDelegate.swift */; };
 		401998872061A52E00411CB8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401998862061A52E00411CB8 /* ViewController.swift */; };
-		4019988A2061A52E00411CB8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 401998882061A52E00411CB8 /* Main.storyboard */; };
 		4019988C2061A52E00411CB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4019988B2061A52E00411CB8 /* Assets.xcassets */; };
 		4019988F2061A52E00411CB8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */; };
 		4064286E206C7AFD000B18A3 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* Progress.swift */; };
@@ -84,7 +83,6 @@
 		401998812061A52E00411CB8 /* Arthius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arthius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401998842061A52E00411CB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		401998862061A52E00411CB8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		401998892061A52E00411CB8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4019988B2061A52E00411CB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4019988E2061A52E00411CB8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		401998902061A52E00411CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -274,7 +272,6 @@
 		40B0352020671DB400A4D8FB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				401998882061A52E00411CB8 /* Main.storyboard */,
 				4019988B2061A52E00411CB8 /* Assets.xcassets */,
 				4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */,
 				401998902061A52E00411CB8 /* Info.plist */,
@@ -360,7 +357,6 @@
 			files = (
 				4019988F2061A52E00411CB8 /* LaunchScreen.storyboard in Resources */,
 				4019988C2061A52E00411CB8 /* Assets.xcassets in Resources */,
-				4019988A2061A52E00411CB8 /* Main.storyboard in Resources */,
 				40A41FB62065B10A000E4634 /* Levels in Resources */,
 				40A41FAF2065A1ED000E4634 /* SF-Pro-Text-Heavy.otf in Resources */,
 				40A41FB12065A696000E4634 /* SF-Pro-Text-Light.otf in Resources */,
@@ -494,14 +490,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		401998882061A52E00411CB8 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				401998892061A52E00411CB8 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
