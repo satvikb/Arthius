@@ -158,7 +158,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     static func BlankLevel() -> LevelData{
-        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0.78, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
+        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(outerFrame: CGRect(x: 0.7, y: 0.7, width: 0.1, height: 0.1), coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1))], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], speedBoostData: [])
     }
     
     func publishView(){
@@ -257,11 +257,11 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func addColorBoxToView(d : ColorBoxData){
         var data = d
-        let colorBox = ColorBox(frame: propToRect(prop: data.frame), rotation: data.rotation, box: data.box, _leftColor: data.leftColor, _rightColor: data.rightColor, backgroundColor: data.backgroundColor, _middlePropWidth: data.middlePropWidth, _stageView: stageView, _editable: true)
+        let colorBox = ColorBox(frame: propToRect(prop: data.frame), _rotation: data.rotation, box: data.box, _leftColor: data.leftColor, _rightColor: data.rightColor, backgroundColor: data.backgroundColor, _middlePropWidth: data.middlePropWidth, _stageView: stageView, _editable: true)
         
         colorBox.frameChanged = {
             self.levelData.colorBoxData.remove(at: self.levelData.colorBoxData.index(of: data)!)
-            data.frame = self.rectToProp(rect: colorBox.frame)
+            data.frame = self.rectToProp(rect: colorBox.bodyView.frame)
             self.levelData.colorBoxData.append(data)
         }
         

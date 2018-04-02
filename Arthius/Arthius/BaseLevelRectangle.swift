@@ -22,14 +22,14 @@ class BaseLevelRectangle : GameUIElement {
     }
     
     //doesnt work for rotation
-    func pointInRect(locInMain : CGPoint) -> Bool{
-        let locInSub = self.convert(locInMain, from: superview)
-        
-        if(self.bounds.contains(locInSub)){
-            return true
-        }
-        return false;
-    }
+//    func pointInRect(locInMain : CGPoint) -> Bool{
+//        let locInSub = self.convert(locInMain, from: superview)
+//        
+//        if(self.bounds.contains(locInSub)){
+//            return true
+//        }
+//        return false;
+//    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

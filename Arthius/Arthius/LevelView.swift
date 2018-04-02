@@ -492,7 +492,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func createColorBox(frame : CGRect, rotation : CGFloat, box : Bool, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
-        let newBox = ColorBox(frame: frame, rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth, _stageView: stageView)
+        let newBox = ColorBox(frame: frame, _rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth, _stageView: stageView)
         
         stageView.addSubview(newBox)
         scaledColorBoxes.append(newBox)
@@ -608,7 +608,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func handleColorBoxesForLine(line : Line){
         for cBox in scaledColorBoxes {
-            if(cBox.pointInRect(locInMain: line.currentPoint)){
+            if(cBox.bodyView.pointInRect(locInMain: line.currentPoint)){
                 if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
                     
                     if(cBox.step1 == false){

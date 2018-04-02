@@ -14,12 +14,15 @@ import UIKit
     Split into two sides, required and new color depends on entry side
 */
 
-class ColorBox :  BaseLevelRectangle {
+class ColorBox :  UIView {
     
     var leftColor : Color!;
     var rightColor : Color!;
     var middlePropWidth : CGFloat!;
     
+    var bodyView : UIView!//BaseLevelRectangle!;
+    
+    var backgroundView : UIView!;
     var leftView : UIView!;
     var rightView : UIView!;
     
@@ -28,6 +31,8 @@ class ColorBox :  BaseLevelRectangle {
     
     var stageView : UIView;
     
+    var rotation : CGFloat = 0
+    var knobFrame : CGRect!;
     
     //To edit in level editor
     var editable : Bool! = false;
@@ -35,27 +40,45 @@ class ColorBox :  BaseLevelRectangle {
     var frameChanged = {}
     var frameChangeKnob : KnobEdit!;
     
-    init(frame: CGRect, rotation: CGFloat, box: Bool, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat, _stageView : UIView, _editable : Bool = false) {
+    init(frame: CGRect, _rotation: CGFloat, box: Bool, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat, _stageView : UIView, _editable : Bool = false) {
+        rotation = _rotation;
         leftColor = _leftColor;
         rightColor = _rightColor;
         middlePropWidth = _middlePropWidth;
         stageView = _stageView;
         editable = _editable;
         
-        super.init(frame: frame, rotation: rotation, box: box)
-        self.backgroundColor = ColorBox.ColorToUIColor(col: backgroundColor)
+        print("F \(frame)")
+        super.init(frame: frame)//, rotation: rotation, box: box)
         
+        self.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        self.transform = CGAffineTransform(rotationAngle: rotation);
+        
+        self.backgroundColor = UIColor.clear//ColorBox.ColorToUIColor(col: backgroundColor)
+        
+        self.layer.borderWidth = 3;
+        self.layer.borderColor = UIColor.orange.cgColor
+        
+        bodyView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))//, rotation: rotation, box: box)
+        
+        bodyView.layer.borderWidth = 3;
+        bodyView.layer.borderColor = UIColor.black.cgColor
+        self.addSubview(bodyView)
+        
+        backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
+        backgroundView.backgroundColor = ColorBox.ColorToUIColor(col: backgroundColor)
+        bodyView.addSubview(backgroundView)
         
         //rotation should be handled by parent
         leftView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height))
         leftView.backgroundColor = ColorBox.ColorToUIColor(col: leftColor)
 //        leftView.transform = CGAffineTransformMakeRotation(rotation);
-        self.addSubview(leftView)
+        bodyView.addSubview(leftView)
         
         rightView = UIView(frame: CGRect(x: frame.width/2+((middlePropWidth/2)*frame.width), y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height))
 //        rightView.transform = CGAffineTransformMakeRotation(rotation);
         rightView.backgroundColor = ColorBox.ColorToUIColor(col: rightColor)
-        self.addSubview(rightView)
+        bodyView.addSubview(rightView)
         
         
         //editable
@@ -64,14 +87,15 @@ class ColorBox :  BaseLevelRectangle {
             self.addGestureRecognizer(panGesture)
             
     //        TODO box (done)
-            frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
+            knobFrame = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: bodyView.frame)
+            frameChangeKnob = KnobEdit(frame: knobFrame)
             frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
                 //in case
                 if(self.editable == true){
                     self.handleFrameChangePan(pan: pan)
                 }
             }
-            self.addSubview(frameChangeKnob)
+            bodyView.addSubview(frameChangeKnob)
         }
     }
     
@@ -110,30 +134,65 @@ class ColorBox :  BaseLevelRectangle {
     }
     
     var preFrame : CGRect = CGRect.zero
-
+    var knobPre : CGRect = CGRect.zero
+    
     func handleFrameChangePan(pan: UIPanGestureRecognizer){
 
         if pan.state == .began {
-            preFrame = self.frame
+            preFrame = bodyView.frame
+            knobPre = frameChangeKnob.frame
         } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
             //            self.center = boxCenter // restore button center
+//            frameChangeKnob.frame = knobPre
         } else {
-            let change = pan.translation(in: superview) // get pan location
+            var change = pan.translation(in: self) // get pan location
 //            var originOffset = CGPoint.zero;
+            let oChange = change
+//            change = CGPoint(x: change.x/cos(rotation), y: change.y/sin(rotation))
+            print(oChange, change)
+//            var newKnobFrame : CGRect = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: bodyView.frame)
+//            newKnobFrame.size = CGSize(width: newKnobFrame.width, height: newKnobFrame.width)
+            
+            
+            var newKnobLoc = knobPre.origin+change;
+            
+            
             
             var newWidth = preFrame.size.width+change.x
             var newHeight = preFrame.size.height+change.y
             
-            let minWidth = propToFloat(prop: 0.03, scaleWithX: true)
+            let minWidth = propToFloat(prop: 0.1, scaleWithX: true)
             if(newWidth < minWidth){
                 newWidth = minWidth
+                newKnobLoc.x = newWidth
             }
             
             if(newHeight < minWidth){
                 newHeight = minWidth
+                newKnobLoc.y = newHeight
             }
             
-            self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: newWidth, height: newHeight))
+            
+            let maxWidth = propToFloat(prop: 0.8, scaleWithX: true)
+            if(newWidth > maxWidth){
+                newWidth = maxWidth
+                newKnobLoc.x = newWidth
+            }
+            
+            if(newHeight > maxWidth){
+                newHeight = maxWidth
+                newKnobLoc.y = newHeight
+            }
+            
+            frameChangeKnob.frame = CGRect(origin: newKnobLoc, size: knobPre.size)
+            frameChangeKnob.layer.cornerRadius = frameChangeKnob.frame.width/2
+            
+
+            bodyView.frame = CGRect(origin: bodyView.frame.origin, size: CGSize(width: newWidth, height: newHeight))
+//            print(bodyView.frame)
+            
+            self.frame.size = CGSize(width: newWidth, height: newHeight)
+            
             updateSubViewsWithNewFrame()
 
             frameChanged()
@@ -141,16 +200,15 @@ class ColorBox :  BaseLevelRectangle {
     }
     
     func updateSubViewsWithNewFrame(){
-        let newLeftFrame = CGRect(x: 0, y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height)
+        let newLeftFrame = CGRect(x: 0, y: 0, width: bodyView.frame.width/2-((middlePropWidth/2)*bodyView.frame.width), height: bodyView.frame.height)
         leftView.frame = newLeftFrame;
-        let newRightFrame = CGRect(x: frame.width/2+((middlePropWidth/2)*frame.width), y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height)
+        let newRightFrame = CGRect(x: bodyView.frame.width/2+((middlePropWidth/2)*bodyView.frame.width), y: 0, width: bodyView.frame.width/2-((middlePropWidth/2)*bodyView.frame.width), height: bodyView.frame.height)
         rightView.frame = newRightFrame;
         
+        backgroundView.frame = bodyView.frame
+        
         //TODO
-        var newKnobFrame : CGRect = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame)
-        newKnobFrame.size = CGSize(width: newKnobFrame.width, height: newKnobFrame.width)
-        frameChangeKnob.frame = newKnobFrame;
-        frameChangeKnob.layer.cornerRadius = frameChangeKnob.frame.width/2
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -159,6 +217,14 @@ class ColorBox :  BaseLevelRectangle {
     
     static func ColorToUIColor(col : Color) -> UIColor{
         return UIColor(red: col.r, green: col.g, blue: col.b, alpha: col.a)
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
+        if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
+            return self.frameChangeKnob//.hitTest(point, with:event)
+        }
+        return super.hitTest(point, with: event)
     }
     
 //    static func UIColorToColor(col : UIColor) -> Color{
