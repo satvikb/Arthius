@@ -27,11 +27,12 @@ enum View {
     case CreateSelect
     case LevelCreate
     case SavedLevelSelect
-    case GLSSelect
+    case GLS
     case LevelBeat
 }
 
-class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate{
+class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate, GlobalLevelSelectViewDelegate{
+    
     
    
 
@@ -41,6 +42,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     var playSelectView : PlaySelectView!;
     var campaignLevelSelectView : CampaignLevelSelectView!;
     var createLevelSelectView : CreateLevelSelectView!;
+    var globalLevelSelectView : GlobalLevelSelectView!;
     
     var levelView : LevelView!;
     var currentLevel : Level!;
@@ -62,11 +64,16 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         accountView = AccountView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)))
         accountView.accountDelegate = self;
         
+        
+        //TODO change these startPosition to frame
         playSelectView = PlaySelectView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))
         playSelectView.playSelectDelegate = self;
         
         createLevelSelectView = CreateLevelSelectView(startPosition: CGPoint(x: 0, y: 0))
         createLevelSelectView.createLevelSelectDelegate = self;
+        
+        globalLevelSelectView = GlobalLevelSelectView(frame:  propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)))
+        globalLevelSelectView.globalLevelSelectDelegate = self;
         
         // COPY ALL FILES FROM LEVELS FOLDER TO DOCUMENTS
         // DO THIS BEFORE CAMPAIGNLEVELVIEW INIT
@@ -122,6 +129,10 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             createLevelView.animateOut()
             removeView(view: createLevelView, after: transitionTime)
             break;
+        case .GLS:
+            globalLevelSelectView.animateOut()
+            removeView(view: globalLevelSelectView, after: transitionTime)
+            break;
         default: break
             
         }
@@ -159,21 +170,17 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             createLevelView.animateIn()
             self.view.addSubview(createLevelView)
             break;
+        case .GLS:
+            self.view.addSubview(globalLevelSelectView)
+            globalLevelSelectView.animateIn()
+            break;
         default: break
             
         }
         
         currentView = newView;
     }
-//
-//    func testLevel() -> Level{
-//        var gWells : [GravityWellData] = []
-////        gWells.append(GravityWell(corePoint: propToPoint(prop: CGPoint(x: 0.7, y: 0.5)), coreDiameter: propToFloat(prop: 0.1, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.65, scaleWithX: true), mass: 1000).data)
-//        let level = Level(_metadata: LevelMetadata(levelUUID: "UUID", levelNumber: 0, levelName: "Lv 1", levelVersion: "0", levelAuthor: "Satvik Borra"), _propFrame: CGRect(x: 0, y: 0, width: 3, height: 1), _startPosition: CGPoint(x: 0, y: 0.4), _endPosition: CGRect(x: 2, y: 0.95, width: 0.1, height: 0.05), _startVelocity: CGVector(dx: 0.0025, dy: 0), _gravityWells: gWells, _colorBoxData: [], _rockData: [], _speedBoostData: [])
-//
-//        return level;
-//    }
-//
+    
     public func propToPoint(prop: CGPoint) -> CGPoint {
         return CGPoint(x: propToFloat(prop: prop.x, scaleWithX: true), y: propToFloat(prop: prop.y, scaleWithX: false))
     }
@@ -223,6 +230,42 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         
     }
     
+    func globalLevelSelect_pressBack() {
+        switchToView(newView: .PlaySelect)
+    }
+    
+    func globalLevelSelect_pressLevel(level: LevelData) {
+        
+    }
+    
+    func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([GLSLevelData]) -> Void){
+        
+        db.collection("levels").getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                
+                var lData : [GLSLevelData] = []
+                
+                for document in querySnapshot!.documents {
+                    print("\(document.documentID) => \(document.data())")
+                    let d = document.data()
+                    
+                    //TODO guard lets based on query
+                    let title : String = d["Title"]! as! String
+                    let creatorId : String = d["UserID"]! as! String
+                    let levelUUID : String = d["LevelID"]! as! String
+                    let description : String = d["Description"]! as! String
+                    
+                    let glsData = GLSLevelData(title: title, creatorId: creatorId, levelUUID: levelUUID, description: description)
+                    lData.append(glsData)
+                }
+                
+                completion(lData)
+            }
+        }
+    }
+    
     func playSelect_pressBack() {
         switchToView(newView: View.Menu)
     }
@@ -233,7 +276,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     func playSelect_pressGlobalLevelSelect() {
-        
+        switchToView(newView: .GLS)
     }
     
     func playSelect_pressSavedLevelsSelect() {
@@ -331,31 +374,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         let metadata = StorageMetadata()
         metadata.contentType = "level/png"
         
-        
-//        print("UPLOADING IMAGE")
-//        let _ = levelRef.putData(imageData, metadata: metadata) { metadata, error in
-//            let downloadURL = metadata?.downloadURL()
-//            
-//            print(error?.localizedDescription)
-//            
-//            print(downloadURL?.path)
-//        }
-        
         levelRef.putData(imageData)
-        
-        // Upload the file to the path "images/rivers.jpg"
-//        let _ = levelRef.putFile(from: localFile, metadata: nil) { metadata, error in
-//            if let error = error {
-//                // Uh-oh, an error occurred!
-//                print("error uploading \(error.localizedDescription)")
-//            } else {
-//                // Metadata contains file metadata such as size, content-type, and download URL.
-//
-//                //                let downloadURL = metadata!.downloadURL()
-//                //                print(downloadURL?.path)
-//            }
-//        }
-        
     }
     
     func uploadCustomMadeFile(userId : String, levelUUID : String){
@@ -382,14 +401,15 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             }
         }
         
+    }
+    
+    
+    //TODO async completion handlers
+    func downloadLevel(){
         
-        
-        
-       
-        
-        
-        
-        
+    }
+    
+    func downloadThumbnail(){
         
     }
     

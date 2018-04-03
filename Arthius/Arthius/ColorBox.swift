@@ -56,8 +56,10 @@ class ColorBox :  UIView {
         
         self.backgroundColor = UIColor.clear//ColorBox.ColorToUIColor(col: backgroundColor)
         
-        self.layer.borderWidth = 3;
-        self.layer.borderColor = UIColor.orange.cgColor
+        if(editable){
+            self.layer.borderWidth = 3;
+            self.layer.borderColor = UIColor.orange.cgColor
+        }
         
         bodyView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))//, rotation: rotation, box: box)
         
@@ -220,9 +222,11 @@ class ColorBox :  UIView {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
-        if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
-            return self.frameChangeKnob//.hitTest(point, with:event)
+        if(editable){
+            let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
+            if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
+                return self.frameChangeKnob//.hitTest(point, with:event)
+            }
         }
         return super.hitTest(point, with: event)
     }

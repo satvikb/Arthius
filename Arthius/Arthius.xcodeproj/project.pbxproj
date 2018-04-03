@@ -17,6 +17,7 @@
 		401998872061A52E00411CB8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401998862061A52E00411CB8 /* ViewController.swift */; };
 		4019988C2061A52E00411CB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4019988B2061A52E00411CB8 /* Assets.xcassets */; };
 		4019988F2061A52E00411CB8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */; };
+		4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */; };
 		4064286E206C7AFD000B18A3 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* Progress.swift */; };
 		40642870206C823E000B18A3 /* LineStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286F206C823E000B18A3 /* LineStart.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
@@ -86,6 +87,7 @@
 		4019988B2061A52E00411CB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4019988E2061A52E00411CB8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		401998902061A52E00411CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalLevelSelectView.swift; sourceTree = "<group>"; };
 		4064286D206C7AFD000B18A3 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
 		4064286F206C823E000B18A3 /* LineStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStart.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 				40B0351E2067004D00A4D8FB /* LevelSelector.swift */,
 				40B47D52206F3E7E0061A78D /* PublishLevelView.swift */,
 				40ADEDFC206F484500643253 /* LevelLeaveConfirmation.swift */,
+				4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -461,6 +464,7 @@
 				40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */,
 				40E544D820633D04006505D5 /* LevelView.swift in Sources */,
 				40A41F9D20647124000E4634 /* Disk+Helpers.swift in Sources */,
+				4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */,
 				40EDDB9D206447A6006FF6ED /* Button.swift in Sources */,
 				4016788220699A5D00D8A5EF /* Rock.swift in Sources */,
 				401998872061A52E00411CB8 /* ViewController.swift in Sources */,

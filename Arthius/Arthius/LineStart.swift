@@ -198,9 +198,11 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
-        if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
-            return self.frameChangeKnob//.hitTest(point, with:event)
+        if(editable){
+            let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
+            if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
+                return self.frameChangeKnob//.hitTest(point, with:event)
+            }
         }
         return super.hitTest(point, with: event)
     }
