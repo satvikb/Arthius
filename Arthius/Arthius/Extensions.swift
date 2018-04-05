@@ -74,8 +74,8 @@ public extension UIView {
         return CGRect(x: rect.origin.x / screen.width, y: rect.origin.y / screen.height, width: rect.width / screen.width, height: rect.height / screen.height)
     }
 
-    public func pointInRect(locInMain : CGPoint) -> Bool{
-        let locInSub = self.convert(locInMain, from: superview)
+    public func pointInRect(locInMain : CGPoint, view : UIView) -> Bool{
+        let locInSub = self.convert(locInMain, from: view)
         
         if(self.bounds.contains(locInSub)){
             return true

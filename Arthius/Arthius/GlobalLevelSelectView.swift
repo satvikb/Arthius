@@ -67,9 +67,10 @@ class GlobalLevelSelectView : UIView {
             
             print("Got levels: \(String(describing: levelData.count))")
 
+            //TODO create/update level selector
+            
         })
         
-        //TODO create/update level selector
     }
     
     func animateIn(){

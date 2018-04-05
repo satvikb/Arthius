@@ -18,32 +18,39 @@ class Line : CAShapeLayer{
     var startPosition : CGPoint!;
     var startVelocity : CGVector!;
     var startColor : Color!;
+    var startThickness : CGFloat!;
     
     var currentPoint: CGPoint!
     var linePath : UIBezierPath!;
 //    var lineShape : CAShapeLayer!;
     var lineVelocity: CGVector!;
     var lineColor : Color!;
+    var lineThickness : CGFloat!;
     
     var lineMass : CGFloat = 1; //no effect for now?
     var tempLineForces : CGVector! = CGVector.zero;
 
     var madeItToEnd : Bool = false;
     
+    var currentPointView : CAShapeLayer!;
+    
 //    var startView : UIView!; //For editable
     
     
     //TODO: frame: should be just the screen bounds, or should it be level bounds (sizes bigger than screen)?
-    init(frame: CGRect, _startPoint : CGPoint, _startVelocity : CGVector, _startColor : Color) {
+    init(frame: CGRect, _startPoint : CGPoint, _startVelocity : CGVector, _startColor : Color, _startThickness : CGFloat) {
         startPosition = _startPoint;
         startVelocity = _startVelocity;
         startColor = _startColor;
+        startThickness = _startThickness;
         
         lineColor = startColor;
         currentPoint = startPosition;
         lineVelocity = startVelocity;
         linePath = UIBezierPath();
 
+        lineThickness = 10;
+        
         super.init()
         
         linePath.move(to: startPosition)
@@ -51,22 +58,50 @@ class Line : CAShapeLayer{
         self.path = linePath.cgPath;
         self.lineCap = kCALineCapRound;
         self.fillColor = UIColor.clear.cgColor;
-        self.lineWidth = 10;
+        self.lineWidth = lineThickness;
         updateStrokeColor()
         self.zPosition = 100;
         
+        currentPointView = CAShapeLayer()
+        currentPointViewUpdate()
+        self.addSublayer(currentPointView)
+        
         reset()
+    }
+    
+    func currentPointViewUpdate(){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        
+        currentPointView.frame = currentPointViewFrame()
+        currentPointView.fillColor = UIColor.orange.cgColor
+        currentPointView.path = circlePath().cgPath
+        
+        CATransaction.commit()
+    }
+    
+    func circlePath() -> UIBezierPath {
+        let circlePath = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: lineThickness/2, startAngle: CGFloat(0), endAngle:CGFloat(Double.pi * 2), clockwise: true)
+        return circlePath
+    }
+    
+    func currentPointViewFrame() -> CGRect{
+        return CGRect(x: currentPoint.x, y: currentPoint.y, width: lineThickness/2, height: lineThickness/2)
     }
     
     func reset(){
         currentPoint = startPosition;
         lineVelocity = startVelocity;
         lineColor = startColor;
-        
+        lineThickness = startThickness;
+            
         linePath = UIBezierPath();
         linePath.move(to: currentPoint)
         path = nil;
+        
+        currentPointViewUpdate()
         updateStrokeColor()
+        updateLineThickness()
     }
     
     func newLocation(p: CGPoint){
@@ -74,6 +109,8 @@ class Line : CAShapeLayer{
         path = linePath.cgPath;
         didChangeValue(forKey: "path")
         currentPoint = p;
+        
+        currentPointViewUpdate()
     }
     
     func changeLineColor(to: Color){
@@ -83,6 +120,14 @@ class Line : CAShapeLayer{
     
     func updateStrokeColor(){
         self.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor
+    }
+    
+    func updateLineThickness(){
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        
+        lineWidth = lineThickness
+        CATransaction.commit()
     }
     
     override init(layer: Any) {
@@ -221,7 +266,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func setupLines(){
         for line in level.levelData.lineData {
-            let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor)
+            let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor, _startThickness: propToFloat(prop: line.startThickness, scaleWithX: true))
             lines.append(newLine)
             self.stageView.layer.addSublayer(newLine)
             
@@ -386,6 +431,9 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func getLevelTextWithId(id : Int?) -> LevelText? {
         for text in level.levelData.texts {
+            if(text.id == -1){
+                return LevelText(id: -1, text: "", triggerOn: .tap, nextText: 0, animateTime: 0, animateIn: false, animateOut: false, propFrame: CGRect(x: -1, y: 0, width: 0, height: 0), fontSize: 0, fontColor: Color(r: 0, g: 0, b: 0, a: 0))
+            }
             if(text.id == id){
                 return text
             }
@@ -443,7 +491,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         // Perform operation
         if(recognizer.state == .began){
             longTapInital = recognizer.location(in: recognizer.view)
-            currentGravityWellCreated = createGravityWell(point: longTapInital, core: propToFloat(prop: 0.015, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: 0.05, scaleWithX: true), mass: 100, new: true)
+            currentGravityWellCreated = createGravityWell(point: longTapInital, core: /*propToFloat(prop: 0.015, scaleWithX: true)*/0, areaOfEffectDiameter: /*propToFloat(prop: 0.05, scaleWithX: true)*/0, mass: 100, new: true)
 //            print("Creating gravity well")
         }else if(recognizer.state == .changed){
             let p = recognizer.location(in: recognizer.view)
@@ -553,7 +601,18 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     
                     //handle collisions
                     
-                    
+                    for gravWell in scaledGravityWells {
+                        let lineCircle = Circle(center: line.currentPoint, radius: line.lineThickness/2)
+                        let gravCircle = Circle(center: gravWell.corePoint, radius: gravWell.coreDiameter/2)
+                        
+                        let collide = lineCircle.collidesWith(circle2: gravCircle)
+                        
+                        if(collide && line.lineThickness >= 1){
+                            line.lineThickness = line.lineThickness - 1 //TODO use by how much it's collided
+                            line.updateLineThickness()
+                        }
+//                        print("C: \(line.currentPoint) \(gravWell.corePoint) \(collide)")
+                    }
                     
                     
                     
@@ -569,7 +628,14 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             //TODO
             didBeatLevel()
         }
+        
+        if(isLevelDead()){
+            self.paused = true;
+            self.resetLines()
+        }
     }
+    
+    
     
     func didBeatLevel(){
         let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: 0, timePlayed: 0))
@@ -608,7 +674,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func handleColorBoxesForLine(line : Line){
         for cBox in scaledColorBoxes {
-            if(cBox.bodyView.pointInRect(locInMain: line.currentPoint)){
+            if(cBox.bodyView.pointInRect(locInMain: line.currentPoint, view: stageView)){
                 if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
                     
                     if(cBox.step1 == false){
@@ -667,6 +733,23 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             }
         }
         return levelDone
+    }
+    
+    func isLevelDead() -> Bool {
+        var levelDead = true
+        
+        for line in lines{
+            if line.lineThickness > 1{//} && pointInLevel(p: line.currentPoint){
+                levelDead = false
+            }
+        }
+        return levelDead
+    }
+    
+    //TODO doesnt work
+    func pointInLevel(p : CGPoint) -> Bool{
+        return stageView.frame.contains(p)
+//        return (p.x >= 0 && p.x <= stageView.frame.width) && (p.y >= 0 && p.y <= stageView.frame.height)
     }
     
     func distance(a: CGPoint, b: CGPoint) -> CGFloat {
@@ -756,5 +839,20 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct Circle {
+    var center : CGPoint!
+    var radius : CGFloat!
+    
+    func collidesWith(circle2 : Circle) -> Bool{
+//        (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+        let xx = circle2.center.x-self.center.x
+        let yy = circle2.center.y-self.center.y
+        let rr = circle2.radius + self.radius
+        
+        return ((xx*xx) + (yy*yy)) <= (rr*rr)
+        
     }
 }

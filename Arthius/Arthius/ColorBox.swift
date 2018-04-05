@@ -103,6 +103,7 @@ class ColorBox :  UIView {
     
     func pointInRightRect(locInMain : CGPoint) -> Bool{
         //TODO test if superview.superview exists
+        
         let locInSub = rightView.convert(locInMain, from: stageView)
         
         if(rightView.bounds.contains(locInSub)){

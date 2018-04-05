@@ -11,6 +11,7 @@ import UIKit
 class GravityWell: UIView {
     
     var coreView : UIView!;
+    var coreOuterLayer : CAShapeLayer!;
     
     var corePoint:CGPoint!;
     var coreDiameter : CGFloat!;
@@ -24,6 +25,7 @@ class GravityWell: UIView {
     
     var editable : Bool! = false;
     var panGesture : UIPanGestureRecognizer!;
+    var pinchGesture : UIPinchGestureRecognizer!;
     var frameChanged = {}
     var frameChangeKnob : KnobEdit!;
     
@@ -41,34 +43,44 @@ class GravityWell: UIView {
         super.init(frame: frame)
         
         self.layer.cornerRadius = areaOfEffectDiameter/2;
-        
+        self.backgroundColor = UIColor(red: 0, green: 0.2, blue: 1, alpha: 0.4)
+
         coreView = UIView(frame: coreFrame)
         coreView.layer.cornerRadius = coreDiameter/2
         
         coreView.backgroundColor = UIColor(red: 0, green: 0.2, blue: 1, alpha: 0.7)
-        self.backgroundColor = UIColor(red: 0, green: 0.2, blue: 1, alpha: 0.4)
-
-        
         self.addSubview(coreView)
         
-        //editable
-//        if(editable){
-            panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            self.addGestureRecognizer(panGesture)
         
-        //TODO Use knob for INNER CORE size, PINCH to change outer size
-//            frameChangeKnob = KnobEdit(frame: propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: self.frame))
-//            frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
-//                //in case
-//                if(self.editable == true){
-//                    self.handleFrameChangePan(pan: pan)
-//                }
-//            }
-//            if(editable){
-//                self.addSubview(frameChangeKnob)
-//            }
-//        }
         
+        coreOuterLayer = CAShapeLayer()
+        coreOuterLayer.fillColor = UIColor.yellow.cgColor
+        coreOuterLayer.strokeColor = UIColor.black.cgColor
+//        coreOuterLayer.frame = CGRect(origin: CGPoint.zero, size: frame.size)
+
+        self.updateCorePath()
+//        self.layer.addSublayer(coreOuterLayer)
+        
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        panGesture.delaysTouchesBegan = false
+        self.addGestureRecognizer(panGesture)
+        
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        self.addGestureRecognizer(pinchGesture)
+        
+    }
+    
+    func updateCorePath(){
+        func getCorePath() -> UIBezierPath{
+            let circlePath = UIBezierPath(arcCenter: CGPoint(x: coreView.frame.midX,y: coreView.frame.midY), radius: coreDiameter/2, startAngle: CGFloat(0), endAngle:CGFloat(Double.pi * 2), clockwise: true)
+
+            return circlePath
+        }
+        
+        coreOuterLayer.path = getCorePath().cgPath
+        coreOuterLayer.lineWidth = coreView.frame.width*0.2
+        coreOuterLayer.bounds = coreOuterLayer.path!.boundingBox// IMPORTANT, without this hitTest wont work
+
     }
     
     func updateSize(){
@@ -80,6 +92,7 @@ class GravityWell: UIView {
         coreView.frame = coreFrame;
         coreView.layer.cornerRadius = coreDiameter/2
 
+        updateCorePath()
         //TODO
         //change mass proportional to diameter
     }
@@ -93,9 +106,33 @@ class GravityWell: UIView {
 
         } else {
             let location = pan.translation(in: superview) // get pan location
-            self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
+            let newCenter = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
+            self.center = newCenter
+            self.corePoint = newCenter;
             frameChanged()
         }
+    }
+    
+    @objc func handlePinch(_ pinch : UIPinchGestureRecognizer){
+//        if pan.state == .began {
+//            boxCenter = self.center // store old button center
+//        } else if pan.state == .ended || pan.state == .failed || pan.state == .cancelled {
+//
+//        } else {
+//            let location = pan.translation(in: superview) // get pan location
+//            self.center = CGPoint(x: boxCenter.x+location.x, y: boxCenter.y+location.y)
+//            frameChanged()
+//        }
+        bringToFront()
+        
+        var currentOuterSize = areaOfEffectDiameter
+        currentOuterSize = currentOuterSize! * pinch.scale
+        coreDiameter = coreDiameter! * pinch.scale
+        print(pinch.scale, currentOuterSize!, areaOfEffectDiameter)
+        areaOfEffectDiameter = currentOuterSize
+        updateSize()
+        
+        pinch.scale = 1
     }
     
     
@@ -103,12 +140,26 @@ class GravityWell: UIView {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         heldDown = true;
+        
+        
+//        
+//        let point = touches.first?.location(in: self) // Where you pressed
+//        let np = self.coreOuterLayer.convert(point!, from: self.layer)
+//        
+//        print("d \(self.coreOuterLayer.hitTest(np)) \(np)")
+//        if let layer = self.coreOuterLayer.hitTest(point!) as? CAShapeLayer { // If you hit a layer and if its a Shapelayer
+//            if (layer.path?.contains(point!))! { // Optional, if you are inside its content path
+//                print("Hit shapeLayer") // Do something
+//            }
+//        }
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if(touches.count > 0){
             if(heldDown == true && touchInBtn(point: touches.first!.location(in: self.superview))){
                 heldDown = false
+                //TESTING
                 touched()
             }
         }
@@ -121,6 +172,12 @@ class GravityWell: UIView {
             return true
         }
         return false
+    }
+    
+    func bringToFront(){
+        if(superview != nil){
+            self.superview!.bringSubview(toFront: self)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

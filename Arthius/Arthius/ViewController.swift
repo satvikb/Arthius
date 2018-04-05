@@ -251,7 +251,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                     print("\(document.documentID) => \(document.data())")
                     let d = document.data()
                     
-                    //TODO guard lets based on query
+                    //TODO guard lets based on query, optionals?
                     let title : String = d["Title"]! as! String
                     let creatorId : String = d["UserID"]! as! String
                     let levelUUID : String = d["LevelID"]! as! String

@@ -62,6 +62,7 @@ struct LineData : Codable, Equatable{
     var startPosition : CGPoint;
     var startVelocity : CGVector;
     var startColor : Color;
+    var startThickness : CGFloat;
 }
 
 struct EndData : Codable{
