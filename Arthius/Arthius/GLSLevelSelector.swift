@@ -14,13 +14,22 @@ protocol GLSSelectorDelegate: class {
     func getThumbnail(levelUUID: String, completion: @escaping (_ img : UIImage) -> Void);
 }
 
+
+protocol GLSDetailViewDelegate : class {
+    func pressedPlay(_ tile : GLSSelectTile)
+    func exit()
+}
+
 //used in gls level selector
-class GLSLevelSelector : UIScrollView {
+class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
     
     weak var glsSelectorDelegate:GLSSelectorDelegate?
     var levels : [GLSLevelData]!
     var xTiles : CGFloat!
     var yTiles : CGFloat!
+    
+    var showingDetailView : Bool = false;
+    var startedLoadingLevel : Bool = false;
     
     init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [GLSLevelData]){
         super.init(frame: frame)
@@ -67,7 +76,9 @@ class GLSLevelSelector : UIScrollView {
             
             let propRect = CGRect(x: startX+sidePadding+(tilePropWidth*x)+(xMiddlePadding*x), y: /*startY*/+topPadding+(tilePropHeight*y)+(yMiddlePadding*y), width: tilePropWidth, height: tilePropHeight);
             let levelTile = GLSSelectTile(frame: propToRectSelf(prop: propRect), _level: level)
-            levelTile.backgroundColor = UIColor.yellow
+            levelTile.backgroundColor = UIColor.clear
+            levelTile.layer.borderColor = UIColor.black.cgColor
+            levelTile.layer.borderWidth = 2;
             
             glsSelectorDelegate?.getThumbnail(levelUUID: level.levelUUID, completion: {(img : UIImage) in
                 levelTile.image = img
@@ -75,7 +86,10 @@ class GLSLevelSelector : UIScrollView {
             
             
             levelTile.pressed = {(levelData : GLSLevelData) in
-                self.showLevelDetailView(levelTile: levelTile)
+                
+                
+                    self.showLevelDetailView(levelTile: levelTile)
+                
 //                self.glsSelectorDelegate?.levelSelector_pressedLevel(level: levelData)
             }
             
@@ -87,8 +101,15 @@ class GLSLevelSelector : UIScrollView {
     }
     
     func showLevelDetailView(levelTile : GLSSelectTile){
-        let detailView : GLSLevelDetailView = GLSLevelDetailView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), tileView: levelTile);
-        self.addSubview(detailView)
+        
+        if(!self.showingDetailView){
+            self.showingDetailView = true;
+            
+            let detailView : GLSLevelDetailView = GLSLevelDetailView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), tileView: levelTile);
+            detailView.delegate = self
+            self.addSubview(detailView)
+            detailView.animateIn()
+        }
     }
     
     func propToRectSelf(prop: CGRect) -> CGRect {
@@ -98,11 +119,24 @@ class GLSLevelSelector : UIScrollView {
     
     //TODO Animate
     func animateIn(){
-        
+        showingDetailView = false
+        startedLoadingLevel = false
     }
     
     func animateOut(){
-        
+        showingDetailView = false
+        startedLoadingLevel = false
+    }
+    
+    func exit() {
+        self.showingDetailView = false
+    }
+    
+    func pressedPlay(_ tile : GLSSelectTile) {
+        if(!startedLoadingLevel){
+            startedLoadingLevel = true;
+            glsSelectorDelegate?.globalLevelSelector_pressedPlayLevel(level: tile.level)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -110,6 +144,7 @@ class GLSLevelSelector : UIScrollView {
     }
     
 }
+
 
 class GLSSelectTile : UIImageView {
     var level : GLSLevelData
@@ -152,20 +187,28 @@ class GLSSelectTile : UIImageView {
     }
 }
 
+
 class GLSLevelDetailView : UIView {
     
+    var tileView : GLSSelectTile!;
     var topView : UIView!;
     var leftView : UIView!;
     var rightView : UIView!;
     var bottomView : UIView!;
     
+    var playButton : Button!
+    
+    weak var delegate : GLSDetailViewDelegate?
+    
     init(frame : CGRect, tileView : GLSSelectTile){
         //need to draw view around tileView
+        self.tileView = tileView;
         
         super.init(frame: frame)
         
         let tF = tileView.frame
-        //TODO paddings
+        
+        //TODO paddings, labels
         let widthFromLeftEdgeToTileRightEdge = tF.origin.x
         let heightFromTopEdgeToTileTopEdge = tF.origin.y
 
@@ -188,10 +231,24 @@ class GLSLevelDetailView : UIView {
         bottomView.backgroundColor = UIColor.orange
         self.addSubview(bottomView)
         
+        playButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.7, width: 0.8, height: 0.2), within: bottomView.frame), text: "play", fontSize: Screen.fontSize(propFontSize: 20), outPos: propToRect(prop: CGRect(x: -1, y: 0.7, width: 0, height: 0), within: bottomView.frame).origin)
+        playButton.pressed = {
+            self.delegate?.pressedPlay(self.tileView)
+        }
+        bottomView.addSubview(playButton)
+    }
+    
+    func animateIn(){
+        playButton.animateIn()
+    }
+    
+    func animateOut(){
+        playButton.animateOut()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.removeFromSuperview()
+        delegate?.exit()
     }
     
     required init?(coder aDecoder: NSCoder) {

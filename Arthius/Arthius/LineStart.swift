@@ -171,7 +171,7 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
         let d = sqrt(x*x + y*y)
         let s = (d/(maxVectorRadius))
         let newBoundedCenter = CGVector(dx: nx, dy: ny).normalized() * (s > 1 ? 1 : s)//(CGVector(dx: frameChangeKnob.center.x-offset.x, dy: frameChangeKnob.center.y-offset.y))//* (CGVector(dx: (frameChangeKnob.center.x-offset.x)/maxVectorRadius, dy: (frameChangeKnob.center.y-offset.y)/maxVectorRadius))
-        print("T",newBoundedCenter, maxVectorRadius, d)
+//        print("T",newBoundedCenter, maxVectorRadius, d)
         return newBoundedCenter
     }
     

@@ -14,6 +14,11 @@ import UIKit
     Split into two sides, required and new color depends on entry side
 */
 
+struct LineState : Equatable{
+    var step1 : Bool = false;
+    var step2 : Bool = false;
+}
+
 class ColorBox :  UIView {
     
     var leftColor : Color!;
@@ -26,8 +31,8 @@ class ColorBox :  UIView {
     var leftView : UIView!;
     var rightView : UIView!;
     
-    var step1 : Bool = false;
-    var step2 : Bool = false;
+    
+    var lineStates : [String : LineState] = [:]
     
     var stageView : UIView;
     
@@ -232,8 +237,46 @@ class ColorBox :  UIView {
         return super.hitTest(point, with: event)
     }
     
-//    static func UIColorToColor(col : UIColor) -> Color{
-//        let components = col.colorComponents!;
-//        return Color(r: components.red, g: components.green, b: components.blue, a: components.alpha)
-//    }
+    //could have also used a Line type instead of string
+    func getStep1(_ lineUUID : String) -> Bool {
+        if let states = lineStates[lineUUID] {
+            return states.step1
+        }
+        return false;
+    }
+    
+    
+    func setStep1(_ lineUUID: String, to: Bool){
+//        let key = lineStates.index(forKey: lineUUID)
+        let keyExists = lineStates[lineUUID] != nil
+        
+        if(keyExists){
+            lineStates[lineUUID]?.step1 = to;
+        }else{
+            let newState = LineState(step1: to, step2: false)
+            lineStates[lineUUID] = newState
+        }
+    }
+    
+    
+    func getStep2(_ lineUUID : String) -> Bool {
+        if let states = lineStates[lineUUID] {
+            return states.step2
+        }
+        return false;
+    }
+    
+    
+    func setStep2(_ lineUUID: String, to: Bool){
+        //        let key = lineStates.index(forKey: lineUUID)
+        let keyExists = lineStates[lineUUID] != nil
+        
+        if(keyExists){
+            lineStates[lineUUID]?.step2 = to;
+        }else{
+            let newState = LineState(step1: false, step2: to)
+            lineStates[lineUUID] = newState
+        }
+    }
+
 }

@@ -85,35 +85,6 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 //        self.addSubview(publishBtn)
 
 
-//        do {
-//            try Disk.save(existingLevel, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
-//            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
-//            var text = "s"
-//
-//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//
-//                let fileURL = dir.appendingPathComponent(file)
-//                print(fileURL.path)
-//
-//                //reading
-//                do {
-//                    text = try String(contentsOf: fileURL, encoding: .utf8)
-//                    print(text)
-//                }
-//                catch let error as NSError{/* error handling here */
-//                    print("read error "+error.localizedDescription)
-//                }
-//            }
-//        } catch let error as NSError {
-//            print("""
-//                NO SAVE TEST
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
     }
     
     func showMenu(){
@@ -179,9 +150,47 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func saveLevel(){
         do {
+            try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
+            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
+            var text = "s"
+            
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                
+                let fileURL = dir.appendingPathComponent(file)
+                print(fileURL.path)
+                
+                //reading
+                do {
+                    text = try String(contentsOf: fileURL, encoding: .utf8)
+                    print(text)
+                }
+                catch let error as NSError{/* error handling here */
+                    print("read error "+error.localizedDescription)
+                }
+            }
+        } catch let error as NSError {
+            print("""
+                NO SAVE TEST
+                Domain: \(error.domain)
+                Code: \(error.code)
+                Description: \(error.localizedDescription)
+                Failure Reason: \(error.localizedFailureReason ?? "")
+                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+                """)
+        }
+
+        
+        do {
             try Disk.save(levelData, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).\(File.levelExtensionForType(type: .UserMade))")
         }catch let error as NSError{
             print("Error saving user made level \(error.localizedDescription)")
+        }
+        
+        do {
+            let data = try Disk.retrieve("\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).\(File.levelExtensionForType(type: .UserMade))", from: .documents, as: LevelData.self)
+            print("GOT LEVEL \(data.levelMetadata.levelUUID)")
+        }catch let error as NSError{
+            print("Error getting user made level \(error.localizedDescription)")
         }
     }
     

@@ -237,8 +237,33 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: .PlaySelect)
     }
     
-    func globalLevelSelect_pressLevel(level: LevelData) {
+    func globalLevelSelect_pressLevel(level: GLSLevelData) {
+        getLevelFile(uuid: level.levelUUID, completion: {(levelData : LevelData) in
+            self.currentLevel = Level(_levelData: levelData);
+            self.switchToView(newView: .LevelPlay)
+        })
+    }
+    
+    func getLevelFile(uuid: String, completion: @escaping (_ levelData : LevelData) -> Void){
+        let storageRef = storage.reference()
+        let levelRef = storageRef.child("levels/\(uuid).gws")
         
+        // Download in memory with a maximum allowed size of 10MB (1 * 1024 * 1024 bytes)
+        levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
+            if let error = error {
+                // Uh-oh, an error occurred!
+            } else {
+                // Data for "images/island.jpg" is returned
+//                Disk.retrieve("", from: .documents, as: LevelData.self)
+                do{
+                    let decoder = JSONDecoder()
+                    let levelData = try decoder.decode(LevelData.self, from: data!)
+                    completion(levelData)
+                }catch let error as NSError {
+                    print("Error getting file \(error.localizedDescription)")
+                }
+            }
+        })
     }
     
     func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([GLSLevelData]) -> Void){

@@ -28,7 +28,7 @@ protocol GlobalLevelSelectViewDelegate: class {
     func globalLevelSelect_pressBack()
 //    func globalLevelSelect_getLevels(query : LevelQuery) -> [GLSLevelData]
     func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([GLSLevelData]) -> Void)
-    func globalLevelSelect_pressLevel(level:LevelData)
+    func globalLevelSelect_pressLevel(level:GLSLevelData)
     func globalLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void)
 }
 
@@ -61,6 +61,8 @@ class GlobalLevelSelectView : UIView, GLSSelectorDelegate {
         levelSelector.isUserInteractionEnabled = true;
         levelSelector.glsSelectorDelegate = self
         self.addSubview(levelSelector)
+        
+       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -84,7 +86,7 @@ class GlobalLevelSelectView : UIView, GLSSelectorDelegate {
     func animateIn(){
         titleLabel.animateIn()
         backButton.animateIn()
-        
+        levelSelector.animateIn()
         //TODO
         self.loadLevels(query: LevelQuery(userId: nil, levelTitle: nil, minimumDownloads: nil, maxResults: nil))
     }
@@ -92,6 +94,7 @@ class GlobalLevelSelectView : UIView, GLSSelectorDelegate {
     func animateOut(){
         titleLabel.animateOut()
         backButton.animateOut()
+        levelSelector.animateOut()
     }
     
     func getThumbnail(levelUUID: String, completion: @escaping (UIImage) -> Void) {
@@ -99,6 +102,6 @@ class GlobalLevelSelectView : UIView, GLSSelectorDelegate {
     }
     
     func globalLevelSelector_pressedPlayLevel(level: GLSLevelData){
-        
+        globalLevelSelectDelegate?.globalLevelSelect_pressLevel(level: level)
     }
 }

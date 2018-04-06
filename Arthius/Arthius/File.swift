@@ -40,8 +40,56 @@ class File {
                 
                 if(url.pathExtension == levelExtensionForType(type: type)){
                     let fileName = url.lastPathComponent
+//                    print("GETTING LEVEL \(fileName) \(type.rawValue)")
+                    
+//
+//
+//
+//
+//
+//
+//
+//                    do {
+////                        try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
+//                        let file = "\(getFolderForLevelType(type: type))/\(fileName)"
+//                        var text = "s"
+//
+//                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//
+//                            let fileURL = dir.appendingPathComponent(file)
+////                            print(fileURL.path)
+//
+//                            //reading
+//                            do {
+//                                text = try String(contentsOf: fileURL, encoding: .utf8)
+//                                print(text)
+//                            }
+//                            catch let error as NSError{/* error handling here */
+//                                print("read error "+error.localizedDescription)
+//                            }
+//                        }
+//                    } catch let error as NSError {
+//                        print("""
+//                            NO SAVE TEST
+//                            Domain: \(error.domain)
+//                            Code: \(error.code)
+//                            Description: \(error.localizedDescription)
+//                            Failure Reason: \(error.localizedFailureReason ?? "")
+//                            Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                            """)
+//                    }
+//
+//
+//
+//
+//
+                    
+                    
+                    
+                    
                     let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: LevelData.self)
                     levels.append(level)
+                    
                     
                     let attr = try fileManager.attributesOfItem(atPath: url.path);
                     print("Loaded \(type.rawValue) level: \(url.lastPathComponent) \(attr[FileAttributeKey.size] as! UInt64) bytes")

@@ -37,6 +37,9 @@ class Line : CAShapeLayer{
 //    var startView : UIView!; //For editable
     
     
+    //oh why not, too much work to have an incremental number ID system
+    var uuid : String!
+    
     //TODO: frame: should be just the screen bounds, or should it be level bounds (sizes bigger than screen)?
     init(frame: CGRect, _startPoint : CGPoint, _startVelocity : CGVector, _startColor : Color, _startThickness : CGFloat) {
         startPosition = _startPoint;
@@ -50,6 +53,8 @@ class Line : CAShapeLayer{
         linePath = UIBezierPath();
 
         lineThickness = 10;
+        
+        uuid = UUID().uuidString
         
         super.init()
         
@@ -564,17 +569,17 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         if(paused == false){
             
             for line in lines{
-                if(line.madeItToEnd == false){
+                if(line.madeItToEnd == false && line.lineThickness >= 1){
                     line.tempLineForces = CGVector.zero;
                     
-                    
+                    var forces = calculateGravityForcesForLine(line: line)
+                    line.tempLineForces = CGVector.zero;
+
                     //BROKEN: multiple end points makes move twice??
                     //Having multiple lines does not make color boxes work
                     for endView in endPoints{
                         
-                        var forces = calculateGravityForcesForLine(line: line)
-                        line.tempLineForces = CGVector.zero;
-
+                        
                         if(endView.frame.contains(line.currentPoint)){
                             forces = CGVector.zero;
 
@@ -591,16 +596,16 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                                 }
                             }
                         }
-                        
-                        
-                        //pemdas
-                        let dV = forces / line.lineMass
-                        line.lineVelocity = line.lineVelocity + dV
-                        
-                        let deltaVel = line.lineVelocity!
-                        let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
-                        line.newLocation(p: pos)
                     }
+                    
+                    //pemdas
+                    let dV = forces / line.lineMass
+                    line.lineVelocity = line.lineVelocity + dV
+                    
+                    let deltaVel = line.lineVelocity!
+                    let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+                    line.newLocation(p: pos)
+                    
                     
                     //handle collisions
                     
@@ -680,49 +685,50 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             if(cBox.bodyView.pointInRect(locInMain: line.currentPoint, view: stageView)){
                 if(cBox.pointInLeftRect(locInMain: line.currentPoint)){
                     
-                    if(cBox.step1 == false){
+                    if(cBox.getStep1(line.uuid) == false){
                         //coming from outside world into left side changer
                         if(cBox.leftColor == line.lineColor){
-                            cBox.step1 = true;
+                            cBox.setStep1(line.uuid, to: true)
                         }
-                    }else if(cBox.step1 == true){
+                    }else if(cBox.getStep1(line.uuid) == true){
                         //coming from right side to this side
                         if(line.lineColor == cBox.rightColor){
-                            cBox.step2 = true;
+                            cBox.setStep2(line.uuid, to: true)// = true;
                         }
                     }
                     
                     
-                    if(cBox.step2 == true){
+                    if(cBox.getStep2(line.uuid) == true){
                         line.changeLineColor(to: cBox.leftColor)
-                        cBox.step1 = false;
-                        cBox.step2 = false;
+                        cBox.setStep1(line.uuid, to: false)// = false;
+                        cBox.setStep2(line.uuid, to: false)// = false;
+                        
                     }
                 }
                 
                 if(cBox.pointInRightRect(locInMain: line.currentPoint)){
                     
-                    if(cBox.step1 == false){
+                    if(cBox.getStep1(line.uuid) == false){
                         //coming from outside world into right side changer
                         if(cBox.rightColor == line.lineColor){
-                            cBox.step1 = true;
+                            cBox.setStep1(line.uuid, to: true)// = true;
                         }
-                    }else if(cBox.step1 == true){
+                    }else if(cBox.getStep1(line.uuid) == true){
                         //coming from left side to this side
                         if(line.lineColor == cBox.leftColor){
-                            cBox.step2 = true;
+                            cBox.setStep2(line.uuid, to: true)// = true;
                         }
                     }
                     
-                    if(cBox.step2 == true){
+                    if(cBox.getStep2(line.uuid) == true){
                         line.changeLineColor(to: cBox.rightColor)
-                        cBox.step1 = false;
-                        cBox.step2 = false;
+                        cBox.setStep1(line.uuid, to: false)// = false;
+                        cBox.setStep2(line.uuid, to: false)// = false;
                     }
                 }
             }else{
-                cBox.step1 = false;
-                cBox.step2 = false;
+                cBox.setStep1(line.uuid, to: false)// = false;
+                cBox.setStep2(line.uuid, to: false)// = false;
             }
         }
     }
@@ -739,11 +745,21 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func isLevelDead() -> Bool {
-        var levelDead = true
+//        var levelDead = true
+//
+//        for line in lines{
+//            if line.lineThickness > 1{//} && pointInLevel(p: line.currentPoint){
+//                levelDead = false
+//            }
+//        }
+//        return levelDead
+        
+        //LEVEL IS DEAD IF EVEN ONE LINE IS DEAD (ALL NEED TO MAKE IT TO END)
+        var levelDead = false
         
         for line in lines{
-            if line.lineThickness > 1{//} && pointInLevel(p: line.currentPoint){
-                levelDead = false
+            if line.lineThickness < 1{//} && pointInLevel(p: line.currentPoint){
+                levelDead = true
             }
         }
         return levelDead
