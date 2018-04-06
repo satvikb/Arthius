@@ -11,6 +11,7 @@ import UIKit
 protocol CampaignLevelSelectorViewDelegate: class {
     func campaignLevelSelect_pressBack()
     func campaignLevelSelect_pressLevel(level:LevelData)
+    func campaignLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void)
 }
 
 class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
@@ -73,5 +74,9 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
     
     func levelSelector_pressedLevel(level: LevelData) {
         self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: level)
+    }
+    
+    func getThumbnail(levelUUID: String, completion: @escaping (UIImage) -> Void) {
+        campaignLevelSelectDelegate?.campaignLevelSelect_getThumbnail(uuid: levelUUID, completion: completion)
     }
 }

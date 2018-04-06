@@ -12,10 +12,11 @@ protocol CreateLevelSelectorViewDelegate: class {
     func createLevelSelect_pressBack()
     func createLevelSelect_createNew()
     func createLevelSelect_pressLevel(level:LevelData)
-//    func playSelect_pressSavedLevelsSelect()
+    func createLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void)
 }
 
 class CreateLevelSelectView : UIView, LevelSelectorDelegate {
+    
     weak var createLevelSelectDelegate:CreateLevelSelectorViewDelegate?
     var titleLabel : Label!;
     
@@ -89,5 +90,9 @@ class CreateLevelSelectView : UIView, LevelSelectorDelegate {
     
     func levelSelector_pressedLevel(level: LevelData) {
         self.createLevelSelectDelegate?.createLevelSelect_pressLevel(level: level)
+    }
+    
+    func getThumbnail(levelUUID: String, completion: @escaping (UIImage) -> Void) {
+        createLevelSelectDelegate?.createLevelSelect_getThumbnail(uuid: levelUUID, completion: completion)
     }
 }

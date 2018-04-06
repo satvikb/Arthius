@@ -34,6 +34,9 @@ enum View {
 class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate, GlobalLevelSelectViewDelegate{
     
     
+    
+    
+    
    
 
     var currentView : View!;
@@ -342,7 +345,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             let userId = Auth.auth().currentUser?.uid ?? ""
             
             if(userId != ""){
-                let thumbnailStoragePath = "\(userId)/thumb/\(currentLevel.levelData.levelMetadata.levelUUID).png"
+                let thumbnailStoragePath = "thumb/\(currentLevel.levelData.levelMetadata.levelUUID).png"
                 
                 let data : [String : Any] = [
                     "LevelID" : levelId,
@@ -379,8 +382,8 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     func uploadCustomMadeFile(userId : String, levelUUID : String){
         let storageRef = storage.reference()
-        
-        let levelRef = storageRef.child("\(userId)/\(levelUUID).gws")
+
+        let levelRef = storageRef.child("levels/\(levelUUID).gws")
         
         let localFile = File.getLevelPath(uuid: levelUUID, type: .UserMade)
 
@@ -404,14 +407,36 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     
+    func campaignLevelSelect_getThumbnail(uuid: String, completion: @escaping (_ img : UIImage) -> Void) {
+        
+    }
+    
+    func createLevelSelect_getThumbnail(uuid: String, completion: @escaping (_ img : UIImage) -> Void) {
+        
+    }
+    
+    func globalLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void){
+        let storageRef = storage.reference()
+        let thumbRef = storageRef.child("thumb/\(uuid).png")
+        
+        // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+        thumbRef.getData(maxSize: 1 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
+            if let error = error {
+                // Uh-oh, an error occurred!
+            } else {
+                // Data for "images/island.jpg" is returned
+                let image = UIImage(data: data!)
+                completion(image!)
+            }
+        })
+    }
+    
+    
     //TODO async completion handlers
     func downloadLevel(){
         
     }
-    
-    func downloadThumbnail(){
-        
-    }
+
     
     override var prefersStatusBarHidden: Bool {
         return true;

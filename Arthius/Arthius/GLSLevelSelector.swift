@@ -1,27 +1,28 @@
 //
-//  LevelSelector.swift
+//  GLSLevelSelector.swift
 //  Arthius
 //
-//  Created by Satvik Borra on 3/24/18.
+//  Created by Satvik Borra on 4/5/18.
 //  Copyright © 2018 satvik borra. All rights reserved.
 //
 
 import UIKit
 
-protocol LevelSelectorDelegate: class {
-    func levelSelector_pressedLevel(level: LevelData)
+
+protocol GLSSelectorDelegate: class {
+    func globalLevelSelector_pressedPlayLevel(level: GLSLevelData)
     func getThumbnail(levelUUID: String, completion: @escaping (_ img : UIImage) -> Void);
 }
 
-//used in create level selector and campaign level selector
-class LevelSelector : UIScrollView {
+//used in gls level selector
+class GLSLevelSelector : UIScrollView {
     
-    weak var levelSelectorDelegate:LevelSelectorDelegate?
-    var levels : [LevelData]!
+    weak var glsSelectorDelegate:GLSSelectorDelegate?
+    var levels : [GLSLevelData]!
     var xTiles : CGFloat!
     var yTiles : CGFloat!
     
-    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [LevelData]){
+    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [GLSLevelData]){
         super.init(frame: frame)
         
         self.levels = levels
@@ -36,7 +37,7 @@ class LevelSelector : UIScrollView {
         
     }
     
-    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [LevelData]){
+    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [GLSLevelData]){
         for subview in subviews{
             subview.removeFromSuperview()
         }
@@ -65,12 +66,17 @@ class LevelSelector : UIScrollView {
             let y :CGFloat = CGFloat(Int(CGFloat(i)/yTiles))//-1;
             
             let propRect = CGRect(x: startX+sidePadding+(tilePropWidth*x)+(xMiddlePadding*x), y: /*startY*/+topPadding+(tilePropHeight*y)+(yMiddlePadding*y), width: tilePropWidth, height: tilePropHeight);
-            let levelTile = LevelSelectTile(frame: propToRectSelf(prop: propRect), _level: level)
+            let levelTile = GLSSelectTile(frame: propToRectSelf(prop: propRect), _level: level)
             levelTile.backgroundColor = UIColor.yellow
             
-            levelTile.pressed = {(levelData : LevelData) in
-                //                self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: levelData)
-                self.levelSelectorDelegate?.levelSelector_pressedLevel(level: levelData)
+            glsSelectorDelegate?.getThumbnail(levelUUID: level.levelUUID, completion: {(img : UIImage) in
+                levelTile.image = img
+            })
+            
+            
+            levelTile.pressed = {(levelData : GLSLevelData) in
+                self.showLevelDetailView(levelTile: levelTile)
+//                self.glsSelectorDelegate?.levelSelector_pressedLevel(level: levelData)
             }
             
             self.addSubview(levelTile)
@@ -78,6 +84,11 @@ class LevelSelector : UIScrollView {
         }
         
         self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
+    }
+    
+    func showLevelDetailView(levelTile : GLSSelectTile){
+        let detailView : GLSLevelDetailView = GLSLevelDetailView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), tileView: levelTile);
+        self.addSubview(detailView)
     }
     
     func propToRectSelf(prop: CGRect) -> CGRect {
@@ -100,17 +111,17 @@ class LevelSelector : UIScrollView {
     
 }
 
-class LevelSelectTile : UIImageView {
-    var level : LevelData
-    var pressed = {(levelData : LevelData) in}
+class GLSSelectTile : UIImageView {
+    var level : GLSLevelData
+    var pressed = {(glsData : GLSLevelData) in}
     
     var heldDown : Bool = false;
     
-    init(frame: CGRect, _level: LevelData){
+    init(frame: CGRect, _level: GLSLevelData){
         level = _level;
         super.init(frame: frame);
         self.isUserInteractionEnabled = true;
-
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -135,6 +146,53 @@ class LevelSelectTile : UIImageView {
         return false
     }
     
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class GLSLevelDetailView : UIView {
+    
+    var topView : UIView!;
+    var leftView : UIView!;
+    var rightView : UIView!;
+    var bottomView : UIView!;
+    
+    init(frame : CGRect, tileView : GLSSelectTile){
+        //need to draw view around tileView
+        
+        super.init(frame: frame)
+        
+        let tF = tileView.frame
+        //TODO paddings
+        let widthFromLeftEdgeToTileRightEdge = tF.origin.x
+        let heightFromTopEdgeToTileTopEdge = tF.origin.y
+
+        let widthFromTileRightEdgeToRightEdge = frame.width-(tF.origin.x+tF.width)
+        let heightFromTileBottomEdgeToBottomEdge = frame.height-(tF.origin.y+tF.height)
+
+        topView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: heightFromTopEdgeToTileTopEdge))
+        topView.backgroundColor = UIColor.black
+        self.addSubview(topView)
+        
+        leftView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge, width: widthFromLeftEdgeToTileRightEdge, height: tF.height))
+        leftView.backgroundColor = UIColor.green
+        self.addSubview(leftView)
+        
+        rightView = UIView(frame: CGRect(x: tF.origin.x+tF.width, y: heightFromTopEdgeToTileTopEdge, width: widthFromTileRightEdgeToRightEdge, height: tF.height))
+        rightView.backgroundColor = UIColor.red
+        self.addSubview(rightView)
+        
+        bottomView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge+tF.height, width: frame.width, height: heightFromTileBottomEdgeToBottomEdge))
+        bottomView.backgroundColor = UIColor.orange
+        self.addSubview(bottomView)
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.removeFromSuperview()
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

@@ -567,6 +567,9 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                 if(line.madeItToEnd == false){
                     line.tempLineForces = CGVector.zero;
                     
+                    
+                    //BROKEN: multiple end points makes move twice??
+                    //Having multiple lines does not make color boxes work
                     for endView in endPoints{
                         
                         var forces = calculateGravityForcesForLine(line: line)
