@@ -37,6 +37,10 @@ class Line : CAShapeLayer{
 //    var startView : UIView!; //For editable
     
     
+    var levelCountTimer : Double = 0;
+    var levelCountDistance : CGFloat = 0;
+    
+    
     //oh why not, too much work to have an incremental number ID system
     var uuid : String!
     
@@ -205,6 +209,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     var changeBordersBasedOnZoom : Bool = true
 
+    
     init(_level: Level, _parentView: View){
         level = _level;
         parentView = _parentView;
@@ -299,8 +304,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         playResetBtn.pressed = {
             if(self.paused == true){
                 //play
-                self.paused = false
-                self.playResetBtn.text.text = "R"
+                self.playLevel()
             }else if(self.paused == false){
                 //currently playing, pause and reset level
                 self.paused = true;
@@ -317,6 +321,17 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         
         self.addSubview(playResetBtn);
         self.addSubview(homeBtn);
+    }
+    
+    func playLevel(){
+        
+        self.paused = false
+        self.playResetBtn.text.text = "R"
+        
+        for line in lines{
+            line.levelCountDistance = 0
+            line.levelCountTimer = Date().timeIntervalSince1970
+        }
     }
     
     func setupLevelTexts(){
@@ -574,9 +589,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     
                     var forces = calculateGravityForcesForLine(line: line)
                     line.tempLineForces = CGVector.zero;
-
-                    //BROKEN: multiple end points makes move twice??
-                    //Having multiple lines does not make color boxes work
+                    
                     for endView in endPoints{
                         
                         
@@ -592,6 +605,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
 //                            if(endView.innerView.frame.contains(innerViewPos)){
                             if(innerFrame.contains(line.currentPoint)){
                                 if(line.lineColor == endView.color){
+                                    line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
                                     line.madeItToEnd = true;
                                 }
                             }
@@ -599,14 +613,16 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     }
                     
                     //pemdas
-                    let dV = forces / line.lineMass
+                    let dV = forces / line.lineMass //accelerations
                     line.lineVelocity = line.lineVelocity + dV
                     
                     let deltaVel = line.lineVelocity!
+                    
                     let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+                    line.levelCountDistance += deltaVel.length()
                     line.newLocation(p: pos)
                     
-                    
+                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
                     //handle collisions
                     
                     for gravWell in scaledGravityWells {
@@ -646,7 +662,25 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     
     func didBeatLevel(){
-        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: 0, timePlayed: 0))
+        func totalDistanceTravelled() -> CGFloat{
+            var dist : CGFloat = 0;
+            for line in lines{
+                dist += line.levelCountDistance
+            }
+            return dist
+        }
+        
+        func maxLineTime() -> CGFloat{
+            var max : Double = 0;
+            for line in lines{
+                if(line.levelCountTimer > max){
+                    max = line.levelCountTimer
+                }
+            }
+            return CGFloat(max);
+        }
+        
+        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: totalDistanceTravelled(), timePlayed: maxLineTime()))
         levelBeat.homePressed = {
             self.levelViewDelegate?.level_pressMenu()
         }

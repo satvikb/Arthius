@@ -110,7 +110,7 @@ class LevelSelectTile : UIImageView {
         level = _level;
         super.init(frame: frame);
         self.isUserInteractionEnabled = true;
-
+        self.contentMode = UIViewContentMode.scaleAspectFit;
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

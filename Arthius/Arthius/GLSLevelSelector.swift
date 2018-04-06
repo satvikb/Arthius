@@ -80,8 +80,10 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
             levelTile.layer.borderColor = UIColor.black.cgColor
             levelTile.layer.borderWidth = 2;
             
+            print("Showing Level Tile: \(level.levelUUID)")
             glsSelectorDelegate?.getThumbnail(levelUUID: level.levelUUID, completion: {(img : UIImage) in
                 levelTile.image = img
+                print("Showing Level Thumb: \(level.levelUUID)")
             })
             
             
@@ -156,7 +158,7 @@ class GLSSelectTile : UIImageView {
         level = _level;
         super.init(frame: frame);
         self.isUserInteractionEnabled = true;
-        
+        self.contentMode = UIViewContentMode.scaleAspectFit;
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

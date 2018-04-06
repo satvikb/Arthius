@@ -248,7 +248,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         let storageRef = storage.reference()
         let levelRef = storageRef.child("levels/\(uuid).gws")
         
-        // Download in memory with a maximum allowed size of 10MB (1 * 1024 * 1024 bytes)
+        // Download in memory with a maximum allowed size of 10MB (10 * 1024 * 1024 bytes)
         levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
             if let error = error {
                 // Uh-oh, an error occurred!
@@ -332,6 +332,8 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     func level_nextLevel() {
         print("NEXT LEVEL")
+        //TODO get next level in a way that allows dynamic new levels frmo the internet
+        //use LevelNumber in level metadata
     }
     
     func createLevelSelect_pressBack() {

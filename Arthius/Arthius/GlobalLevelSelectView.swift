@@ -72,6 +72,7 @@ class GlobalLevelSelectView : UIView, GLSSelectorDelegate {
     func loadLevels(query : LevelQuery){
         //TODO get query from UI
         
+        print("Getting levels")
         //get all queried levels from firebase
         globalLevelSelectDelegate?.globalLevelSelect_getLevels(query: query, completion: {(levelData : [GLSLevelData]) in
             

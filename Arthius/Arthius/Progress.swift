@@ -9,12 +9,14 @@
 import Foundation
 
 struct CampaignProgress {
-    var progress : [CampaignProgressData];
+    var progress : [String : CampaignProgressData];
 }
 
 struct CampaignProgressData : Codable {
-    var uuid : String
+//    var uuid : String
+    var levelNumber : Bool
     var completed : Bool
+    var locked : Bool
     var stars : Int
     var time : CGFloat
     var distance : CGFloat
