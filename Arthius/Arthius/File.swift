@@ -172,7 +172,9 @@ class File {
                 Failure Reason: \(error.localizedFailureReason ?? "")
                 Suggestions: \(error.localizedRecoverySuggestion ?? "")
                 """)
-            return CampaignProgress(progress: [:])
+            
+            let startingData = [1:CampaignProgressData(levelNumber: 1, completed: false, locked: false, stars: 0, time: 0, distance: 0)]
+            return CampaignProgress(progress: startingData)
         }
     }
     

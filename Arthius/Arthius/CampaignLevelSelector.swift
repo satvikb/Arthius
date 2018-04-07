@@ -17,14 +17,12 @@ protocol CampaignLevelSelectorDelegate: class {
 class CampaignLevelSelector : UIScrollView {
     
     weak var campaignLevelSelectorDelegate:CampaignLevelSelectorDelegate?
-    var levels : [LevelData]!
     var xTiles : CGFloat!
     var yTiles : CGFloat!
     
-    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [LevelData], campaignProgress : CampaignProgress){
+    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat){
         super.init(frame: frame)
         
-        self.levels = levels
         self.xTiles = xTiles
         self.yTiles = yTiles
         
@@ -32,18 +30,17 @@ class CampaignLevelSelector : UIScrollView {
         self.showsHorizontalScrollIndicator = false;
         self.isUserInteractionEnabled = true;
         
-        self.updateLevels(xTiles, yTiles, newLevels: levels, newCampaignProgress: campaignProgress)
+        self.updateLevels(xTiles, yTiles)
         
     }
     
-    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [LevelData], newCampaignProgress : CampaignProgress){
+    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat){
         for subview in subviews{
             subview.removeFromSuperview()
         }
         
         xTiles = newXTiles
         yTiles = newYTiles
-        levels = newLevels;
         
         let sidePadding : CGFloat = 0.05;
         let topPadding : CGFloat = 0.05;
@@ -60,20 +57,30 @@ class CampaignLevelSelector : UIScrollView {
         let tilePropHeight = ((1)-preDivY)/yTiles;
         
         var i = 0
-        for level in levels {
-            let progress = newCampaignProgress.progress[level.levelMetadata.levelUUID]!
+        for level in CampaignLevelHandler.allLevels {
+            var progress = CampaignProgressHandler.progress.progress[level.levelMetadata.levelNumber]
+            
+            if progress == nil{
+                progress = CampaignProgressHandler.setProgress(level.levelMetadata.levelNumber, CampaignProgressData(levelNumber: level.levelMetadata.levelNumber, completed: false, locked: true, stars: 0, time: 0, distance: 0))
+            }
             
             
             let x = CGFloat(Int((i%Int(xTiles))));
             let y :CGFloat = CGFloat(Int(CGFloat(i)/yTiles))//-1;
             
             let propRect = CGRect(x: startX+sidePadding+(tilePropWidth*x)+(xMiddlePadding*x), y: /*startY*/+topPadding+(tilePropHeight*y)+(yMiddlePadding*y), width: tilePropWidth, height: tilePropHeight);
-            let levelTile = CampaignLevelSelectTile(frame: propToRectSelf(prop: propRect), _level: level, _progressData: progress)
-            levelTile.backgroundColor = UIColor.yellow
+            let levelTile = CampaignLevelSelectTile(frame: propToRectSelf(prop: propRect), _level: level, _progressData: progress!)
+            
+            if(progress!.locked){
+                levelTile.backgroundColor = UIColor.yellow
+            }else{
+                levelTile.layer.borderColor = UIColor.black.cgColor
+                levelTile.layer.borderWidth = 3
+            }
             
             levelTile.pressed = {(levelData : LevelData) in
                 //                self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: levelData)
-                if(!progress.locked){
+                if(!progress!.locked){
                     self.campaignLevelSelectorDelegate?.campaignLevelSelector_pressedLevel(level: levelData)
                 }
             }

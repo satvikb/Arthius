@@ -55,6 +55,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         currentView = View.Splash
         
         File.copyLevelsFromBundleToDocuments()
+        CampaignLevelHandler.load()
         CampaignProgressHandler.load()
         
         firebaseAuthHandler()
@@ -148,9 +149,10 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             self.view.addSubview(accountView)
             accountView.animateIn()
         case .LevelPlay:
-            levelView = LevelView(_level: currentLevel, _parentView: currentView)//, _resetToLevel: currentLevel)
+            levelView = LevelView(_level: currentLevel, _parentView: currentView, _campaignLevel: didPressCampaignLevel)//, _resetToLevel: currentLevel)
             levelView.levelViewDelegate = self;
             levelView.animateIn()
+            didPressCampaignLevel = false;
             self.view.addSubview(levelView)
             break;
         case .PlaySelect:
@@ -158,6 +160,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             playSelectView.animateIn(time: transitionTime)
             break;
         case .CampaignLevelSelect:
+//            campaignLevelSelectView.
             self.view.addSubview(campaignLevelSelectView)
             campaignLevelSelectView.animateIn(time: transitionTime)
         case .CreateSelect:
@@ -313,8 +316,10 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: .PlaySelect)
     }
     
+    var didPressCampaignLevel : Bool = false
     func campaignLevelSelect_pressLevel(level: LevelData) {
         currentLevel = Level(_levelData: level);
+        didPressCampaignLevel = true;
         switchToView(newView: .LevelPlay)
     }
     

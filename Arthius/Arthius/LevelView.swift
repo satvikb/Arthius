@@ -687,7 +687,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         let time = maxLineTime()
         
         if(campaignLevel){
-            CampaignProgressHandler.completedLevel(uuid: level.levelData.levelMetadata.levelUUID, data: CampaignProgressData(levelNumber: level.levelData.levelMetadata.levelNumber, completed: true, locked: false, stars: 3, time: time, distance: dist))
+            CampaignProgressHandler.completedLevel(levelNumber: level.levelData.levelMetadata.levelNumber, data: CampaignProgressData(levelNumber: level.levelData.levelMetadata.levelNumber, completed: true, locked: false, stars: 3, time: time, distance: dist))
         }
         
         let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time))

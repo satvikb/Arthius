@@ -19,7 +19,7 @@
 		4019988C2061A52E00411CB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4019988B2061A52E00411CB8 /* Assets.xcassets */; };
 		4019988F2061A52E00411CB8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */; };
 		4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */; };
-		4064286E206C7AFD000B18A3 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* Progress.swift */; };
+		4064286E206C7AFD000B18A3 /* CampaignHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* CampaignHandler.swift */; };
 		40642870206C823E000B18A3 /* LineStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286F206C823E000B18A3 /* LineStart.swift */; };
 		4081BDE920784DA400710AED /* CampaignLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDE820784DA400710AED /* CampaignLevelSelector.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
@@ -91,7 +91,7 @@
 		4019988E2061A52E00411CB8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		401998902061A52E00411CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalLevelSelectView.swift; sourceTree = "<group>"; };
-		4064286D206C7AFD000B18A3 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
+		4064286D206C7AFD000B18A3 /* CampaignHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignHandler.swift; sourceTree = "<group>"; };
 		4064286F206C823E000B18A3 /* LineStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStart.swift; sourceTree = "<group>"; };
 		4081BDE820784DA400710AED /* CampaignLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignLevelSelector.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 				40A41FB82065C96A000E4634 /* File.swift */,
 				40E544D5206336FA006505D5 /* Level.swift */,
 				4016787D20683E2400D8A5EF /* FirebaseHandler.swift */,
-				4064286D206C7AFD000B18A3 /* Progress.swift */,
+				4064286D206C7AFD000B18A3 /* CampaignHandler.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -462,7 +462,7 @@
 				40ADEDFD206F484500643253 /* LevelLeaveConfirmation.swift in Sources */,
 				40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */,
 				4016787E20683E2400D8A5EF /* FirebaseHandler.swift in Sources */,
-				4064286E206C7AFD000B18A3 /* Progress.swift in Sources */,
+				4064286E206C7AFD000B18A3 /* CampaignHandler.swift in Sources */,
 				40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */,
 				40A41F9B20647124000E4634 /* Disk+Codable.swift in Sources */,
 				40A41FA720659C33000E4634 /* PlaySelect.swift in Sources */,

@@ -14,13 +14,10 @@ protocol CampaignLevelSelectorViewDelegate: class {
     func campaignLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void)
 }
 
-class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
+class CampaignLevelSelectView: UIView, CampaignLevelSelectorDelegate {
     
     weak var campaignLevelSelectDelegate:CampaignLevelSelectorViewDelegate?
     var titleLabel : Label!;
-    
-    var levels : [LevelData] = []
-//    var levelTiles : [LevelSelectTile] = []
     
     var levelSelectScroll : CampaignLevelSelector!;
     
@@ -49,18 +46,17 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
         // load all .gws files from campaignlevels directory
         // loading async?
         
-        levels = File.getAllLevels(type: .Campaign)
-
-        
-        levelSelectScroll = CampaignLevelSelector(frame: propToRect(prop: CGRect(x: 0, y: 0.25, width: 1, height: 0.75)), xTiles: 3, yTiles: 3, levels: levels, campaignProgress: CampaignProgressHandler.progress)
+        levelSelectScroll = CampaignLevelSelector(frame: propToRect(prop: CGRect(x: 0, y: 0.25, width: 1, height: 0.75)), xTiles: 3, yTiles: 3)
         levelSelectScroll.isUserInteractionEnabled = true;
-        levelSelectScroll.levelSelectorDelegate = self
+        levelSelectScroll.campaignLevelSelectorDelegate = self
         self.addSubview(levelSelectScroll)
     }
     
     func animateIn(time: CGFloat){
         titleLabel.animateIn(time: time)
         backButton.animateIn()
+        
+        levelSelectScroll.updateLevels(levelSelectScroll.xTiles, levelSelectScroll.yTiles)
     }
     
     func animateOut(time : CGFloat){
@@ -71,8 +67,8 @@ class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func levelSelector_pressedLevel(level: LevelData) {
+
+    func campaignLevelSelector_pressedLevel(level: LevelData) {
         self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: level)
     }
     
