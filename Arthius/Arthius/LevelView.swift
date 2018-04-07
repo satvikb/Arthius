@@ -150,27 +150,35 @@ class Line : CAShapeLayer{
 }
 
 class LevelEnd : UIView{
-    var innerView : UIView!;
     var color : Color!;
     
-    var endView : UIView!; //For editable
+//    var endView : UIView!; //For editable
     
-    init(_outerFrame : CGRect, _innerFrame : CGRect, _color : Color) {
-        super.init(frame: _outerFrame)
+    init(_innerFrame : CGRect, _color : Color) {
+        super.init(frame: _innerFrame)
         color = _color
-        
-        self.backgroundColor = UIColor.black
-        
-        innerView = UIView(frame: _innerFrame)
-        innerView.backgroundColor = ColorBox.ColorToUIColor(col: _color)
-        
-        self.addSubview(innerView)
+        self.backgroundColor = _color.uiColor()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+class AntiGravityZone : UIView{
+    var color : Color!;
+    
+    init(_innerFrame : CGRect, _color : Color) {
+        super.init(frame: _innerFrame)
+        color = _color
+        self.backgroundColor = _color.uiColor()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 
 class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
@@ -185,6 +193,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
 
     var lines : [Line] = []
     var endPoints : [LevelEnd] = []
+    var antiGravityZones : [AntiGravityZone] = []
     
     let G : CGFloat = 1;
     
@@ -221,13 +230,15 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         
         
         setupLevelView()
+        
         setupLines()
         setupLevelEnds()
+        setupAntiGrvityZones()
+        
         setupGestureRecognizers()
         createLevelElementsFromLevel()
         createUIButtons()
         setupLevelTexts()
-        
         
         start()
     }
@@ -281,24 +292,25 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor, _startThickness: propToFloat(prop: line.startThickness, scaleWithX: true))
             lines.append(newLine)
             self.stageView.layer.addSublayer(newLine)
-            
-            
         }
-        
     }
     
     func setupLevelEnds(){
         
         for end in level.levelData.endPoints{
-            let outerFrame = propToRect(prop: end.outerFrame)
-            let newEnd = LevelEnd(_outerFrame: outerFrame, _innerFrame: propToRect(prop: end.coreFrame, within: outerFrame), _color: end.endColor)
+//            let outerFrame = propToRect(prop: end.outerFrame)
+            let newEnd = LevelEnd(_innerFrame: propToRect(prop: end.coreFrame), _color: end.endColor)
             endPoints.append(newEnd)
             self.stageView.addSubview(newEnd)
         }
-        
-//        let endRect = UIView(frame: endRectScaled)
-//        endRect.backgroundColor = ColorBox.ColorToUIColor(col: level.levelData.endColor)
-//        self.stageView.addSubview(endRect)
+    }
+    
+    func setupAntiGrvityZones(){
+        for zone in level.levelData.antiGravityZones{
+            let newZone = AntiGravityZone(_innerFrame: propToRect(prop: zone.frame), _color: zone.color)
+            antiGravityZones.append(newZone)
+            self.stageView.addSubview(newZone)
+        }
     }
     
     func createUIButtons(){
@@ -337,13 +349,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func setupLevelTexts(){
-        
-//        var startText : String = ""
-//        var startHidden : Bool = true;
-//        var startPropFrame : CGRect = CGRect.zero
-//        var textColor : UIColor = UIColor.clear;
-//        var fontSize : CGFloat = 0;
-        
+
         currentTextsLabel = LevelTextsLabel(frame: propToRect(prop: CGRect.zero, within: self.frame), text: "", _outPos: propToPoint(prop: CGPoint(x: -1, y: 0.7)), textColor: UIColor.white, valign: VAlign.Default, _insets: true, hidden: false)
 //        currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: fontSize))
 
@@ -593,24 +599,25 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     line.tempLineForces = CGVector.zero;
                     
                     for endView in endPoints{
+//                        let newFrame : CGRect = stageView.convert(endView.frame, from:levelView)
+//stageView.convert(<#T##point: CGPoint##CGPoint#>, from: <#T##UIView?#>)
                         
-                        
-                        if(endView.frame.contains(line.currentPoint)){
-                            forces = CGVector.zero;
+                        if(endView.frame.contains(stageView.convert(line.currentPoint, from: stageView))){
+//                            forces = CGVector.zero;
 
-//                            [subview convertPoint:pointInSuperview fromView:superview];
-                            //TODO compatibility test conversion
-//                            let endViewPos = endView.convert(line.currentPoint, from: stageView)
-//                            let innerViewPos = endView.innerView.convert(endViewPos, from: endView)
-                            let innerFrame : CGRect = stageView.convert(endView.innerView.frame, from:endView)
-
-//                            if(endView.innerView.frame.contains(innerViewPos)){
-                            if(innerFrame.contains(line.currentPoint)){
-                                if(line.lineColor == endView.color){
-                                    line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
-                                    line.madeItToEnd = true;
-                                }
+                            if(line.lineColor == endView.color){
+                                line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
+                                line.madeItToEnd = true;
                             }
+                            
+                        }
+                    }
+                    
+                    //ANTI GRAVITY ZONES
+                    //TODO doesnt work 
+                    for antiGrav in antiGravityZones {
+                        if(antiGrav.frame.contains(line.currentPoint)){
+                            forces = CGVector.zero
                         }
                     }
                     
@@ -624,7 +631,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     line.levelCountDistance += deltaVel.length()
                     line.newLocation(p: pos)
                     
-                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
+//                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
                     //handle collisions
                     
                     for gravWell in scaledGravityWells {

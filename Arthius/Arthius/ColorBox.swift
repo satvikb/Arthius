@@ -53,7 +53,7 @@ class ColorBox :  UIView {
         stageView = _stageView;
         editable = _editable;
         
-        print("F \(frame)")
+//        print("F \(frame)")
         super.init(frame: frame)//, rotation: rotation, box: box)
         
         self.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)

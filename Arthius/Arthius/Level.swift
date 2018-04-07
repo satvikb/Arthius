@@ -51,7 +51,8 @@ struct LevelData : Codable {
     var gravityWells : [GravityWellData]
     var colorBoxData : [ColorBoxData]
     var rockData : [RockData]
-    var speedBoostData : [SpeedBoostData]
+    var antiGravityZones : [AntiGravityData]
+//    var speedBoostData : [SpeedBoostData]
 }
 
 struct LineData : Codable, Equatable{
@@ -65,9 +66,13 @@ struct LineData : Codable, Equatable{
     var startThickness : CGFloat;
 }
 
+struct AntiGravityData : Codable{
+    var frame : CGRect;
+    var color : Color; //ANTI GRAVITY ONLY AFFECTS LINES OF CERTAIN COLORS?? <- IF SO, == COLORS IMPOSSIBLE TO SEE, OR JUST VISUAL??
+}
+
 struct EndData : Codable{
-    var outerFrame : CGRect;
-    var coreFrame : CGRect; //treated as: propToRect(coreFrame, within: outerFrame)
+    var coreFrame : CGRect;
     var endColor : Color;
 }
 

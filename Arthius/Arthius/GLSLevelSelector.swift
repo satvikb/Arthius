@@ -252,6 +252,7 @@ class GLSLevelDetailView : UIView {
     }
     
     //TODO
+    // DO A BUNCH OF MAX() FOR WIDTHS AND HEIGHTS TO FIND THE LARGEST VIEW
     func getOpenViewForTitle() -> UIView{
         return topView
     }
