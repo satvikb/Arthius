@@ -32,8 +32,6 @@ enum View {
 }
 
 class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate, GlobalLevelSelectViewDelegate{
-    
-   
 
     var currentView : View!;
     var menuView : MenuView!;
@@ -93,7 +91,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         })
     }
     
-    func switchToView(newView : View, transitionTime : CGFloat = transitionTime){
+    func switchToView(newView : View, transitionTime : CGFloat = transitionTime, forceParentView: Bool = false, forcedParentView : View = .Menu){
         func removeView(view: UIView, after: CGFloat){
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(after), execute: {
                 view.removeFromSuperview()
@@ -139,7 +137,6 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             
         }
         
-        
         switch newView {
         case .Menu:
             self.view.addSubview(menuView);
@@ -149,7 +146,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             self.view.addSubview(accountView)
             accountView.animateIn()
         case .LevelPlay:
-            levelView = LevelView(_level: currentLevel, _parentView: currentView, _campaignLevel: didPressCampaignLevel)//, _resetToLevel: currentLevel)
+            levelView = LevelView(_level: currentLevel, _parentView: forceParentView ? forcedParentView : currentView, _campaignLevel: didPressCampaignLevel)//, _resetToLevel: currentLevel)
             levelView.levelViewDelegate = self;
             levelView.animateIn()
             didPressCampaignLevel = false;
@@ -240,6 +237,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     func globalLevelSelect_pressLevel(level: GLSLevelData) {
         getLevelFile(uuid: level.levelUUID, completion: {(levelData : LevelData) in
+            DownloadCounter.addDownloadCounterTo(uuid: level.levelUUID)
             self.currentLevel = Level(_levelData: levelData);
             self.switchToView(newView: .LevelPlay)
         })
@@ -275,9 +273,10 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             } else {
                 
                 var lData : [GLSLevelData] = []
+                var num : Int = 0
                 
                 for document in querySnapshot!.documents {
-                    print("\(document.documentID) => \(document.data())")
+//                    print("\(document.documentID) => \(document.data())")
                     let d = document.data()
                     
                     //TODO guard lets based on query, optionals?
@@ -286,11 +285,20 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                     let levelUUID : String = d["LevelID"]! as! String
                     let description : String = d["Description"]! as! String
                     
-                    let glsData = GLSLevelData(title: title, creatorId: creatorId, levelUUID: levelUUID, description: description)
-                    lData.append(glsData)
+                    DownloadCounter.getDownloadCountFor(uuid: levelUUID, completion: {(downloads : Int) in
+                        let glsData = GLSLevelData(title: title, creatorId: creatorId, levelUUID: levelUUID, description: description, downloads: downloads)
+                        lData.append(glsData)
+                        num += 1
+                        
+                        if(querySnapshot?.count == num){
+                            completion(lData)
+                        }
+                    })
+                    
+                    
                 }
                 
-                completion(lData)
+//                completion(lData)
             }
         }
     }
@@ -333,10 +341,17 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: levelView.parentView, transitionTime: t)
     }
     
-    func level_nextLevel() {
-        print("NEXT LEVEL")
-        //TODO get next level in a way that allows dynamic new levels frmo the internet
+    func level_nextLevel(currentLevelNumber : Int) {
+        //TODO get next level in a way that allows dynamic new levels from the internet
         //use LevelNumber in level metadata
+        let d = CampaignLevelHandler.getLevelFromLevelNumber(levelNumber: currentLevelNumber + 1)
+        if(d != nil){
+            currentLevel = Level(_levelData: d!)
+            didPressCampaignLevel = true
+            switchToView(newView: .LevelPlay, transitionTime: transitionTime, forceParentView: true, forcedParentView: .CampaignLevelSelect)
+        }else{
+            print("NO NEXT LEVEL")
+        }
     }
     
     func createLevelSelect_pressBack() {

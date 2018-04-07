@@ -15,14 +15,14 @@ class CampaignLevelHandler {
         allLevels = File.getAllLevels(type: .Campaign)
     }
     
-//    static func getUUIDFromCampaignLevelNumber(levelNumber : Int) -> String {
-//        for level in allLevels {
-//            if(level.levelMetadata.levelNumber == levelNumber){
-//                return level.levelMetadata.levelUUID
-//            }
-//        }
-//        return "0"
-//    }
+    static func getLevelFromLevelNumber(levelNumber : Int) -> LevelData? {
+        for level in allLevels {
+            if(level.levelMetadata.levelNumber == levelNumber){
+                return level
+            }
+        }
+        return nil
+    }
 }
 
 

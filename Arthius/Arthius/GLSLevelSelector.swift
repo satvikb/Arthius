@@ -89,8 +89,9 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
             
             levelTile.pressed = {(levelData : GLSLevelData) in
                 
+                let paddings = self.propToRect(prop: CGRect(x: sidePadding, y: topPadding, width: xMiddlePadding, height: yMiddlePadding), within: self.bounds)
                 
-                    self.showLevelDetailView(levelTile: levelTile)
+                self.showLevelDetailView(levelTile: levelTile, sidePadding: paddings.origin.x, topPadding: paddings.origin.y, xMiddlePadding: paddings.size.width, yMiddlePadding: paddings.size.height)
                 
 //                self.glsSelectorDelegate?.levelSelector_pressedLevel(level: levelData)
             }
@@ -102,12 +103,12 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
         self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
     }
     
-    func showLevelDetailView(levelTile : GLSSelectTile){
+    func showLevelDetailView(levelTile : GLSSelectTile, sidePadding: CGFloat, topPadding: CGFloat, xMiddlePadding: CGFloat, yMiddlePadding: CGFloat){
         
         if(!self.showingDetailView){
             self.showingDetailView = true;
             
-            let detailView : GLSLevelDetailView = GLSLevelDetailView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), tileView: levelTile);
+            let detailView : GLSLevelDetailView = GLSLevelDetailView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height), tileView: levelTile, sidePadding: sidePadding, topPadding: topPadding, xMiddlePadding: xMiddlePadding, yMiddlePadding: yMiddlePadding);
             detailView.delegate = self
             self.addSubview(detailView)
             detailView.animateIn()
@@ -200,9 +201,11 @@ class GLSLevelDetailView : UIView {
     
     var playButton : Button!
     
+    var downloadCount : Label!
+    
     weak var delegate : GLSDetailViewDelegate?
     
-    init(frame : CGRect, tileView : GLSSelectTile){
+    init(frame : CGRect, tileView : GLSSelectTile, sidePadding: CGFloat, topPadding: CGFloat, xMiddlePadding: CGFloat, yMiddlePadding: CGFloat){
         //need to draw view around tileView
         self.tileView = tileView;
         
@@ -217,28 +220,53 @@ class GLSLevelDetailView : UIView {
         let widthFromTileRightEdgeToRightEdge = frame.width-(tF.origin.x+tF.width)
         let heightFromTileBottomEdgeToBottomEdge = frame.height-(tF.origin.y+tF.height)
 
-        topView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: heightFromTopEdgeToTileTopEdge))
+        topView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: heightFromTopEdgeToTileTopEdge-yMiddlePadding))
         topView.backgroundColor = UIColor.black
         self.addSubview(topView)
         
-        leftView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge, width: widthFromLeftEdgeToTileRightEdge, height: tF.height))
+        leftView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge, width: widthFromLeftEdgeToTileRightEdge-xMiddlePadding, height: tF.height))
         leftView.backgroundColor = UIColor.green
         self.addSubview(leftView)
         
-        rightView = UIView(frame: CGRect(x: tF.origin.x+tF.width, y: heightFromTopEdgeToTileTopEdge, width: widthFromTileRightEdgeToRightEdge, height: tF.height))
+        rightView = UIView(frame: CGRect(x: tF.origin.x+tF.width+xMiddlePadding, y: heightFromTopEdgeToTileTopEdge, width: widthFromTileRightEdgeToRightEdge-xMiddlePadding, height: tF.height))
         rightView.backgroundColor = UIColor.red
         self.addSubview(rightView)
         
-        bottomView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge+tF.height, width: frame.width, height: heightFromTileBottomEdgeToBottomEdge))
+        bottomView = UIView(frame: CGRect(x: 0, y: heightFromTopEdgeToTileTopEdge+tF.height+yMiddlePadding, width: frame.width, height: heightFromTileBottomEdgeToBottomEdge-yMiddlePadding))
         bottomView.backgroundColor = UIColor.orange
         self.addSubview(bottomView)
         
-        playButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.7, width: 0.8, height: 0.2), within: bottomView.frame), text: "play", fontSize: Screen.fontSize(propFontSize: 20), outPos: propToRect(prop: CGRect(x: -1, y: 0.7, width: 0, height: 0), within: bottomView.frame).origin)
+        playButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.7, width: 0.8, height: 0.2), within: bottomView.frame), text: "play", fontSize: Screen.fontSize(propFontSize: 20), outPos: propToRect(prop: CGRect(x: -1, y: 0.7, width: 0, height: 0), within: getOpenViewForPlayButton().frame).origin)
         playButton.pressed = {
             self.delegate?.pressedPlay(self.tileView)
         }
-        bottomView.addSubview(playButton)
+        getOpenViewForPlayButton().addSubview(playButton)
+        
+        
+        downloadCount = Label(frame: propToRect(prop: CGRect(x: 0.05, y: 0.05, width: 0.9, height: 0.2), within: getOpenViewForDownloadCounter().frame), text: "D: \(tileView.level.downloads)", _outPos: CGPoint(x: -1, y: 0.05), textColor: UIColor.white, valign: VAlign.Default, _insets: false)
+//        DownloadCounter.getDownloadCountFor(uuid: tileView.level.levelUUID, completion: {(downloads : Int) in
+//
+//        })
+        getOpenViewForDownloadCounter().addSubview(downloadCount)
+        
     }
+    
+    //TODO
+    func getOpenViewForTitle() -> UIView{
+        return topView
+    }
+    
+    func getOpenViewForPlayButton() -> UIView{
+        return bottomView
+    }
+    
+    func getOpenViewForDownloadCounter() -> UIView{
+        return rightView
+    }
+//
+//    func getOpenViewLeftRight() -> UIView{
+//
+//    }
     
     func animateIn(){
         playButton.animateIn()

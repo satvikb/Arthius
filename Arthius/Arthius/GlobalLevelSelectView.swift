@@ -21,6 +21,7 @@ struct GLSLevelData {
     var creatorId : String
     var levelUUID : String
     var description : String
+    var downloads : Int
     //etc
 }
 

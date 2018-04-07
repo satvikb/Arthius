@@ -149,35 +149,35 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func saveLevel(){
-        do {
-            try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
-            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
-            var text = "s"
-            
-            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                
-                let fileURL = dir.appendingPathComponent(file)
-                print(fileURL.path)
-                
-                //reading
-                do {
-                    text = try String(contentsOf: fileURL, encoding: .utf8)
-                    print(text)
-                }
-                catch let error as NSError{/* error handling here */
-                    print("read error "+error.localizedDescription)
-                }
-            }
-        } catch let error as NSError {
-            print("""
-                NO SAVE TEST
-                Domain: \(error.domain)
-                Code: \(error.code)
-                Description: \(error.localizedDescription)
-                Failure Reason: \(error.localizedFailureReason ?? "")
-                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-                """)
-        }
+//        do {
+//            try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
+//            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
+//            var text = "s"
+//            
+//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//                
+//                let fileURL = dir.appendingPathComponent(file)
+//                print(fileURL.path)
+//                
+//                //reading
+//                do {
+//                    text = try String(contentsOf: fileURL, encoding: .utf8)
+//                    print(text)
+//                }
+//                catch let error as NSError{/* error handling here */
+//                    print("read error "+error.localizedDescription)
+//                }
+//            }
+//        } catch let error as NSError {
+//            print("""
+//                NO SAVE TEST
+//                Domain: \(error.domain)
+//                Code: \(error.code)
+//                Description: \(error.localizedDescription)
+//                Failure Reason: \(error.localizedFailureReason ?? "")
+//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+//                """)
+//        }
 
         
         do {
@@ -336,6 +336,13 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        if(scrollView.zoomScale < 1){
+            stageView.layer.borderWidth = 3;
+        }else{
+            stageView.layer.borderWidth = 0;
+        }
+        
+        
         centerScroll()
     }
 }

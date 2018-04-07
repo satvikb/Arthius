@@ -10,7 +10,7 @@ import UIKit
 
 protocol LevelViewDelegate: class {
     func level_pressMenu()
-    func level_nextLevel()
+    func level_nextLevel(currentLevelNumber: Int)
 }
 
 class Line : CAShapeLayer{
@@ -690,12 +690,12 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             CampaignProgressHandler.completedLevel(levelNumber: level.levelData.levelMetadata.levelNumber, data: CampaignProgressData(levelNumber: level.levelData.levelMetadata.levelNumber, completed: true, locked: false, stars: 3, time: time, distance: dist))
         }
         
-        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time))
+        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time), _campaign: campaignLevel)
         levelBeat.homePressed = {
             self.levelViewDelegate?.level_pressMenu()
         }
         levelBeat.nextLevelPressed = {
-            self.levelViewDelegate?.level_nextLevel()
+            self.levelViewDelegate?.level_nextLevel(currentLevelNumber: self.level.levelData.levelMetadata.levelNumber)
         }
         
         //TODO animate
