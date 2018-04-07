@@ -191,6 +191,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     var playResetBtn : Button!;
     var homeBtn : Button!;
 
+    var campaignLevel : Bool = false;
     var beatLevel : Bool = false;
     
     //Create scaled arrays to store the level elements that are scaled up to the current device size. TODO: Do this for all the other level elements.
@@ -210,9 +211,10 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     var changeBordersBasedOnZoom : Bool = true
 
     
-    init(_level: Level, _parentView: View){
+    init(_level: Level, _parentView: View, _campaignLevel: Bool = false){
         level = _level;
         parentView = _parentView;
+        campaignLevel = _campaignLevel
         super.init(frame: UIScreen.main.bounds)
 
         self.backgroundColor = UIColor.white
@@ -568,16 +570,16 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         return newBox
     }
     
-    func snapshot(){
-        let levelSave = level;
-        
-        //update levelData using scaledGravityWells
-        var gravityWellData : [GravityWellData] = []
-        for scaledGravWell in scaledGravityWells {
-            gravityWellData.append(scaledGravWell.data)
-        }
-        levelSave!.levelData.gravityWells = gravityWellData;
-    }
+//    func snapshot(){
+//        let levelSave = level;
+//
+//        //update levelData using scaledGravityWells
+//        var gravityWellData : [GravityWellData] = []
+//        for scaledGravWell in scaledGravityWells {
+//            gravityWellData.append(scaledGravWell.data)
+//        }
+//        levelSave!.levelData.gravityWells = gravityWellData;
+//    }
 
     
     @objc func update(){
@@ -680,7 +682,15 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             return CGFloat(max);
         }
         
-        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: totalDistanceTravelled(), timePlayed: maxLineTime()))
+        
+        let dist = totalDistanceTravelled()
+        let time = maxLineTime()
+        
+        if(campaignLevel){
+            CampaignProgressHandler.completedLevel(uuid: level.levelData.levelMetadata.levelUUID, data: CampaignProgressData(levelNumber: level.levelData.levelMetadata.levelNumber, completed: true, locked: false, stars: 3, time: time, distance: dist))
+        }
+        
+        let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time))
         levelBeat.homePressed = {
             self.levelViewDelegate?.level_pressMenu()
         }

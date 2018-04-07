@@ -21,6 +21,7 @@
 		4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */; };
 		4064286E206C7AFD000B18A3 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* Progress.swift */; };
 		40642870206C823E000B18A3 /* LineStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286F206C823E000B18A3 /* LineStart.swift */; };
+		4081BDE920784DA400710AED /* CampaignLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDE820784DA400710AED /* CampaignLevelSelector.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
 		40A41F9920647124000E4634 /* Disk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8F20647123000E4634 /* Disk.swift */; };
 		40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9020647123000E4634 /* Disk+Data.swift */; };
@@ -29,7 +30,7 @@
 		40A41F9E20647124000E4634 /* Disk+VolumeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9420647123000E4634 /* Disk+VolumeInformation.swift */; };
 		40A41F9F20647124000E4634 /* Disk+[Data].swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9520647123000E4634 /* Disk+[Data].swift */; };
 		40A41FA120647124000E4634 /* Disk+Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9720647124000E4634 /* Disk+Errors.swift */; };
-		40A41FA320649F99000E4634 /* CampaignLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FA220649F99000E4634 /* CampaignLevelSelector.swift */; };
+		40A41FA320649F99000E4634 /* CampaignLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FA220649F99000E4634 /* CampaignLevelSelectView.swift */; };
 		40A41FA720659C33000E4634 /* PlaySelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FA620659C33000E4634 /* PlaySelect.swift */; };
 		40A41FAA20659E41000E4634 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FA920659E41000E4634 /* Label.swift */; };
 		40A41FAF2065A1ED000E4634 /* SF-Pro-Text-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 40A41FAE2065A1ED000E4634 /* SF-Pro-Text-Heavy.otf */; };
@@ -41,9 +42,9 @@
 		40A41FBF2066B6D0000E4634 /* BaseLevelRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */; };
 		40ADEDFD206F484500643253 /* LevelLeaveConfirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40ADEDFC206F484500643253 /* LevelLeaveConfirmation.swift */; };
 		40B035152066FB7600A4D8FB /* CreateLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035142066FB7600A4D8FB /* CreateLevelView.swift */; };
-		40B035172066FB8700A4D8FB /* CreateLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035162066FB8700A4D8FB /* CreateLevelSelector.swift */; };
+		40B035172066FB8700A4D8FB /* CreateLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035162066FB8700A4D8FB /* CreateLevelSelectView.swift */; };
 		40B035192066FF3800A4D8FB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035182066FF3800A4D8FB /* SettingsView.swift */; };
-		40B0351B2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351A2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift */; };
+		40B0351B2066FF5300A4D8FB /* SavedLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351A2066FF5300A4D8FB /* SavedLevelSelectView.swift */; };
 		40B0351D2066FF6500A4D8FB /* LevelBeatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */; };
 		40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B0351E2067004D00A4D8FB /* LevelSelector.swift */; };
 		40B035222067290200A4D8FB /* MiscElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B035212067290200A4D8FB /* MiscElements.swift */; };
@@ -92,6 +93,7 @@
 		4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalLevelSelectView.swift; sourceTree = "<group>"; };
 		4064286D206C7AFD000B18A3 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
 		4064286F206C823E000B18A3 /* LineStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStart.swift; sourceTree = "<group>"; };
+		4081BDE820784DA400710AED /* CampaignLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignLevelSelector.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
 		40A41F8E20647123000E4634 /* Disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disk.h; sourceTree = "<group>"; };
 		40A41F8F20647123000E4634 /* Disk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disk.swift; sourceTree = "<group>"; };
@@ -101,7 +103,7 @@
 		40A41F9420647123000E4634 /* Disk+VolumeInformation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+VolumeInformation.swift"; sourceTree = "<group>"; };
 		40A41F9520647123000E4634 /* Disk+[Data].swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+[Data].swift"; sourceTree = "<group>"; };
 		40A41F9720647124000E4634 /* Disk+Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+Errors.swift"; sourceTree = "<group>"; };
-		40A41FA220649F99000E4634 /* CampaignLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignLevelSelector.swift; sourceTree = "<group>"; };
+		40A41FA220649F99000E4634 /* CampaignLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignLevelSelectView.swift; sourceTree = "<group>"; };
 		40A41FA620659C33000E4634 /* PlaySelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaySelect.swift; sourceTree = "<group>"; };
 		40A41FA920659E41000E4634 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		40A41FAE2065A1ED000E4634 /* SF-Pro-Text-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Heavy.otf"; sourceTree = "<group>"; };
@@ -113,9 +115,9 @@
 		40A41FBE2066B6D0000E4634 /* BaseLevelRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLevelRectangle.swift; sourceTree = "<group>"; };
 		40ADEDFC206F484500643253 /* LevelLeaveConfirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelLeaveConfirmation.swift; sourceTree = "<group>"; };
 		40B035142066FB7600A4D8FB /* CreateLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLevelView.swift; sourceTree = "<group>"; };
-		40B035162066FB8700A4D8FB /* CreateLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLevelSelector.swift; sourceTree = "<group>"; };
+		40B035162066FB8700A4D8FB /* CreateLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLevelSelectView.swift; sourceTree = "<group>"; };
 		40B035182066FF3800A4D8FB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		40B0351A2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLevelsLevelSelector.swift; sourceTree = "<group>"; };
+		40B0351A2066FF5300A4D8FB /* SavedLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLevelSelectView.swift; sourceTree = "<group>"; };
 		40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelBeatView.swift; sourceTree = "<group>"; };
 		40B0351E2067004D00A4D8FB /* LevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelector.swift; sourceTree = "<group>"; };
 		40B035212067290200A4D8FB /* MiscElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscElements.swift; sourceTree = "<group>"; };
@@ -213,17 +215,18 @@
 				40E544D720633D04006505D5 /* LevelView.swift */,
 				40A41FBA20660512000E4634 /* LevelScrollView.swift */,
 				40A41FA620659C33000E4634 /* PlaySelect.swift */,
-				40A41FA220649F99000E4634 /* CampaignLevelSelector.swift */,
-				40B035162066FB8700A4D8FB /* CreateLevelSelector.swift */,
+				40A41FA220649F99000E4634 /* CampaignLevelSelectView.swift */,
+				40B035162066FB8700A4D8FB /* CreateLevelSelectView.swift */,
 				40B035142066FB7600A4D8FB /* CreateLevelView.swift */,
 				40B035182066FF3800A4D8FB /* SettingsView.swift */,
-				40B0351A2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift */,
+				40B0351A2066FF5300A4D8FB /* SavedLevelSelectView.swift */,
 				40B0351C2066FF6500A4D8FB /* LevelBeatView.swift */,
 				40B0351E2067004D00A4D8FB /* LevelSelector.swift */,
 				40B47D52206F3E7E0061A78D /* PublishLevelView.swift */,
 				40ADEDFC206F484500643253 /* LevelLeaveConfirmation.swift */,
 				4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */,
 				401327312076EF6300165545 /* GLSLevelSelector.swift */,
+				4081BDE820784DA400710AED /* CampaignLevelSelector.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -454,7 +457,7 @@
 				40A41FBD2066B647000E4634 /* ColorBox.swift in Sources */,
 				40B47D53206F3E7E0061A78D /* PublishLevelView.swift in Sources */,
 				40A41F9F20647124000E4634 /* Disk+[Data].swift in Sources */,
-				40B0351B2066FF5300A4D8FB /* SavedLevelsLevelSelector.swift in Sources */,
+				40B0351B2066FF5300A4D8FB /* SavedLevelSelectView.swift in Sources */,
 				40E544D22062FA44006505D5 /* GravityWell.swift in Sources */,
 				40ADEDFD206F484500643253 /* LevelLeaveConfirmation.swift in Sources */,
 				40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */,
@@ -474,7 +477,7 @@
 				40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */,
 				40A41F9E20647124000E4634 /* Disk+VolumeInformation.swift in Sources */,
 				40EDDB9F206448EC006FF6ED /* Screen.swift in Sources */,
-				40A41FA320649F99000E4634 /* CampaignLevelSelector.swift in Sources */,
+				40A41FA320649F99000E4634 /* CampaignLevelSelectView.swift in Sources */,
 				40B0351D2066FF6500A4D8FB /* LevelBeatView.swift in Sources */,
 				4016787C2068398200D8A5EF /* AccountView.swift in Sources */,
 				40B035152066FB7600A4D8FB /* CreateLevelView.swift in Sources */,
@@ -488,7 +491,8 @@
 				40B035192066FF3800A4D8FB /* SettingsView.swift in Sources */,
 				40E544D6206336FA006505D5 /* Level.swift in Sources */,
 				40E544D42063108C006505D5 /* Extensions.swift in Sources */,
-				40B035172066FB8700A4D8FB /* CreateLevelSelector.swift in Sources */,
+				4081BDE920784DA400710AED /* CampaignLevelSelector.swift in Sources */,
+				40B035172066FB8700A4D8FB /* CreateLevelSelectView.swift in Sources */,
 				40B035222067290200A4D8FB /* MiscElements.swift in Sources */,
 				40A41FAA20659E41000E4634 /* Label.swift in Sources */,
 				40A41FA120647124000E4634 /* Disk+Errors.swift in Sources */,

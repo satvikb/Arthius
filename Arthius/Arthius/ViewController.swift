@@ -33,10 +33,6 @@ enum View {
 
 class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, PlaySelectViewDelegate, CampaignLevelSelectorViewDelegate, LevelViewDelegate, CreateLevelSelectorViewDelegate, CreateLevelViewDelegate, GlobalLevelSelectViewDelegate{
     
-    
-    
-    
-    
    
 
     var currentView : View!;
@@ -59,6 +55,8 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         currentView = View.Splash
         
         File.copyLevelsFromBundleToDocuments()
+        CampaignProgressHandler.load()
+        
         firebaseAuthHandler()
 
         menuView = MenuView(startPosition: propToPoint(prop: CGPoint(x: 0, y: 0)))

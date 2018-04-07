@@ -1,82 +1,151 @@
 //
-//  LevelSelector.swift
+//  CampaignLevelSelector.swift
 //  Arthius
 //
-//  Created by Satvik Borra on 3/22/18.
+//  Created by Satvik Borra on 4/6/18.
 //  Copyright © 2018 satvik borra. All rights reserved.
 //
 
 import UIKit
 
-protocol CampaignLevelSelectorViewDelegate: class {
-    func campaignLevelSelect_pressBack()
-    func campaignLevelSelect_pressLevel(level:LevelData)
-    func campaignLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void)
+protocol CampaignLevelSelectorDelegate: class {
+    func campaignLevelSelector_pressedLevel(level: LevelData)
+    func getThumbnail(levelUUID: String, completion: @escaping (_ img : UIImage) -> Void);
 }
 
-class CampaignLevelSelectView: UIView, LevelSelectorDelegate {
+//used in create level selector and campaign level selector
+class CampaignLevelSelector : UIScrollView {
     
-    weak var campaignLevelSelectDelegate:CampaignLevelSelectorViewDelegate?
-    var titleLabel : Label!;
+    weak var campaignLevelSelectorDelegate:CampaignLevelSelectorDelegate?
+    var levels : [LevelData]!
+    var xTiles : CGFloat!
+    var yTiles : CGFloat!
     
-    var levels : [LevelData] = []
-//    var levelTiles : [LevelSelectTile] = []
-    
-    var levelSelectScroll : LevelSelector!;
-    
-    var backButton : Button!;
-    
-    init(startPosition: CGPoint){
-        super.init(frame: CGRect(origin: startPosition, size: UIScreen.main.bounds.size))//CGRect.propToRect(prop: _level.levelData.propFrame, parentRect: UIScreen.main.bounds));
+    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [LevelData], campaignProgress : CampaignProgress){
+        super.init(frame: frame)
+        
+        self.levels = levels
+        self.xTiles = xTiles
+        self.yTiles = yTiles
+        
+        self.showsVerticalScrollIndicator = false;
+        self.showsHorizontalScrollIndicator = false;
         self.isUserInteractionEnabled = true;
         
-        titleLabel = Label(frame: propToRect(prop: CGRect(x: 0.25, y: 0.05, width: 0.65, height: 0.15)), text: "Campaign", _outPos: propToPoint(prop: CGPoint(x: 1, y: 0.05)), textColor: UIColor.black, valign: .Bottom, _insets: false)
-        titleLabel.font = UIFont(name: "SFProText-Heavy", size: Screen.fontSize(propFontSize: 70))
-        titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.textAlignment = .right
-        self.addSubview(titleLabel)
+        self.updateLevels(xTiles, yTiles, newLevels: levels, newCampaignProgress: campaignProgress)
         
-        backButton = Button(frame: propToRect(prop: CGRect(x: 0, y: 0.05, width: 0.2, height: 0.15)), text: "back")
-        backButton.pressed = {
-            self.campaignLevelSelectDelegate?.campaignLevelSelect_pressBack()
+    }
+    
+    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [LevelData], newCampaignProgress : CampaignProgress){
+        for subview in subviews{
+            subview.removeFromSuperview()
         }
-        self.addSubview(backButton)
         
-        loadLevels()
+        xTiles = newXTiles
+        yTiles = newYTiles
+        levels = newLevels;
+        
+        let sidePadding : CGFloat = 0.05;
+        let topPadding : CGFloat = 0.05;
+        
+        let xMiddlePadding : CGFloat = 0.02;
+        let yMiddlePadding : CGFloat = 0.02;
+        
+        let startX : CGFloat = 0;
+        
+        let preDivX : CGFloat = ((xMiddlePadding*(xTiles-1))+(sidePadding*2));
+        let tilePropWidth = (1.0-preDivX)/xTiles;
+        
+        let preDivY : CGFloat = (yMiddlePadding*(yTiles-1))+(topPadding*2);
+        let tilePropHeight = ((1)-preDivY)/yTiles;
+        
+        var i = 0
+        for level in levels {
+            let progress = newCampaignProgress.progress[level.levelMetadata.levelUUID]!
+            
+            
+            let x = CGFloat(Int((i%Int(xTiles))));
+            let y :CGFloat = CGFloat(Int(CGFloat(i)/yTiles))//-1;
+            
+            let propRect = CGRect(x: startX+sidePadding+(tilePropWidth*x)+(xMiddlePadding*x), y: /*startY*/+topPadding+(tilePropHeight*y)+(yMiddlePadding*y), width: tilePropWidth, height: tilePropHeight);
+            let levelTile = CampaignLevelSelectTile(frame: propToRectSelf(prop: propRect), _level: level, _progressData: progress)
+            levelTile.backgroundColor = UIColor.yellow
+            
+            levelTile.pressed = {(levelData : LevelData) in
+                //                self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: levelData)
+                if(!progress.locked){
+                    self.campaignLevelSelectorDelegate?.campaignLevelSelector_pressedLevel(level: levelData)
+                }
+            }
+            
+            self.addSubview(levelTile)
+            i += 1;
+        }
+        
+        self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
     }
     
-    func loadLevels(){
-        // load all .gws files from campaignlevels directory
-        // loading async?
-        
-        levels = File.getAllLevels(type: .Campaign)
-
-        
-        levelSelectScroll = LevelSelector(frame: propToRect(prop: CGRect(x: 0, y: 0.25, width: 1, height: 0.75)), xTiles: 3, yTiles: 3, levels: levels)
-        levelSelectScroll.isUserInteractionEnabled = true;
-        levelSelectScroll.levelSelectorDelegate = self
-        self.addSubview(levelSelectScroll)
+    func propToRectSelf(prop: CGRect) -> CGRect {
+        let screen = self.bounds
+        return CGRect(x: prop.origin.x * screen.width, y: prop.origin.y * screen.height, width: screen.width*prop.width, height: screen.height*prop.height)
     }
     
-    func animateIn(time: CGFloat){
-        titleLabel.animateIn(time: time)
-        backButton.animateIn()
+    //TODO Animate
+    func animateIn(){
+        
     }
     
-    func animateOut(time : CGFloat){
-        titleLabel.animateOut(time: time)
-        backButton.animateOut()
+    func animateOut(){
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func levelSelector_pressedLevel(level: LevelData) {
-        self.campaignLevelSelectDelegate?.campaignLevelSelect_pressLevel(level: level)
+}
+
+class CampaignLevelSelectTile : UIImageView {
+    var level : LevelData
+    var progressData : CampaignProgressData
+    
+    var pressed = {(levelData : LevelData) in}
+    
+    var heldDown : Bool = false;
+    
+    init(frame: CGRect, _level: LevelData, _progressData: CampaignProgressData){
+        level = _level;
+        progressData = _progressData
+        
+        super.init(frame: frame);
+        self.isUserInteractionEnabled = true;
+        self.contentMode = UIViewContentMode.scaleAspectFit;
     }
     
-    func getThumbnail(levelUUID: String, completion: @escaping (UIImage) -> Void) {
-        campaignLevelSelectDelegate?.campaignLevelSelect_getThumbnail(uuid: levelUUID, completion: completion)
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        heldDown = true;
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if(touches.count > 0){
+            if(heldDown == true && touchInBtn(point: touches.first!.location(in: self.superview))){
+                heldDown = false
+                pressed(level)
+            }
+        }
+    }
+    
+    func touchInBtn(point : CGPoint) -> Bool{
+        let f = self.frame//heldDown == true ? heldDownFrame! : heldUpFrame!
+        
+        if(point.x > f.origin.x && point.x < f.origin.x+f.size.width && point.y > f.origin.y && point.y < f.origin.y+f.size.height){
+            return true
+        }
+        return false
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

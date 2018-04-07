@@ -14,6 +14,8 @@ let PUBLIC_LEVELS_FOLDER = "PublicLevels"
 let USER_LEVELS_FOLDER = "UserLevels"
 let USER_SAVES_FOLDER = "UserSave"
 
+let CAMPAIGN_PROGRESS_FILE = "campaign_progress.cpg"
+
 //let LEVEL_EXTENSION = ".gws"
 enum LevelType : String{
     case Campaign
@@ -157,7 +159,37 @@ class File {
         }
     }
     
+    static func loadCampaignProgress() -> CampaignProgress{
+        do {
+            let cp = try Disk.retrieve(CAMPAIGN_PROGRESS_FILE, from: .documents, as: CampaignProgress.self)
+            return cp;
+        } catch let error as NSError {
+            print("""
+                ERROR LOADING CAMPAIGN
+                Domain: \(error.domain)
+                Code: \(error.code)
+                Description: \(error.localizedDescription)
+                Failure Reason: \(error.localizedFailureReason ?? "")
+                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+                """)
+            return CampaignProgress(progress: [:])
+        }
+    }
     
+    static func saveCampaignProgress(progress: CampaignProgress){
+        do {
+            try Disk.save(progress, to: .documents, as: CAMPAIGN_PROGRESS_FILE)
+        } catch let error as NSError {
+            print("""
+                ERROR SAVING CAMPAIGN
+                Domain: \(error.domain)
+                Code: \(error.code)
+                Description: \(error.localizedDescription)
+                Failure Reason: \(error.localizedFailureReason ?? "")
+                Suggestions: \(error.localizedRecoverySuggestion ?? "")
+                """)
+        }
+    }
     
     static func copyLevelsFromBundleToDocuments(){
     
