@@ -16,9 +16,11 @@ class LevelScrollView : UIScrollView{
 
         if(shouldCancelTouch(result: result!)){
             self.isScrollEnabled = false;
+            setZooming(false)
             self.killScroll()
         }else{
             self.isScrollEnabled = true;
+            setZooming(true)
         }
 
         return super.hitTest(point, with: event)
@@ -29,10 +31,19 @@ class LevelScrollView : UIScrollView{
         self.setContentOffset(offset, animated: false)
     }
     
+    func setZooming(_ enabled : Bool){
+        if(enabled){
+            self.pinchGestureRecognizer?.isEnabled = true
+        }else{
+            self.pinchGestureRecognizer?.isEnabled = false
+        }
+    }
+    
     func shouldCancelTouch(result : UIView) -> Bool{
         let hitWell = testIfASuperViewIsType(subview: result, type: GravityWell.self)
-        let hitKnob = testIfASuperViewIsType(subview: result, type: LineStart.self)
-
+        let hitKnob = testIfASuperViewIsType(subview: result, type: EditableElement.self)
+        
+        print("Well \(hitWell) Editable \(hitKnob)")
         
         return hitWell || hitKnob;
     }

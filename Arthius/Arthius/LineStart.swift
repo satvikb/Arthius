@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LineStart : UIView, UIGestureRecognizerDelegate {
+class EditableLineStart : EditableElement, UIGestureRecognizerDelegate {
     
     var lineColor : Color!;
     var lineVelocity : CGVector!;
@@ -17,7 +17,6 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     
     var maxPropStartVelocity : CGVector!;
     
-    var editable : Bool = true; //TODO needed? always editable...
     var panGesture : UIPanGestureRecognizer!;
     var frameChanged = {}
     var frameChangeKnob : KnobEdit!;
@@ -62,30 +61,24 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
 //        testCenter.backgroundColor = UIColor.red
 //        self.addSubview(testCenter)
         
-        if(editable){
-            
-            panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            panGesture.cancelsTouchesInView = false;
-            panGesture.delegate = self;
-            self.addGestureRecognizer(panGesture)
-            
-            //        TODO box (done)
-            let knobFrame = propToRect(prop: CGRect(x:0.5, y: 0.5, width: 0.2, height: 0.2), within: self.frame)
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        panGesture.cancelsTouchesInView = false;
+        panGesture.delegate = self;
+        self.addGestureRecognizer(panGesture)
+        
+        //        TODO box (done)
+        let knobFrame = propToRect(prop: CGRect(x:0.5, y: 0.5, width: 0.2, height: 0.2), within: self.frame)
 //            knobFrame.origin = getKnobPointFromVector(velocityVector: _startVelocity) + knobFrame.origin
-            frameChangeKnob = KnobEdit(frame: knobFrame)
-            let offset = CGPoint(x: self.frame.width/2, y: self.frame.width/2)
+        frameChangeKnob = KnobEdit(frame: knobFrame)
+        let offset = CGPoint(x: self.frame.width/2, y: self.frame.width/2)
 
-            frameChangeKnob.center = getKnobPointFromVector(velocityVector: scaledStart) + offset
+        frameChangeKnob.center = getKnobPointFromVector(velocityVector: scaledStart) + offset
 //            print("S \(frameChangeKnob.center)")
-            frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
-                //in case
-                if(self.editable == true){
-                    self.handleFrameChangePan(pan: pan)
-                }
-            }
-            self.addSubview(frameChangeKnob)
-
+        frameChangeKnob.panned = {(pan: UIPanGestureRecognizer) in
+            //in case
+            self.handleFrameChangePan(pan: pan)
         }
+        self.addSubview(frameChangeKnob)
         
     }
 
@@ -198,12 +191,12 @@ class LineStart : UIView, UIGestureRecognizerDelegate {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if(editable){
+//        if(editable){
             let pointForTargetView = self.frameChangeKnob.convert(point, from: self)
             if(self.frameChangeKnob.bounds.contains(pointForTargetView)){
                 return self.frameChangeKnob//.hitTest(point, with:event)
             }
-        }
+//        }
         return super.hitTest(point, with: event)
     }
     

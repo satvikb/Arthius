@@ -37,7 +37,6 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     var levelData : LevelData!;
     
-    var startPointView : LineStart!;
     var endPointView : UIView!;
     
     
@@ -224,19 +223,21 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func addColorBoxToView(d : ColorBoxData){
         let data = d
-        let colorBox = ColorBox(frame: propToRect(prop: (data.frame?.cgRect)!), _rotation: CGFloat(data.rotation), _leftColor: data.leftColor!, _rightColor: data.rightColor!, backgroundColor: data.backgroundColor!, _middlePropWidth: CGFloat(data.middlePropWidth), _stageView: stageView, _editable: true)
+        let colorBox = EditableColorBox(frame: propToRect(prop: (data.frame?.cgRect)!), _rotation: CGFloat(data.rotation), _leftColor: data.leftColor!, _rightColor: data.rightColor!, backgroundColor: data.backgroundColor!, _middlePropWidth: CGFloat(data.middlePropWidth), _stageView: stageView)
         
         colorBox.frameChanged = {
             let arrIndex = self.levelData.colorBoxData.index(where: { (colorBoxData:ColorBoxData) -> Bool in
                 colorBoxData == data
             })
             
-            self.levelData.colorBoxData.remove(at: arrIndex!)
-            data.frame = self.rectToProp(rect: colorBox.frame).rect
-            self.levelData.colorBoxData.append(data)
+            if(arrIndex != nil){
+                self.levelData.colorBoxData.remove(at: arrIndex!)
+                data.frame = self.rectToProp(rect: colorBox.frame).rect
+                data.rotation = Float32(colorBox.rotation)
+                self.levelData.colorBoxData.append(data)
+            }
         }
         
-        colorBox.frameChangeKnob.panGesture.delegate = self
         stageView.addSubview(colorBox)
     }
     
@@ -244,7 +245,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let data = d
         let maxPropStartVeclocity : CGFloat = 0.002 //TODO per level, global?
 
-        let lineStart = LineStart(f: propToRect(prop: CGRect(x: CGFloat(d.startPosition!.x), y: CGFloat(d.startPosition!.y), width: 0.1, height: 0)), _startVelocity: (d.startVelocity?.cgVector)!, _lineColor: d.startColor!, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
+        let lineStart = EditableLineStart(f: propToRect(prop: CGRect(x: CGFloat(d.startPosition!.x), y: CGFloat(d.startPosition!.y), width: 0.1, height: 0)), _startVelocity: (d.startVelocity?.cgVector)!, _lineColor: d.startColor!, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
         
         lineStart.frameChanged = {
             
@@ -252,15 +253,17 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
                 lineData == data
             })
             
-            self.levelData.lineData.remove(at: arrIndex!)
-//            self.levelData.lineData.remove(at: self.levelData.lineData.index(where: {(lineData) -> Bool in
-//                (lineData as! LineData) == data
-//            }))
-//            self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
-            data.startPosition = self.pointToProp(point: lineStart.center).point
-            data.startVelocity = (lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)).vector
-//            print(data.startVelocity, data.startVelocity/CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height))
-            self.levelData.lineData.append(data)
+            if(arrIndex != nil){
+                self.levelData.lineData.remove(at: arrIndex!)
+    //            self.levelData.lineData.remove(at: self.levelData.lineData.index(where: {(lineData) -> Bool in
+    //                (lineData as! LineData) == data
+    //            }))
+    //            self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
+                data.startPosition = self.pointToProp(point: lineStart.center).point
+                data.startVelocity = (lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)).vector
+    //            print(data.startVelocity, data.startVelocity/CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height))
+                self.levelData.lineData.append(data)
+            }
         }
         
         lineStart.frameChangeKnob.panGesture.delegate = self

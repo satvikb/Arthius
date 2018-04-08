@@ -26,6 +26,8 @@
 		4081BDFE2079EF9300710AED /* FlatBuffersBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */; };
 		4081BDFF2079EF9300710AED /* FlatBuffersReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDFD2079EF9300710AED /* FlatBuffersReader.swift */; };
 		4083FF4E207A8429005E1A00 /* DataCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4083FF4D207A8429005E1A00 /* DataCompression.swift */; };
+		4083FF51207AB66A005E1A00 /* EditableElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4083FF50207AB66A005E1A00 /* EditableElement.swift */; };
+		4083FF53207AB6F8005E1A00 /* EditableColorBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4083FF52207AB6F8005E1A00 /* EditableColorBox.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
 		40A41F9920647124000E4634 /* Disk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8F20647123000E4634 /* Disk.swift */; };
 		40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9020647123000E4634 /* Disk+Data.swift */; };
@@ -102,6 +104,8 @@
 		4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersBuilder.swift; sourceTree = "<group>"; };
 		4081BDFD2079EF9300710AED /* FlatBuffersReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersReader.swift; sourceTree = "<group>"; };
 		4083FF4D207A8429005E1A00 /* DataCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataCompression.swift; sourceTree = "<group>"; };
+		4083FF50207AB66A005E1A00 /* EditableElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableElement.swift; sourceTree = "<group>"; };
+		4083FF52207AB6F8005E1A00 /* EditableColorBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableColorBox.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
 		40A41F8E20647123000E4634 /* Disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disk.h; sourceTree = "<group>"; };
 		40A41F8F20647123000E4634 /* Disk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disk.swift; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 				40A41FC02066D8E9000E4634 /* GLS */,
 				40A41FB72065C95D000E4634 /* Core */,
 				40A41FB52065B109000E4634 /* Levels */,
+				4083FF4F207AB643005E1A00 /* EditableLevelElements */,
 				40A41FAD20659E5A000E4634 /* LevelElements */,
 				40A41FA820659E33000E4634 /* UI */,
 				40A41F8C20647114000E4634 /* Disk */,
@@ -209,6 +214,15 @@
 			);
 			name = FlatBuffers;
 			path = "New Group";
+			sourceTree = "<group>";
+		};
+		4083FF4F207AB643005E1A00 /* EditableLevelElements */ = {
+			isa = PBXGroup;
+			children = (
+				4083FF50207AB66A005E1A00 /* EditableElement.swift */,
+				4083FF52207AB6F8005E1A00 /* EditableColorBox.swift */,
+			);
+			name = EditableLevelElements;
 			sourceTree = "<group>";
 		};
 		40A41F8C20647114000E4634 /* Disk */ = {
@@ -475,6 +489,7 @@
 			files = (
 				40A41F9920647124000E4634 /* Disk.swift in Sources */,
 				40EDDB9B206445DA006FF6ED /* MenuView.swift in Sources */,
+				4083FF51207AB66A005E1A00 /* EditableElement.swift in Sources */,
 				40A41FBD2066B647000E4634 /* ColorBox.swift in Sources */,
 				40B47D53206F3E7E0061A78D /* PublishLevelView.swift in Sources */,
 				40A41F9F20647124000E4634 /* Disk+[Data].swift in Sources */,
@@ -491,6 +506,7 @@
 				40642870206C823E000B18A3 /* LineStart.swift in Sources */,
 				40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */,
 				40E544D820633D04006505D5 /* LevelView.swift in Sources */,
+				4083FF53207AB6F8005E1A00 /* EditableColorBox.swift in Sources */,
 				40A41F9D20647124000E4634 /* Disk+Helpers.swift in Sources */,
 				4081BDF52079DA2600710AED /* LevelFB.swift in Sources */,
 				4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */,

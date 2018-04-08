@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_ "
+let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_ ?!<\\>,.:\"-=+=!@#$%^&*()~`{}[]/;'"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

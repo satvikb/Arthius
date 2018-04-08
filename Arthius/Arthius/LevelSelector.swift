@@ -77,7 +77,7 @@ class LevelSelector : UIScrollView {
             i += 1;
         }
         
-        self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: 1)).size
+        self.contentSize = propToRectSelf(prop: CGRect(x: 0, y: 0, width: 1, height: tilePropHeight*yTiles + (yMiddlePadding*yTiles))).size
     }
     
     func propToRectSelf(prop: CGRect) -> CGRect {

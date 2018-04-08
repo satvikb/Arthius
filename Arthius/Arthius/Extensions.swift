@@ -284,6 +284,18 @@ public extension Point {
     }
 }
 
+public extension UIColor {
+    var color : Color {
+        return Color(r: Float32(self.redValue), g: Float32(self.greenValue), b: Float32(self.blueValue), a: Float32(self.alphaValue))
+    }
+}
+
+extension UIColor {
+    var redValue: CGFloat{ return CIColor(color: self).red }
+    var greenValue: CGFloat{ return CIColor(color: self).green }
+    var blueValue: CGFloat{ return CIColor(color: self).blue }
+    var alphaValue: CGFloat{ return CIColor(color: self).alpha }
+}
 
 public extension CGRect {
     var rect : Rect {

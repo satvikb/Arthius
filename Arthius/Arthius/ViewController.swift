@@ -466,7 +466,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     func createLevelSelect_getThumbnail(uuid: String, completion: @escaping (_ img : UIImage) -> Void) {
-        
+         
     }
     
     func globalLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void){
