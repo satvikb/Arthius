@@ -25,6 +25,7 @@
 		4081BDF52079DA2600710AED /* LevelFB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDF42079DA2600710AED /* LevelFB.swift */; };
 		4081BDFE2079EF9300710AED /* FlatBuffersBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */; };
 		4081BDFF2079EF9300710AED /* FlatBuffersReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDFD2079EF9300710AED /* FlatBuffersReader.swift */; };
+		4083FF4E207A8429005E1A00 /* DataCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4083FF4D207A8429005E1A00 /* DataCompression.swift */; };
 		40A41F9820647124000E4634 /* Disk+InternalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */; };
 		40A41F9920647124000E4634 /* Disk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F8F20647123000E4634 /* Disk.swift */; };
 		40A41F9A20647124000E4634 /* Disk+Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A41F9020647123000E4634 /* Disk+Data.swift */; };
@@ -100,6 +101,7 @@
 		4081BDF42079DA2600710AED /* LevelFB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelFB.swift; sourceTree = "<group>"; };
 		4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersBuilder.swift; sourceTree = "<group>"; };
 		4081BDFD2079EF9300710AED /* FlatBuffersReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersReader.swift; sourceTree = "<group>"; };
+		4083FF4D207A8429005E1A00 /* DataCompression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataCompression.swift; sourceTree = "<group>"; };
 		40A41F8D20647123000E4634 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
 		40A41F8E20647123000E4634 /* Disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Disk.h; sourceTree = "<group>"; };
 		40A41F8F20647123000E4634 /* Disk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disk.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 		4081BDFB2079EF7F00710AED /* FlatBuffers */ = {
 			isa = PBXGroup;
 			children = (
+				4083FF4D207A8429005E1A00 /* DataCompression.swift */,
 				4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */,
 				4081BDFD2079EF9300710AED /* FlatBuffersReader.swift */,
 			);
@@ -498,6 +501,7 @@
 				40A41F9E20647124000E4634 /* Disk+VolumeInformation.swift in Sources */,
 				40EDDB9F206448EC006FF6ED /* Screen.swift in Sources */,
 				40A41FA320649F99000E4634 /* CampaignLevelSelectView.swift in Sources */,
+				4083FF4E207A8429005E1A00 /* DataCompression.swift in Sources */,
 				40B0351D2066FF6500A4D8FB /* LevelBeatView.swift in Sources */,
 				4016787C2068398200D8A5EF /* AccountView.swift in Sources */,
 				40B035152066FB7600A4D8FB /* CreateLevelView.swift in Sources */,

@@ -42,68 +42,19 @@ class File {
                 
                 if(url.pathExtension == levelExtensionForType(type: type)){
                     let fileName = url.lastPathComponent
-//                    print("GETTING LEVEL \(fileName) \(type.rawValue)")
-                    
-//
-//
-//
-//
-//
-//
-//
-//                    do {
-////                        try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
-//                        let file = "\(getFolderForLevelType(type: type))/\(fileName)"
-//                        var text = "s"
-//
-//                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//
-//                            let fileURL = dir.appendingPathComponent(file)
-////                            print(fileURL.path)
-//
-//                            //reading
-//                            do {
-//                                text = try String(contentsOf: fileURL, encoding: .utf8)
-//                                print(text)
-//                            }
-//                            catch let error as NSError{/* error handling here */
-//                                print("read error "+error.localizedDescription)
-//                            }
-//                        }
-//                    } catch let error as NSError {
-//                        print("""
-//                            NO SAVE TEST
-//                            Domain: \(error.domain)
-//                            Code: \(error.code)
-//                            Description: \(error.localizedDescription)
-//                            Failure Reason: \(error.localizedFailureReason ?? "")
-//                            Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                            """)
-//                    }
-//
-//
-//
-//
-//
-                    
 
                     //TODO, copy the FlatBuffer binary file from bundle not JSON
                     
                     do{
-                        let data = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: Data.self)
-                        let level = Level.makeLevel(data: data)
+                        let datao = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: Data.self)
+                        let data = datao.decompress(withAlgorithm: .LZMA)
+                        let level = Level.makeLevel(data: data!)
                         if(level != nil && level?.levelData != nil){
                             levels.append((level?.levelData)!)
                         }
                     }catch{
                         print("Didnt load level \(fileName)")
                     }
-                    
-                    
-                    
-//                    let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: LevelData.self)
-//                    levels.append(level)
-                    
                     
                     let attr = try fileManager.attributesOfItem(atPath: url.path);
                     print("Loaded \(type.rawValue) level: \(url.lastPathComponent) \(attr[FileAttributeKey.size] as! UInt64) bytes")
@@ -132,19 +83,25 @@ class File {
         return documentsURL
     }
     
-    static func saveLevel(level: LevelData, levelType : LevelType) {
+    //TODO JSON TO BINARY AND BACK FOR TESTING/CAMPAIGN LEVEL CREATION - TO DO THIS: UNCOMMENT OLD STRUCT STRUCTURE, use like Level2, LevelData2, etc
+    
+    static func saveLevel(level: LevelData?, levelType : LevelType) {
         do {
-            let data = try? Level(levelData: level).makeData()
-            try Disk.save(data: data!, to: .documents, as: self.getFolderForLevelType(type: levelType)+"/"+level.levelMetadata!.levelUUID!+levelExtensionForType(type: levelType))
-        } catch let error as NSError {
-            print("""
-                ERROR SAVING LEVEL
-                Domain: \(error.domain)
-                Code: \(error.code)
-                Description: \(error.localizedDescription)
-                Failure Reason: \(error.localizedFailureReason ?? "")
-                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-                """)
+            
+            let l = level
+            let lm = l?.levelMetadata
+            
+            //TODO: FIGURE OUT WHY THIS NEEDS TO HAPPEN
+            let newLevelData = LevelData(levelMetadata: LevelMetadata(levelUUID: lm?.levelUUID, levelNumber: (lm?.levelNumber)!, levelName: lm?.levelName, levelVersion: lm?.levelVersion, levelAuthor: lm?.levelAuthor), texts: (l?.texts)!, propFrame: l?.propFrame, endPoints: (l?.endPoints)!, lineData: (l?.lineData)!, gravityWells: (l?.gravityWells)!, colorBoxData: (l?.colorBoxData)!, rockData: (l?.rockData)!, antiGravityZones: (l?.antiGravityZones)!)
+            
+            
+            let datao = try?Level(levelData: newLevelData).makeData()
+            
+            let data = datao?.compress(withAlgorithm: .LZMA)
+
+            try Disk.save(data: data!, to: .documents, as: "\(File.getFolderForLevelType(type: levelType))/\(newLevelData.levelMetadata!.levelUUID!).\(File.levelExtensionForType(type: levelType))")
+        }catch let error as NSError{
+            print("Error saving level \(error.localizedDescription)")
         }
     }
     

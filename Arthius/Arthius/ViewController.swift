@@ -249,27 +249,26 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         let levelRef = storageRef.child("levels/\(uuid).gws")
         
         // Download in memory with a maximum allowed size of 10MB (10 * 1024 * 1024 bytes)
-        levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
+        levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(datao : Data?, error : Error?) in
             if let error = error {
                 // Uh-oh, an error occurred!
                 print("error getData \(error.localizedDescription)")
             } else {
                 // Data for "images/island.jpg" is returned
-//                Disk.retrieve("", from: .documents, as: LevelData.self)
-                do{
-//                    let decoder = JSONDecoder()
-//
-//                    let levelData = try decoder.decode(LevelData.self, from: data!)
+//                do{
+                
+                    //DECOMPRESS DATA
+                    let data = datao?.decompress(withAlgorithm: .LZMA)
                     
                     let level : Level = Level.makeLevel(data: data!)!//List.fromByteArray(UnsafePointer(fbData))
                     let levelData = level.levelData
                     
-                    print("GET GLS LEVEL FILE \(level.levelData?.levelMetadata) \(level.levelData?.endPoints)")
+                    print("GET GLS LEVEL FILE \(String(describing: level.levelData?.levelMetadata)) \(String(describing: level.levelData?.endPoints))")
                     
                     completion(levelData!)
-                }catch let error as NSError {
-                    print("Error getting file \(error.localizedDescription)")
-                }
+//                }catch let error as NSError {
+//                    print("Error getting file \(error.localizedDescription)")
+//                }
             }
         })
     }
@@ -399,14 +398,14 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             let userId = Auth.auth().currentUser?.uid ?? ""
             
             if(userId != ""){
-                let thumbnailStoragePath = "thumb/\(levelId).png"
+                let thumbnailStoragePath = "thumb/\(levelId).jpg"
                 
                 let data : [String : Any] = [
                     "LevelID" : levelId,
                     "UserID" : userId, //TODO handle no user id?
                     "Title" : title,
                     "Description" : description,
-                    //"Thumbnail" : thumbnailStoragePath //no need to actually store, can be remade with /{userId}/thumb/{levelUUID}.png
+                    //"Thumbnail" : thumbnailStoragePath //no need to actually store, can be remade with /{userId}/thumb/{levelUUID}.jpg
                 ]
                 
                 
@@ -424,13 +423,13 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     func uploadLevelImage(storagePath: String, userId: String, thumbnail: UIImage){
         //test image
         
-        let imageData : Data = UIImagePNGRepresentation(thumbnail)!
+        let imageData : Data = UIImageJPEGRepresentation(thumbnail, 0.5)!.compress(withAlgorithm: .LZMA)!
         
         let storageRef = storage.reference()
         let levelRef = storageRef.child(storagePath)
         
         let metadata = StorageMetadata()
-        metadata.contentType = "level/png"
+        metadata.contentType = "level/jpg"
         
         levelRef.putData(imageData)
     }
@@ -472,14 +471,16 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     func globalLevelSelect_getThumbnail(uuid : String, completion: @escaping (_ img : UIImage) -> Void){
         let storageRef = storage.reference()
-        let thumbRef = storageRef.child("thumb/\(uuid).png")
+        let thumbRef = storageRef.child("thumb/\(uuid).jpg")
         
         // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
-        thumbRef.getData(maxSize: 1 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
+        thumbRef.getData(maxSize: 1 * 1024 * 1024, completion: {(datao : Data?, error : Error?) in
             if error != nil {
                 // Uh-oh, an error occurred!
             } else {
                 // Data for "images/island.jpg" is returned
+                let data = datao?.decompress(withAlgorithm: .LZMA)
+                
                 let image = UIImage(data: data!)
                 completion(image!)
             }

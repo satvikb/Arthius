@@ -149,67 +149,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func saveLevel(){
-//        do {
-//
-//
-//            try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
-//            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
-//            var text = "s"
-//
-//            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//
-//                let fileURL = dir.appendingPathComponent(file)
-//                print(fileURL.path)
-//
-//                //reading
-//                do {
-//                    text = try String(contentsOf: fileURL, encoding: .utf8)
-//                    print(text)
-//                }
-//                catch let error as NSError{/* error handling here */
-//                    print("read error "+error.localizedDescription)
-//                }
-//            }
-//        } catch let error as NSError {
-//            print("""
-//                NO SAVE TEST
-//                Domain: \(error.domain)
-//                Code: \(error.code)
-//                Description: \(error.localizedDescription)
-//                Failure Reason: \(error.localizedFailureReason ?? "")
-//                Suggestions: \(error.localizedRecoverySuggestion ?? "")
-//                """)
-//        }
-
-        
-        do {
-            
-            let l = levelData
-            let lm = l?.levelMetadata
-            
-//            let levelDataTest = LevelData(levelMetadata: LevelMetadata(levelUUID: "uT1", levelNumber: 0, levelName: "a test", levelVersion: "0", levelAuthor: "Tester"), texts: [], propFrame: Rect(x: 0, y: 0, width: 1, height: 1), endPoints: [], lineData: [LineData(startPosition: Point(x: 0.2, y: 0.2), startVelocity: Vector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 1, b: 0, a: 1), startThickness: 10)], gravityWells: [], colorBoxData: [], rockData: [], antiGravityZones: [])
-            
-            //TODO: FIGURE OUT WHY THIS NEEDS TO HAPPEN
-            let newLevelData = LevelData(levelMetadata: LevelMetadata(levelUUID: lm?.levelUUID, levelNumber: (lm?.levelNumber)!, levelName: lm?.levelName, levelVersion: lm?.levelVersion, levelAuthor: lm?.levelAuthor), texts: (l?.texts)!, propFrame: l?.propFrame, endPoints: (l?.endPoints)!, lineData: (l?.lineData)!, gravityWells: (l?.gravityWells)!, colorBoxData: (l?.colorBoxData)!, rockData: (l?.rockData)!, antiGravityZones: (l?.antiGravityZones)!)
-            
-            
-            let data = try?Level(levelData: newLevelData).makeData()
-            
-////            let data2 = Level.makeData(Level(levelData: levelData))
-//            
-//            let newLevel = Level.makeLevel(data: data!)
-////            try Disk.save(data: levelData, to: .documents, as: "")
-            try Disk.save(data: data!, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata!.levelUUID!).\(File.levelExtensionForType(type: .UserMade))")
-        }catch let error as NSError{
-            print("Error saving user made level \(error.localizedDescription)")
-        }
-        
-//        do {
-//            let data = try Disk.retrieve("\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata?.levelUUID).\(File.levelExtensionForType(type: .UserMade))", from: .documents, as: LevelData.self)
-//            print("GOT LEVEL \(data.levelMetadata.levelUUID)")
-//        }catch let error as NSError{
-//            print("Error getting user made level \(error.localizedDescription)")
-//        }
+        File.saveLevel(level: levelData, levelType: .UserMade)
     }
     
     func createLevelScrollView(){
