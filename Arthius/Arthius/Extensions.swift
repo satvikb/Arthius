@@ -251,3 +251,56 @@ public extension CGVector{
         return len>0 ? self / len : CGVector.zero
     }
 }
+
+func ==(lh:LineData, rh:LineData) -> Bool{
+    return lh.startColor == rh.startColor && lh.startPosition == rh.startPosition && lh.startThickness == rh.startThickness && lh.startVelocity == rh.startVelocity
+}
+
+func ==(lh:ColorBoxData, rh:ColorBoxData) -> Bool{
+    return lh.backgroundColor == rh.backgroundColor && lh.frame == rh.frame && lh.leftColor == rh.leftColor && lh.middlePropWidth == rh.middlePropWidth && lh.rightColor == rh.rightColor && lh.rotation == rh.rotation
+}
+
+public extension Color {
+    func uiColor() -> UIColor{
+        return UIColor(red: CGFloat(self.r), green: CGFloat(self.g), blue: CGFloat(self.b), alpha: CGFloat(self.a))
+    }
+}
+
+public extension Rect {
+    var cgRect : CGRect {
+        return CGRect(x: CGFloat(self.x), y: CGFloat(self.y), width: CGFloat(self.width), height: CGFloat(self.height))
+    }
+}
+
+public extension Vector {
+    var cgVector : CGVector {
+        return CGVector(dx: CGFloat(self.dx), dy: CGFloat(self.dy))
+    }
+}
+
+public extension Point {
+    var cgPoint : CGPoint {
+        return CGPoint(x: CGFloat(self.x), y: CGFloat(self.y))
+    }
+}
+
+
+public extension CGRect {
+    var rect : Rect {
+        return Rect(x: Float32(self.origin.x), y: Float32(self.origin.y), width: Float32(self.width), height: Float32(self.height))
+//        return CGRect(x: CGFloat(self.x), y: CGFloat(self.y), width: CGFloat(self.width), height: CGFloat(self.height))
+    }
+}
+
+public extension CGVector {
+    var vector : Vector {
+        return Vector(dx: Float32(self.dx), dy: Float32(self.dy))
+    }
+}
+
+public extension CGPoint {
+    var point : Point {
+        return Point(x: Float32(self.x), y: Float32(self.y))
+    }
+}
+

@@ -282,6 +282,14 @@ class SignUpView : UIView, UITextFieldDelegate{
         return false
     }
     
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = string.components(separatedBy: cs).joined(separator: "")
+        
+        return (string == filtered)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -335,6 +343,14 @@ class SignInView : UIView, UITextFieldDelegate{
         textField.resignFirstResponder()
         return false
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = string.components(separatedBy: cs).joined(separator: "")
+        
+        return (string == filtered)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -8,6 +8,8 @@
 
 import UIKit
 
+//TODO FLAT BUFFERS
+
 class CampaignLevelHandler {
     static var allLevels : [LevelData]!
     
@@ -17,7 +19,7 @@ class CampaignLevelHandler {
     
     static func getLevelFromLevelNumber(levelNumber : Int) -> LevelData? {
         for level in allLevels {
-            if(level.levelMetadata.levelNumber == levelNumber){
+            if(Int((level.levelMetadata?.levelNumber)!) == levelNumber){
                 return level
             }
         }

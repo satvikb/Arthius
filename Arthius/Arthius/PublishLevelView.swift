@@ -32,7 +32,7 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
         
         
         thumbnailView = UIView(frame: propToRect(prop: CGRect(x: 0.05, y: 0.2, width: 0.4, height: 0.275), within: self.frame))
-        let levelView = LevelView(_level: Level(_levelData: level), _parentView: .LevelCreate)
+        let levelView = LevelView(_level: Level(levelData: level), _parentView: .LevelCreate)
         levelView.levelView.frame = CGRect(x: 0, y: 0, width: thumbnailView.frame.width, height: thumbnailView.frame.height)
 //        levelView.levelView.delegate = self
         levelView.changeBordersBasedOnZoom = false
@@ -109,6 +109,13 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
         return false
     }
 
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = string.components(separatedBy: cs).joined(separator: "")
+        
+        return (string == filtered)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

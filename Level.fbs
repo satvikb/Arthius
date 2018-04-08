@@ -1,0 +1,109 @@
+enum LevelTextTriggers : byte{
+  none = 0,
+  start = 1,
+  tap = 2,
+  pressPlay = 3
+}
+
+table Level {
+  levelData : LevelData;
+}
+
+table LevelData {
+  levelMetadata : LevelMetadata;
+  texts : [LevelText];
+  propFrame : Rect;
+  endPoints : [EndData];
+  lineData : [LineData];
+  gravityWells : [GravityWellData];
+  colorBoxData : [ColorBoxData];
+  rockData : [RockData];
+  antiGravityZones : [AntiGravityData];
+}
+
+table LevelText {
+  id:int;
+  text:string;
+  triggerOn:LevelTextTriggers;
+  nextText:int;
+  animateTime:float;
+  animateIn:bool;
+  animateOut:bool;
+  propFrame:Rect;
+  fontColor:Color;
+  fontSize:int;
+}
+
+table LevelMetadata {
+  levelUUID:string;
+  levelNumber:int;
+  levelName:string;
+  levelVersion:string;
+  levelAuthor:string;
+}
+
+table GravityWellData {
+  position:Point;
+  mass:float;
+  coreDiameter:float;
+  areaOfEffectDiameter:float;
+}
+
+table ColorBoxData {
+  frame:Rect;
+  rotation:float;
+  leftColor:Color;
+  rightColor:Color;
+  backgroundColor:Color;
+  middlePropWidth:float;
+}
+
+table LineData {
+  startPosition : Point;
+  startVelocity : Vector;
+  startColor : Color;
+  startThickness : float;
+}
+
+table RockData {
+  position:Point;
+  diameter:float;
+}
+
+table AntiGravityData {
+  frame:Rect;
+  color:Color;
+}
+
+table EndData {
+  frame:Rect;
+  color:Color;
+}
+
+struct Color {
+  r:float;
+  g:float;
+  b:float;
+  a:float;
+}
+
+
+struct Point {
+  x:float;
+  y:float;
+}
+
+struct Vector {
+  dx:float;
+  dy:float;
+}
+
+struct Rect {
+  x:float;
+  y:float;
+  width:float;
+  height:float;
+}
+
+
+root_type Level;

@@ -45,7 +45,7 @@ class ColorBox :  UIView {
     var frameChanged = {}
     var frameChangeKnob : KnobEdit!;
     
-    init(frame: CGRect, _rotation: CGFloat, box: Bool, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat, _stageView : UIView, _editable : Bool = false) {
+    init(frame: CGRect, _rotation: CGFloat, _leftColor : Color, _rightColor : Color, backgroundColor : Color, _middlePropWidth : CGFloat, _stageView : UIView, _editable : Bool = false) {
         rotation = _rotation;
         leftColor = _leftColor;
         rightColor = _rightColor;
@@ -73,18 +73,18 @@ class ColorBox :  UIView {
         self.addSubview(bodyView)
         
         backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
-        backgroundView.backgroundColor = ColorBox.ColorToUIColor(col: backgroundColor)
+        backgroundView.backgroundColor = backgroundColor.uiColor()
         bodyView.addSubview(backgroundView)
         
         //rotation should be handled by parent
         leftView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height))
-        leftView.backgroundColor = ColorBox.ColorToUIColor(col: leftColor)
+        leftView.backgroundColor = leftColor.uiColor()
 //        leftView.transform = CGAffineTransformMakeRotation(rotation);
         bodyView.addSubview(leftView)
         
         rightView = UIView(frame: CGRect(x: frame.width/2+((middlePropWidth/2)*frame.width), y: 0, width: frame.width/2-((middlePropWidth/2)*frame.width), height: frame.height))
 //        rightView.transform = CGAffineTransformMakeRotation(rotation);
-        rightView.backgroundColor = ColorBox.ColorToUIColor(col: rightColor)
+        rightView.backgroundColor = rightColor.uiColor()
         bodyView.addSubview(rightView)
         
         
@@ -153,11 +153,11 @@ class ColorBox :  UIView {
             //            self.center = boxCenter // restore button center
 //            frameChangeKnob.frame = knobPre
         } else {
-            var change = pan.translation(in: self) // get pan location
+            let change = pan.translation(in: self) // get pan location
 //            var originOffset = CGPoint.zero;
-            let oChange = change
+//            let oChange = change
 //            change = CGPoint(x: change.x/cos(rotation), y: change.y/sin(rotation))
-            print(oChange, change)
+//            print(oChange, change)
 //            var newKnobFrame : CGRect = propToRect(prop: CGRect(x: 0.8, y: 0.8, width: 0.4, height: 0.1), within: bodyView.frame)
 //            newKnobFrame.size = CGSize(width: newKnobFrame.width, height: newKnobFrame.width)
             
@@ -223,9 +223,9 @@ class ColorBox :  UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    static func ColorToUIColor(col : Color) -> UIColor{
-        return UIColor(red: col.r, green: col.g, blue: col.b, alpha: col.a)
-    }
+//    static func ColorToUIColor(col : Color) -> UIColor{
+//        return UIColor(red: CGFloat(col.r), green: CGFloat(col.g), blue: CGFloat(col.b), alpha: CGFloat(col.a))
+//    }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if(editable){

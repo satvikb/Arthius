@@ -86,11 +86,23 @@ class File {
 //
 //
                     
+
+                    //TODO, copy the FlatBuffer binary file from bundle not JSON
+                    
+                    do{
+                        let data = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: Data.self)
+                        let level = Level.makeLevel(data: data)
+                        if(level != nil && level?.levelData != nil){
+                            levels.append((level?.levelData)!)
+                        }
+                    }catch{
+                        print("Didnt load level \(fileName)")
+                    }
                     
                     
                     
-                    let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: LevelData.self)
-                    levels.append(level)
+//                    let level : LevelData = try Disk.retrieve(self.getFolderForLevelType(type: type)+"/\(fileName)", from: .documents, as: LevelData.self)
+//                    levels.append(level)
                     
                     
                     let attr = try fileManager.attributesOfItem(atPath: url.path);
@@ -122,7 +134,8 @@ class File {
     
     static func saveLevel(level: LevelData, levelType : LevelType) {
         do {
-            try Disk.save(level, to: .documents, as: self.getFolderForLevelType(type: levelType)+"/"+level.levelMetadata.levelUUID+levelExtensionForType(type: levelType))
+            let data = try? Level(levelData: level).makeData()
+            try Disk.save(data: data!, to: .documents, as: self.getFolderForLevelType(type: levelType)+"/"+level.levelMetadata!.levelUUID!+levelExtensionForType(type: levelType))
         } catch let error as NSError {
             print("""
                 ERROR SAVING LEVEL

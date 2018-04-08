@@ -103,7 +103,8 @@ class Line : CAShapeLayer{
         lineVelocity = startVelocity;
         lineColor = startColor;
         lineThickness = startThickness;
-            
+        madeItToEnd = false;
+        
         linePath = UIBezierPath();
         linePath.move(to: currentPoint)
         path = nil;
@@ -128,7 +129,7 @@ class Line : CAShapeLayer{
     }
     
     func updateStrokeColor(){
-        self.strokeColor = ColorBox.ColorToUIColor(col: lineColor).cgColor
+        self.strokeColor = lineColor.uiColor().cgColor
     }
     
     func updateLineThickness(){
@@ -251,7 +252,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         levelView.showsVerticalScrollIndicator = false;
         levelView.showsHorizontalScrollIndicator = false;
         levelView.delaysContentTouches = false;
-        levelView.contentSize = propToRect(prop: level.levelData.propFrame).size
+        levelView.contentSize = propToRect(prop: level.levelData!.propFrame!.cgRect).size
 //        levelView.contentOffset = propToRect(prop: increaseRect(rect: level.levelData.propFrame, byPercentage: 0.1)).origin
         levelView.delegate = self;
         levelView.minimumZoomScale = 0.5
@@ -259,7 +260,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         levelView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.addSubview(levelView)
         
-        stageView = UIView(frame: propToRect(prop: CGRect(origin: CGPoint.zero, size: level.levelData.propFrame.size)))
+        stageView = UIView(frame: propToRect(prop: CGRect(origin: CGPoint.zero, size: (level.levelData?.propFrame?.cgRect.size)!)))
         stageView.layer.borderColor = UIColor.black.cgColor;
         stageView.layer.borderWidth = 0;
         stageView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -288,8 +289,8 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func setupLines(){
-        for line in level.levelData.lineData {
-            let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: line.startPosition), _startVelocity: propToVector(prop: line.startVelocity), _startColor: line.startColor, _startThickness: propToFloat(prop: line.startThickness, scaleWithX: true))
+        for line in (level.levelData?.lineData)! {
+            let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: (line.startPosition?.cgPoint)!), _startVelocity: propToVector(prop: (line.startVelocity?.cgVector)!), _startColor: line.startColor!, _startThickness: propToFloat(prop: CGFloat(line.startThickness), scaleWithX: true))
             lines.append(newLine)
             self.stageView.layer.addSublayer(newLine)
         }
@@ -297,17 +298,17 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func setupLevelEnds(){
         
-        for end in level.levelData.endPoints{
+        for end in (level.levelData?.endPoints)!{
 //            let outerFrame = propToRect(prop: end.outerFrame)
-            let newEnd = LevelEnd(_innerFrame: propToRect(prop: end.coreFrame), _color: end.endColor)
+            let newEnd = LevelEnd(_innerFrame: propToRect(prop: (end.frame?.cgRect)!), _color: end.color!)
             endPoints.append(newEnd)
             self.stageView.addSubview(newEnd)
         }
     }
     
     func setupAntiGrvityZones(){
-        for zone in level.levelData.antiGravityZones{
-            let newZone = AntiGravityZone(_innerFrame: propToRect(prop: zone.frame), _color: zone.color)
+        for zone in (level.levelData?.antiGravityZones)!{
+            let newZone = AntiGravityZone(_innerFrame: propToRect(prop: (zone.frame?.cgRect)!), _color: zone.color!)
             antiGravityZones.append(newZone)
             self.stageView.addSubview(newZone)
         }
@@ -371,7 +372,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     }
     
     func levelTextTriggerOccured(trigger : LevelTextTriggers){
-        let next : LevelText? = getLevelTextWithId(id: currentText?.nextText)
+        let next : LevelText? = getLevelTextWithId(id: (currentText?.nextText))
         if(next != nil){
             if(next!.triggerOn == trigger){
                 self.nextText(oldText: self.currentText)
@@ -390,16 +391,16 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         var animateOutTime : CGFloat = 0
         
         if(oldText != nil){
-            completedText.append(oldText!.id)
-            next = getLevelTextWithId(id: oldText!.nextText)
+            completedText.append(Int(oldText!.id))
+            next = getLevelTextWithId(id: (oldText!.nextText))
             animateOutCurrent = oldText!.animateOut
-            animateOutTime = oldText!.animateTime
+            animateOutTime = CGFloat(oldText!.animateTime)
         }else{
             next = getFirstText()
         }
         
         if(next != nil){
-            if(!completedText.contains(next!.id)){
+            if(!completedText.contains(Int(next!.id))){
                 //valid new text
                 currentText = next;
                 
@@ -410,11 +411,11 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + Double(animateOutTime), execute: {
                         self.updateLevelText(text: next)
-                        self.currentTextsLabel.animateIn(time: self.currentText.animateTime)
+                        self.currentTextsLabel.animateIn(time: CGFloat(self.currentText.animateTime))
                     })
                 }else{
                     self.updateLevelText(text: next)
-                    self.currentTextsLabel.animateIn(time: self.currentText.animateTime)
+                    self.currentTextsLabel.animateIn(time: CGFloat(self.currentText.animateTime))
                 }
             }else{
                 levelTextsAllComplete() //more secure, all id's used
@@ -441,8 +442,8 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             }
             currentTextsLabel.text = text.text
             
-            let frame = propToRect(prop: text.propFrame, within: self.frame)
-            let outPos = getPropOutPosForText(propOrigin: text.propFrame.origin)
+            let frame = propToRect(prop: (text.propFrame?.cgRect)!, within: self.frame)
+            let outPos = getPropOutPosForText(propOrigin: (text.propFrame?.cgRect.origin)!)
             if(text.animateIn){
                 currentTextsLabel.frame = CGRect(origin: propToPoint(prop: outPos), size: frame.size)
                 currentTextsLabel.inPos = frame.origin
@@ -451,16 +452,16 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                 currentTextsLabel.inPos = frame.origin
             }
             
-            currentTextsLabel.textColor = text.fontColor.uiColor()
+            currentTextsLabel.textColor = text.fontColor?.uiColor()
             currentTextsLabel.updateTapToContinueView()
-            currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: text.fontSize))
+            currentTextsLabel.font = UIFont(name: "SFProText-Light", size: Screen.fontSize(propFontSize: CGFloat(text.fontSize)))
         }
     }
     
-    func getLevelTextWithId(id : Int?) -> LevelText? {
-        for text in level.levelData.texts {
+    func getLevelTextWithId(id : Int32?) -> LevelText? {
+        for text in (level.levelData?.texts)! {
             if(text.id == -1){
-                return LevelText(id: -1, text: "", triggerOn: .tap, nextText: 0, animateTime: 0, animateIn: false, animateOut: false, propFrame: CGRect(x: -1, y: 0, width: 0, height: 0), fontSize: 0, fontColor: Color(r: 0, g: 0, b: 0, a: 0))
+                return LevelText(id: -1, text: "", triggerOn: .tap, nextText: 0, animateTime: 0, animateIn: false, animateOut: false, propFrame: CGRect(x: -1, y: 0, width: 0, height: 0).rect, fontColor: Color(r: 0, g: 0, b: 0, a: 0), fontSize: 0)
             }
             if(text.id == id){
                 return text
@@ -472,7 +473,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     func getFirstText() -> LevelText? {
         //make it pick a random one of the showFirsts, u know, in case OPUT (Other people use this), and prevent crash i guess
         var firstTexts : [LevelText] = []
-        for text in level.levelData.texts{
+        for text in (level.levelData?.texts)!{
             if(text.triggerOn == .start){
                 firstTexts.append(text)
             }
@@ -492,15 +493,15 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     
     func createGravityWellsFromLevel(){
         
-        for gWell in level.levelData.gravityWells {
-            let _ = createGravityWell(point: propToPoint(prop: gWell.position), core: propToFloat(prop: gWell.coreDiameter, scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: gWell.areaOfEffectDiameter, scaleWithX: true), mass: gWell.mass, new: false)
+        for gWell in (level.levelData?.gravityWells)! {
+            let _ = createGravityWell(point: propToPoint(prop: (gWell.position?.cgPoint)!), core: propToFloat(prop: CGFloat(gWell.coreDiameter), scaleWithX: true), areaOfEffectDiameter: propToFloat(prop: CGFloat(gWell.areaOfEffectDiameter), scaleWithX: true), mass: CGFloat(gWell.mass), new: false)
         }
         
     }
     
     func createColorBoxesFromLevel(){
-        for cBox in level.levelData.colorBoxData {
-            let _ = createColorBox(frame: propToRect(prop: cBox.frame), rotation: cBox.rotation, box: cBox.box, leftCol: cBox.leftColor, rightCol: cBox.rightColor, backgroundColor: cBox.backgroundColor, middlePropWidth: cBox.middlePropWidth)
+        for cBox in (level.levelData?.colorBoxData)! {
+            let _ = createColorBox(frame: propToRect(prop: (cBox.frame?.cgRect)!), rotation: CGFloat(cBox.rotation), leftCol: cBox.leftColor!, rightCol: cBox.rightColor!, backgroundColor: cBox.backgroundColor!, middlePropWidth: CGFloat(cBox.middlePropWidth))
         }
     }
     
@@ -567,8 +568,8 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: well)!)
     }
     
-    func createColorBox(frame : CGRect, rotation : CGFloat, box : Bool, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
-        let newBox = ColorBox(frame: frame, _rotation: rotation, box: box, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth, _stageView: stageView)
+    func createColorBox(frame : CGRect, rotation : CGFloat, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
+        let newBox = ColorBox(frame: frame, _rotation: rotation, _leftColor: leftCol, _rightColor: rightCol, backgroundColor: backgroundColor, _middlePropWidth: middlePropWidth, _stageView: stageView)
         
         stageView.addSubview(newBox)
         scaledColorBoxes.append(newBox)
@@ -694,7 +695,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         let time = maxLineTime()
         
         if(campaignLevel){
-            CampaignProgressHandler.completedLevel(levelNumber: level.levelData.levelMetadata.levelNumber, data: CampaignProgressData(levelNumber: level.levelData.levelMetadata.levelNumber, completed: true, locked: false, stars: 3, time: time, distance: dist))
+            CampaignProgressHandler.completedLevel(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), data: CampaignProgressData(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), completed: true, locked: false, stars: 3, time: time, distance: dist))
         }
         
         let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time), _campaign: campaignLevel)
@@ -702,7 +703,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             self.levelViewDelegate?.level_pressMenu()
         }
         levelBeat.nextLevelPressed = {
-            self.levelViewDelegate?.level_nextLevel(currentLevelNumber: self.level.levelData.levelMetadata.levelNumber)
+            self.levelViewDelegate?.level_nextLevel(currentLevelNumber: Int(self.level.levelData!.levelMetadata!.levelNumber))
         }
         
         //TODO animate

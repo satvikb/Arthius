@@ -129,7 +129,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     static func BlankLevel() -> LevelData{
-        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1), endPoints: [EndData(coreFrame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2), endColor: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2), startVelocity: CGVector(dx: 0, dy: 0.0025), startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), startThickness: 0.03)], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], antiGravityZones: [])
+        return LevelData(levelMetadata: LevelMetadata(levelUUID: UUID().uuidString, levelNumber: 0, levelName: "Untitled", levelVersion: "0", levelAuthor: "Unknown"), texts: [/*LevelText(id: 0, showFirst: true, text: "Welcome to GAME", triggerOn: .None, showNext: 0)*/], propFrame: CGRect(x: 0, y: 0, width: 1, height: 1).rect, endPoints: [EndData(frame: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2).rect, color: Color(r: 0, g: 0, b: 0, a: 1))], lineData: [LineData(startPosition: CGPoint(x: 0.2, y: 0.2).point, startVelocity: CGVector(dx: 0, dy: 0.0025).vector, startColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), startThickness: 0.03)], gravityWells: [], colorBoxData: [ColorBoxData(frame: CGRect(x: 0.45, y: 0.4, width: 0.1, height: 0.1).rect, rotation: 0, leftColor: Color(r: 0.2, g: 0.1, b: 1, a: 1), rightColor: Color(r: 0, g: 0, b: 0, a: 1), backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.7)], rockData: [], antiGravityZones: [])
     }
     
     func publishView(){
@@ -150,12 +150,14 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     
     func saveLevel(){
 //        do {
+//
+//
 //            try Disk.save(levelData, to: .documents, as: USER_LEVELS_FOLDER+"/\(levelData.levelMetadata.levelUUID)")
 //            let file = "\(USER_LEVELS_FOLDER)/\(levelData.levelMetadata.levelUUID)"
 //            var text = "s"
 //
 //            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-//                
+//
 //                let fileURL = dir.appendingPathComponent(file)
 //                print(fileURL.path)
 //
@@ -181,17 +183,33 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 
         
         do {
-            try Disk.save(levelData, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).\(File.levelExtensionForType(type: .UserMade))")
+            
+            let l = levelData
+            let lm = l?.levelMetadata
+            
+//            let levelDataTest = LevelData(levelMetadata: LevelMetadata(levelUUID: "uT1", levelNumber: 0, levelName: "a test", levelVersion: "0", levelAuthor: "Tester"), texts: [], propFrame: Rect(x: 0, y: 0, width: 1, height: 1), endPoints: [], lineData: [LineData(startPosition: Point(x: 0.2, y: 0.2), startVelocity: Vector(dx: 0.0025, dy: 0), startColor: Color(r: 0, g: 1, b: 0, a: 1), startThickness: 10)], gravityWells: [], colorBoxData: [], rockData: [], antiGravityZones: [])
+            
+            //TODO: FIGURE OUT WHY THIS NEEDS TO HAPPEN
+            let newLevelData = LevelData(levelMetadata: LevelMetadata(levelUUID: lm?.levelUUID, levelNumber: (lm?.levelNumber)!, levelName: lm?.levelName, levelVersion: lm?.levelVersion, levelAuthor: lm?.levelAuthor), texts: (l?.texts)!, propFrame: l?.propFrame, endPoints: (l?.endPoints)!, lineData: (l?.lineData)!, gravityWells: (l?.gravityWells)!, colorBoxData: (l?.colorBoxData)!, rockData: (l?.rockData)!, antiGravityZones: (l?.antiGravityZones)!)
+            
+            
+            let data = try?Level(levelData: newLevelData).makeData()
+            
+////            let data2 = Level.makeData(Level(levelData: levelData))
+//            
+//            let newLevel = Level.makeLevel(data: data!)
+////            try Disk.save(data: levelData, to: .documents, as: "")
+            try Disk.save(data: data!, to: .documents, as: "\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata!.levelUUID!).\(File.levelExtensionForType(type: .UserMade))")
         }catch let error as NSError{
             print("Error saving user made level \(error.localizedDescription)")
         }
         
-        do {
-            let data = try Disk.retrieve("\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata.levelUUID).\(File.levelExtensionForType(type: .UserMade))", from: .documents, as: LevelData.self)
-            print("GOT LEVEL \(data.levelMetadata.levelUUID)")
-        }catch let error as NSError{
-            print("Error getting user made level \(error.localizedDescription)")
-        }
+//        do {
+//            let data = try Disk.retrieve("\(File.getFolderForLevelType(type: .UserMade))/\(levelData.levelMetadata?.levelUUID).\(File.levelExtensionForType(type: .UserMade))", from: .documents, as: LevelData.self)
+//            print("GOT LEVEL \(data.levelMetadata.levelUUID)")
+//        }catch let error as NSError{
+//            print("Error getting user made level \(error.localizedDescription)")
+//        }
     }
     
     func createLevelScrollView(){
@@ -235,7 +253,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         //TODO: MULTIPLE ENDS? yes ofc, allows for one end of each colors for ex.
         //TODO: Make editable EndPointView
         //show the end frame
-        endPointView = UIView(frame: propToRect(prop: levelData.endPoints[0].coreFrame))
+        endPointView = UIView(frame: propToRect(prop: (levelData.endPoints[0].frame?.cgRect)!))
         endPointView.backgroundColor = UIColor.black;
         stageView.addSubview(endPointView);
     }
@@ -245,7 +263,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let colorChangeBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0.1, width: 1, height: 0.1), within: toolbox.frame))
         colorChangeBtn.backgroundColor = UIColor.yellow;
         colorChangeBtn.pressed = {
-            let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1), rotation: 0, box: false, leftColor: self.levelData.lineData[0].startColor, rightColor: self.levelData.lineData[0].startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
+            let colorBoxData : ColorBoxData = ColorBoxData(frame: CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1).rect, rotation: 0, leftColor: self.levelData.lineData[0].startColor, rightColor: self.levelData.lineData[0].startColor, backgroundColor: Color(r: 0.2, g: 0.2, b: 0.2, a: 1), middlePropWidth: 0.2)
             self.addColorBoxToView(d: colorBoxData)
             self.levelData.colorBoxData.append(colorBoxData)
 
@@ -256,7 +274,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         let lineStartBtn = ToolboxButton(frame: propToRect(prop: CGRect(x: 0, y: 0.3, width: 1, height: 0.1), within: toolbox.frame))
         lineStartBtn.backgroundColor = UIColor.yellow;
         lineStartBtn.pressed = {
-            let startLineData : LineData = LineData(startPosition: CGPoint(x: 0.5, y: 0.5), startVelocity: CGVector(dx: 0.001, dy: 0), startColor: Color(r: 0, g: 0, b: 0, a: 1), startThickness: 0.03)
+            let startLineData : LineData = LineData(startPosition: CGPoint(x: 0.5, y: 0.5).point, startVelocity: CGVector(dx: 0.001, dy: 0).vector, startColor: Color(r: 0, g: 0, b: 0, a: 1), startThickness: 0.03)
             self.addStartLineToView(d: startLineData)
             self.levelData.lineData.append(startLineData)
             
@@ -265,12 +283,16 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func addColorBoxToView(d : ColorBoxData){
-        var data = d
-        let colorBox = ColorBox(frame: propToRect(prop: data.frame), _rotation: data.rotation, box: data.box, _leftColor: data.leftColor, _rightColor: data.rightColor, backgroundColor: data.backgroundColor, _middlePropWidth: data.middlePropWidth, _stageView: stageView, _editable: true)
+        let data = d
+        let colorBox = ColorBox(frame: propToRect(prop: (data.frame?.cgRect)!), _rotation: CGFloat(data.rotation), _leftColor: data.leftColor!, _rightColor: data.rightColor!, backgroundColor: data.backgroundColor!, _middlePropWidth: CGFloat(data.middlePropWidth), _stageView: stageView, _editable: true)
         
         colorBox.frameChanged = {
-            self.levelData.colorBoxData.remove(at: self.levelData.colorBoxData.index(of: data)!)
-            data.frame = self.rectToProp(rect: colorBox.frame)
+            let arrIndex = self.levelData.colorBoxData.index(where: { (colorBoxData:ColorBoxData) -> Bool in
+                colorBoxData == data
+            })
+            
+            self.levelData.colorBoxData.remove(at: arrIndex!)
+            data.frame = self.rectToProp(rect: colorBox.frame).rect
             self.levelData.colorBoxData.append(data)
         }
         
@@ -279,15 +301,24 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
     }
     
     func addStartLineToView(d : LineData){
-        var data = d
+        let data = d
         let maxPropStartVeclocity : CGFloat = 0.002 //TODO per level, global?
 
-        let lineStart = LineStart(f: propToRect(prop: CGRect(x: d.startPosition.x, y: d.startPosition.y, width: 0.1, height: 0)), _startVelocity: d.startVelocity, _lineColor: d.startColor, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
+        let lineStart = LineStart(f: propToRect(prop: CGRect(x: CGFloat(d.startPosition!.x), y: CGFloat(d.startPosition!.y), width: 0.1, height: 0)), _startVelocity: (d.startVelocity?.cgVector)!, _lineColor: d.startColor!, _maxPropStartVelocity: CGVector(dx: maxPropStartVeclocity, dy: maxPropStartVeclocity))
         
         lineStart.frameChanged = {
-            self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
-            data.startPosition = self.pointToProp(point: lineStart.center)
-            data.startVelocity = lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)
+            
+            let arrIndex = self.levelData.lineData.index(where: { (lineData:LineData) -> Bool in
+                lineData == data
+            })
+            
+            self.levelData.lineData.remove(at: arrIndex!)
+//            self.levelData.lineData.remove(at: self.levelData.lineData.index(where: {(lineData) -> Bool in
+//                (lineData as! LineData) == data
+//            }))
+//            self.levelData.lineData.remove(at: self.levelData.lineData.index(of: data)!)
+            data.startPosition = self.pointToProp(point: lineStart.center).point
+            data.startVelocity = (lineStart.getCurrentKnobVectorNormalized()*lineStart.maxPropStartVelocity*CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height)).vector
 //            print(data.startVelocity, data.startVelocity/CGVector(dx: 1, dy: UIScreen.main.bounds.width/UIScreen.main.bounds.height))
             self.levelData.lineData.append(data)
         }

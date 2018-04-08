@@ -17,6 +17,7 @@ let storage = Storage.storage()
 
 let lineStartTag = 1020;
 
+
 enum View {
     case Splash
     case Menu
@@ -166,7 +167,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             createLevelSelectView.animateIn(time: transitionTime)
             break;
         case .LevelCreate:
-            createLevelView = CreateLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), existingLevel: currentLevel.levelData)
+            createLevelView = CreateLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), existingLevel: currentLevel.levelData!)
             createLevelView.delegate = self;
             createLevelView.animateIn()
             self.view.addSubview(createLevelView)
@@ -238,7 +239,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     func globalLevelSelect_pressLevel(level: GLSLevelData) {
         getLevelFile(uuid: level.levelUUID, completion: {(levelData : LevelData) in
             DownloadCounter.addDownloadCounterTo(uuid: level.levelUUID)
-            self.currentLevel = Level(_levelData: levelData);
+            self.currentLevel = Level(levelData: levelData);
             self.switchToView(newView: .LevelPlay)
         })
     }
@@ -251,13 +252,21 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
             if let error = error {
                 // Uh-oh, an error occurred!
+                print("error getData \(error.localizedDescription)")
             } else {
                 // Data for "images/island.jpg" is returned
 //                Disk.retrieve("", from: .documents, as: LevelData.self)
                 do{
-                    let decoder = JSONDecoder()
-                    let levelData = try decoder.decode(LevelData.self, from: data!)
-                    completion(levelData)
+//                    let decoder = JSONDecoder()
+//
+//                    let levelData = try decoder.decode(LevelData.self, from: data!)
+                    
+                    let level : Level = Level.makeLevel(data: data!)!//List.fromByteArray(UnsafePointer(fbData))
+                    let levelData = level.levelData
+                    
+                    print("GET GLS LEVEL FILE \(level.levelData?.levelMetadata) \(level.levelData?.endPoints)")
+                    
+                    completion(levelData!)
                 }catch let error as NSError {
                     print("Error getting file \(error.localizedDescription)")
                 }
@@ -326,7 +335,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     var didPressCampaignLevel : Bool = false
     func campaignLevelSelect_pressLevel(level: LevelData) {
-        currentLevel = Level(_levelData: level);
+        currentLevel = Level(levelData: level);
         didPressCampaignLevel = true;
         switchToView(newView: .LevelPlay)
     }
@@ -346,7 +355,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         //use LevelNumber in level metadata
         let d = CampaignLevelHandler.getLevelFromLevelNumber(levelNumber: currentLevelNumber + 1)
         if(d != nil){
-            currentLevel = Level(_levelData: d!)
+            currentLevel = Level(levelData: d!)
             didPressCampaignLevel = true
             switchToView(newView: .LevelPlay, transitionTime: transitionTime, forceParentView: true, forcedParentView: .CampaignLevelSelect)
         }else{
@@ -359,13 +368,13 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     func createLevelSelect_pressLevel(level: LevelData) {
-        currentLevel = Level(_levelData: level);
+        currentLevel = Level(levelData: level);
         switchToView(newView: .LevelCreate)
     }
     
     func createLevelSelect_createNew() {
         print("CREATE NEW LEVEL")
-        currentLevel = Level(_levelData: CreateLevelView.BlankLevel())
+        currentLevel = Level(levelData: CreateLevelView.BlankLevel())
         switchToView(newView: .LevelCreate)
     }
     
@@ -375,7 +384,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     func createLevelView_playLv() {
-        currentLevel = Level(_levelData: createLevelView.levelData)
+        currentLevel = Level(levelData: createLevelView.levelData)
 //        levelView = LevelView(_level: Level(_levelData: createLevelView.levelData), _parentView: .LevelCreate)//, _resetToLevel: currentLevel)
 //        levelView.levelViewDelegate = self;
 //        self.view.addSubview(levelView)
@@ -385,12 +394,12 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     
     func createLevelView_publishLv(title: String, description: String, thumbnail: UIImage){
         if(account_isLoggedIn()){
-            currentLevel = Level(_levelData: createLevelView.levelData)
-            let levelId = currentLevel.levelData.levelMetadata.levelUUID;
+            currentLevel = Level(levelData: createLevelView.levelData)
+            let levelId = currentLevel.levelData?.levelMetadata?.levelUUID! ?? ""
             let userId = Auth.auth().currentUser?.uid ?? ""
             
             if(userId != ""){
-                let thumbnailStoragePath = "thumb/\(currentLevel.levelData.levelMetadata.levelUUID).png"
+                let thumbnailStoragePath = "thumb/\(levelId).png"
                 
                 let data : [String : Any] = [
                     "LevelID" : levelId,
@@ -406,6 +415,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                     self.uploadCustomMadeFile(userId: userId, levelUUID: levelId)
                 })
                 
+                print("uploading thumb to: \(thumbnailStoragePath)")
                 uploadLevelImage(storagePath: thumbnailStoragePath, userId: userId, thumbnail: thumbnail)
             }
         }
@@ -466,7 +476,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         
         // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
         thumbRef.getData(maxSize: 1 * 1024 * 1024, completion: {(data : Data?, error : Error?) in
-            if let error = error {
+            if error != nil {
                 // Uh-oh, an error occurred!
             } else {
                 // Data for "images/island.jpg" is returned

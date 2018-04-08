@@ -128,7 +128,7 @@ class GravityWell: UIView {
         var currentOuterSize = areaOfEffectDiameter
         currentOuterSize = currentOuterSize! * pinch.scale
         coreDiameter = coreDiameter! * pinch.scale
-        print(pinch.scale, currentOuterSize!, areaOfEffectDiameter)
+//        print(pinch.scale, currentOuterSize!, areaOfEffectDiameter)
         areaOfEffectDiameter = currentOuterSize
         updateSize()
         
@@ -187,6 +187,7 @@ class GravityWell: UIView {
 
 extension GravityWell {
     var data : GravityWellData {
-        return GravityWellData(position: pointToProp(point: self.corePoint), mass: self.mass, coreDiameter: floatToProp(float: self.coreDiameter, scaleWithX: true), areaOfEffectDiameter: floatToProp(float: self.areaOfEffectDiameter, scaleWithX: true))
+//        GravityWellData(position: <#T##CGPoint?#>, mass: <#T##Float32#>, coreDiameter: <#T##Float32#>, areaOfEffectDiameter: <#T##Float32#>)
+        return GravityWellData(position: pointToProp(point: self.corePoint).point, mass: Float32(self.mass), coreDiameter: Float32(floatToProp(float: self.coreDiameter, scaleWithX: true)), areaOfEffectDiameter: Float32(floatToProp(float: self.areaOfEffectDiameter, scaleWithX: true)))
     }
 }
