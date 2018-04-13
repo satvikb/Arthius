@@ -1,0 +1,14 @@
+table Progress {
+  progressData : [LevelProgressData];
+}
+
+table LevelProgressData {
+  uuid:string;
+  completed:bool;
+  locked:bool;
+  stars:int;
+  time:float;
+  distance:float;
+}
+
+root_type Progress;

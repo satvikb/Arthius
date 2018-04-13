@@ -11,6 +11,7 @@ table Level {
 
 table LevelData {
   levelMetadata : LevelMetadata;
+  levelConditions : LevelConditions;
   texts : [LevelText];
   propFrame : Rect;
   endPoints : [EndData];
@@ -19,6 +20,11 @@ table LevelData {
   colorBoxData : [ColorBoxData];
   rockData : [RockData];
   antiGravityZones : [AntiGravityData];
+}
+
+table LevelConditions {
+  maxDistance:float;
+  maxTime:float;
 }
 
 table LevelText {
@@ -40,6 +46,7 @@ table LevelMetadata {
   levelName:string;
   levelVersion:string;
   levelAuthor:string;
+  levelThumbnail:Rect;
 }
 
 table GravityWellData {

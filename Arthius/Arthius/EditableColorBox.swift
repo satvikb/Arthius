@@ -78,9 +78,9 @@ class EditableColorBox :  EditableElement, UIGestureRecognizerDelegate {
         panGesture.delegate = self
         self.addGestureRecognizer(panGesture)
         
-//        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
-//        pinchGesture.delegate = self
-//        self.addGestureRecognizer(pinchGesture)
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        pinchGesture.delegate = self
+        self.addGestureRecognizer(pinchGesture)
         
         rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation(_:)))
         rotationGesture.delegate = self

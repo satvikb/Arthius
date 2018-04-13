@@ -694,8 +694,28 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         let dist = totalDistanceTravelled()
         let time = maxLineTime()
         
+//        if(campaignLevel){
+//            CampaignProgressHandler.completedLevel(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), data: CampaignProgressData(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), completed: true, locked: false, stars: 3, time: time, distance: dist))
+//        }
+        
+        var stars : Int = 1;
+        
+        
+        if(dist <= CGFloat((level.levelData?.levelConditions?.maxDistance)!)){
+            stars += 1;
+        }
+        
+        if(time <= CGFloat((level.levelData?.levelConditions?.maxTime)!)){
+            stars += 1;
+        }
+        
+        
+        let levelProgressData = LevelProgressData(uuid: level.levelData!.levelMetadata?.levelUUID, completed: true, locked: false, stars: Int32(stars), time: Float32(time), distance: Float32(dist))
+        
         if(campaignLevel){
-            CampaignProgressHandler.completedLevel(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), data: CampaignProgressData(levelNumber: Int(level.levelData!.levelMetadata!.levelNumber), completed: true, locked: false, stars: 3, time: time, distance: dist))
+            ProgressHandler.completedCampaignLevel(data: levelProgressData);
+        }else{
+            ProgressHandler.completedLevel(data: levelProgressData);
         }
         
         let levelBeat = LevelBeatView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), _gameplayStats: LevelGameplayStats(lineDistance: dist, timePlayed: time), _campaign: campaignLevel)

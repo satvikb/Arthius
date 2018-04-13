@@ -58,10 +58,14 @@ class CampaignLevelSelector : UIScrollView {
         
         var i = 0
         for level in CampaignLevelHandler.allLevels {
-            var progress = CampaignProgressHandler.progress.progress[Int((level.levelMetadata?.levelNumber)!)]
-            
+//            var progress = CampaignProgressHandler.progress.progress[Int((level.levelMetadata?.levelNumber)!)]
+            var progress = ProgressHandler.getCurrentProgressForUUID(uuid: (level.levelMetadata?.levelUUID)!);
             if progress == nil{
-                progress = CampaignProgressHandler.setProgress(Int((level.levelMetadata!.levelNumber)), CampaignProgressData(levelNumber: Int(level.levelMetadata!.levelNumber), completed: false, locked: true, stars: 0, time: 0, distance: 0))
+                progress = LevelProgressData(uuid: level.levelMetadata?.levelUUID, completed: false, locked: true, stars: 0, time: 0, distance: 0);
+                
+                //dont actually save new progress
+//                progress = ProgressHandler.setProgress(<#T##progress: LevelProgressData##LevelProgressData#>)
+//                progress = CampaignProgressHandler.setProgress(Int((level.levelMetadata!.levelNumber)), CampaignProgressData(levelNumber: Int(level.levelMetadata!.levelNumber), completed: false, locked: true, stars: 0, time: 0, distance: 0))
             }
             
             
@@ -114,13 +118,13 @@ class CampaignLevelSelector : UIScrollView {
 
 class CampaignLevelSelectTile : UIImageView {
     var level : LevelData
-    var progressData : CampaignProgressData
+    var progressData : LevelProgressData
     
     var pressed = {(levelData : LevelData) in}
     
     var heldDown : Bool = false;
     
-    init(frame: CGRect, _level: LevelData, _progressData: CampaignProgressData){
+    init(frame: CGRect, _level: LevelData, _progressData: LevelProgressData){
         level = _level;
         progressData = _progressData
         

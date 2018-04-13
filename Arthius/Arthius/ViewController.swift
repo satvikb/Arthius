@@ -55,7 +55,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         
         File.copyLevelsFromBundleToDocuments()
         CampaignLevelHandler.load()
-        CampaignProgressHandler.load()
+        ProgressHandler.load()
         
         firebaseAuthHandler()
 

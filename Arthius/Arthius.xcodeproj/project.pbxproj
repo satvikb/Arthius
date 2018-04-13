@@ -21,6 +21,15 @@
 		4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */; };
 		4064286E206C7AFD000B18A3 /* CampaignHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286D206C7AFD000B18A3 /* CampaignHandler.swift */; };
 		40642870206C823E000B18A3 /* LineStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4064286F206C823E000B18A3 /* LineStart.swift */; };
+		406CF28F207D5CBD008F88CA /* ChromaShadeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF287207D5CBD008F88CA /* ChromaShadeSlider.swift */; };
+		406CF290207D5CBD008F88CA /* UIColor+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF288207D5CBD008F88CA /* UIColor+Utilities.swift */; };
+		406CF291207D5CBD008F88CA /* ChromaColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF28A207D5CBD008F88CA /* ChromaColorPicker.swift */; };
+		406CF292207D5CBD008F88CA /* ColorModeToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF28B207D5CBD008F88CA /* ColorModeToggleButton.swift */; };
+		406CF294207D5CBD008F88CA /* ChromaHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF28D207D5CBD008F88CA /* ChromaHandle.swift */; };
+		406CF295207D5CBD008F88CA /* ChromaAddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF28E207D5CBD008F88CA /* ChromaAddButton.swift */; };
+		406CF297207D5EB4008F88CA /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF296207D5EB4008F88CA /* UInt128.swift */; };
+		406CF29B20803471008F88CA /* ProgressFB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF29920803471008F88CA /* ProgressFB.swift */; };
+		406CF29D20804A7E008F88CA /* LevelFB2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406CF29C20804A7E008F88CA /* LevelFB2.swift */; };
 		4081BDE920784DA400710AED /* CampaignLevelSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDE820784DA400710AED /* CampaignLevelSelector.swift */; };
 		4081BDF52079DA2600710AED /* LevelFB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDF42079DA2600710AED /* LevelFB.swift */; };
 		4081BDFE2079EF9300710AED /* FlatBuffersBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */; };
@@ -99,6 +108,15 @@
 		4063DCAD2073251D00D37EB1 /* GlobalLevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalLevelSelectView.swift; sourceTree = "<group>"; };
 		4064286D206C7AFD000B18A3 /* CampaignHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignHandler.swift; sourceTree = "<group>"; };
 		4064286F206C823E000B18A3 /* LineStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStart.swift; sourceTree = "<group>"; };
+		406CF287207D5CBD008F88CA /* ChromaShadeSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChromaShadeSlider.swift; sourceTree = "<group>"; };
+		406CF288207D5CBD008F88CA /* UIColor+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Utilities.swift"; sourceTree = "<group>"; };
+		406CF28A207D5CBD008F88CA /* ChromaColorPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChromaColorPicker.swift; sourceTree = "<group>"; };
+		406CF28B207D5CBD008F88CA /* ColorModeToggleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorModeToggleButton.swift; sourceTree = "<group>"; };
+		406CF28D207D5CBD008F88CA /* ChromaHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChromaHandle.swift; sourceTree = "<group>"; };
+		406CF28E207D5CBD008F88CA /* ChromaAddButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChromaAddButton.swift; sourceTree = "<group>"; };
+		406CF296207D5EB4008F88CA /* UInt128.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UInt128.swift; sourceTree = "<group>"; };
+		406CF29920803471008F88CA /* ProgressFB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressFB.swift; sourceTree = "<group>"; };
+		406CF29C20804A7E008F88CA /* LevelFB2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelFB2.swift; sourceTree = "<group>"; };
 		4081BDE820784DA400710AED /* CampaignLevelSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampaignLevelSelector.swift; sourceTree = "<group>"; };
 		4081BDF42079DA2600710AED /* LevelFB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelFB.swift; sourceTree = "<group>"; };
 		4081BDFC2079EF9300710AED /* FlatBuffersBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersBuilder.swift; sourceTree = "<group>"; };
@@ -187,6 +205,7 @@
 		401998832061A52E00411CB8 /* Arthius */ = {
 			isa = PBXGroup;
 			children = (
+				406CF286207D5CBD008F88CA /* ChromaColorPicker */,
 				4081BDFB2079EF7F00710AED /* FlatBuffers */,
 				4016787A206824A200D8A5EF /* Arthius.entitlements */,
 				40B0352320681C7D00A4D8FB /* GoogleService-Info.plist */,
@@ -205,6 +224,19 @@
 			path = Arthius;
 			sourceTree = "<group>";
 		};
+		406CF286207D5CBD008F88CA /* ChromaColorPicker */ = {
+			isa = PBXGroup;
+			children = (
+				406CF287207D5CBD008F88CA /* ChromaShadeSlider.swift */,
+				406CF288207D5CBD008F88CA /* UIColor+Utilities.swift */,
+				406CF28A207D5CBD008F88CA /* ChromaColorPicker.swift */,
+				406CF28B207D5CBD008F88CA /* ColorModeToggleButton.swift */,
+				406CF28D207D5CBD008F88CA /* ChromaHandle.swift */,
+				406CF28E207D5CBD008F88CA /* ChromaAddButton.swift */,
+			);
+			path = ChromaColorPicker;
+			sourceTree = "<group>";
+		};
 		4081BDFB2079EF7F00710AED /* FlatBuffers */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +253,7 @@
 			children = (
 				4083FF50207AB66A005E1A00 /* EditableElement.swift */,
 				4083FF52207AB6F8005E1A00 /* EditableColorBox.swift */,
+				4064286F206C823E000B18A3 /* LineStart.swift */,
 			);
 			name = EditableLevelElements;
 			sourceTree = "<group>";
@@ -286,7 +319,6 @@
 				40B035212067290200A4D8FB /* MiscElements.swift */,
 				4016788120699A5D00D8A5EF /* Rock.swift */,
 				40167883206B128300D8A5EF /* GameUIElement.swift */,
-				4064286F206C823E000B18A3 /* LineStart.swift */,
 				400B490C206DE4CF00925B55 /* LevelTextsLabel.swift */,
 			);
 			name = LevelElements;
@@ -295,6 +327,8 @@
 		40A41FB72065C95D000E4634 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				406CF29C20804A7E008F88CA /* LevelFB2.swift */,
+				406CF29920803471008F88CA /* ProgressFB.swift */,
 				4081BDF42079DA2600710AED /* LevelFB.swift */,
 				40EDDB9E206448EC006FF6ED /* Screen.swift */,
 				40E544D32063108C006505D5 /* Extensions.swift */,
@@ -316,6 +350,7 @@
 		40B0352020671DB400A4D8FB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				406CF296207D5EB4008F88CA /* UInt128.swift */,
 				4019988B2061A52E00411CB8 /* Assets.xcassets */,
 				4019988D2061A52E00411CB8 /* LaunchScreen.storyboard */,
 				401998902061A52E00411CB8 /* Info.plist */,
@@ -487,6 +522,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				406CF294207D5CBD008F88CA /* ChromaHandle.swift in Sources */,
+				406CF291207D5CBD008F88CA /* ChromaColorPicker.swift in Sources */,
 				40A41F9920647124000E4634 /* Disk.swift in Sources */,
 				40EDDB9B206445DA006FF6ED /* MenuView.swift in Sources */,
 				4083FF51207AB66A005E1A00 /* EditableElement.swift in Sources */,
@@ -494,12 +531,14 @@
 				40B47D53206F3E7E0061A78D /* PublishLevelView.swift in Sources */,
 				40A41F9F20647124000E4634 /* Disk+[Data].swift in Sources */,
 				40B0351B2066FF5300A4D8FB /* SavedLevelSelectView.swift in Sources */,
+				406CF297207D5EB4008F88CA /* UInt128.swift in Sources */,
 				4081BDFF2079EF9300710AED /* FlatBuffersReader.swift in Sources */,
 				40E544D22062FA44006505D5 /* GravityWell.swift in Sources */,
 				40ADEDFD206F484500643253 /* LevelLeaveConfirmation.swift in Sources */,
 				40A41FBB20660512000E4634 /* LevelScrollView.swift in Sources */,
 				4016787E20683E2400D8A5EF /* FirebaseHandler.swift in Sources */,
 				4064286E206C7AFD000B18A3 /* CampaignHandler.swift in Sources */,
+				406CF29D20804A7E008F88CA /* LevelFB2.swift in Sources */,
 				40B0351F2067004D00A4D8FB /* LevelSelector.swift in Sources */,
 				40A41F9B20647124000E4634 /* Disk+Codable.swift in Sources */,
 				40A41FA720659C33000E4634 /* PlaySelect.swift in Sources */,
@@ -508,6 +547,7 @@
 				40E544D820633D04006505D5 /* LevelView.swift in Sources */,
 				4083FF53207AB6F8005E1A00 /* EditableColorBox.swift in Sources */,
 				40A41F9D20647124000E4634 /* Disk+Helpers.swift in Sources */,
+				406CF295207D5CBD008F88CA /* ChromaAddButton.swift in Sources */,
 				4081BDF52079DA2600710AED /* LevelFB.swift in Sources */,
 				4063DCAE2073251D00D37EB1 /* GlobalLevelSelectView.swift in Sources */,
 				40EDDB9D206447A6006FF6ED /* Button.swift in Sources */,
@@ -524,7 +564,10 @@
 				40167884206B128300D8A5EF /* GameUIElement.swift in Sources */,
 				4016788020683F0700D8A5EF /* TextField.swift in Sources */,
 				401998852061A52E00411CB8 /* AppDelegate.swift in Sources */,
+				406CF292207D5CBD008F88CA /* ColorModeToggleButton.swift in Sources */,
+				406CF29B20803471008F88CA /* ProgressFB.swift in Sources */,
 				401327322076EF6300165545 /* GLSLevelSelector.swift in Sources */,
+				406CF290207D5CBD008F88CA /* UIColor+Utilities.swift in Sources */,
 				40A41FB92065C96A000E4634 /* File.swift in Sources */,
 				40A41FBF2066B6D0000E4634 /* BaseLevelRectangle.swift in Sources */,
 				4081BDFE2079EF9300710AED /* FlatBuffersBuilder.swift in Sources */,
@@ -535,6 +578,7 @@
 				4081BDE920784DA400710AED /* CampaignLevelSelector.swift in Sources */,
 				40B035172066FB8700A4D8FB /* CreateLevelSelectView.swift in Sources */,
 				40B035222067290200A4D8FB /* MiscElements.swift in Sources */,
+				406CF28F207D5CBD008F88CA /* ChromaShadeSlider.swift in Sources */,
 				40A41FAA20659E41000E4634 /* Label.swift in Sources */,
 				40A41FA120647124000E4634 /* Disk+Errors.swift in Sources */,
 			);

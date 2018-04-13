@@ -14,7 +14,7 @@ let PUBLIC_LEVELS_FOLDER = "PublicLevels"
 let USER_LEVELS_FOLDER = "UserLevels"
 let USER_SAVES_FOLDER = "UserSave"
 
-let CAMPAIGN_PROGRESS_FILE = "campaign_progress.cpg"
+let PROGRESS_FILE = "progress.gpg"
 
 //let LEVEL_EXTENSION = ".gws"
 enum LevelType : String{
@@ -92,7 +92,7 @@ class File {
             let lm = l?.levelMetadata
             
             //TODO: FIGURE OUT WHY THIS NEEDS TO HAPPEN
-            let newLevelData = LevelData(levelMetadata: LevelMetadata(levelUUID: lm?.levelUUID, levelNumber: (lm?.levelNumber)!, levelName: lm?.levelName, levelVersion: lm?.levelVersion, levelAuthor: lm?.levelAuthor), texts: (l?.texts)!, propFrame: l?.propFrame, endPoints: (l?.endPoints)!, lineData: (l?.lineData)!, gravityWells: (l?.gravityWells)!, colorBoxData: (l?.colorBoxData)!, rockData: (l?.rockData)!, antiGravityZones: (l?.antiGravityZones)!)
+            let newLevelData = LevelData(levelMetadata: LevelMetadata(levelUUID: lm?.levelUUID, levelNumber: (lm?.levelNumber)!, levelName: lm?.levelName, levelVersion: lm?.levelVersion, levelAuthor: lm?.levelAuthor, levelThumbnail: lm?.levelThumbnail), levelConditions: LevelConditions(maxDistance: 200, maxTime: 5), texts: (l?.texts)!, propFrame: l?.propFrame, endPoints: (l?.endPoints)!, lineData: (l?.lineData)!, gravityWells: (l?.gravityWells)!, colorBoxData: (l?.colorBoxData)!, rockData: (l?.rockData)!, antiGravityZones: (l?.antiGravityZones)!)
             
             
             let datao = try?Level(levelData: newLevelData).makeData()
@@ -129,10 +129,13 @@ class File {
         }
     }
     
-    static func loadCampaignProgress() -> CampaignProgress{
+    static func loadProgress() -> Progress{
         do {
-            let cp = try Disk.retrieve(CAMPAIGN_PROGRESS_FILE, from: .documents, as: CampaignProgress.self)
-            return cp;
+            let cp = try Disk.retrieve(PROGRESS_FILE, from: .documents, as: Data.self)
+            let data0 = cp.decompress(withAlgorithm: .LZMA)
+            let data = Progress.makeProgress(data: data0!)
+            
+            return data!;
         } catch let error as NSError {
             print("""
                 ERROR LOADING CAMPAIGN
@@ -143,17 +146,25 @@ class File {
                 Suggestions: \(error.localizedRecoverySuggestion ?? "")
                 """)
             
-            let startingData = [1:CampaignProgressData(levelNumber: 1, completed: false, locked: false, stars: 0, time: 0, distance: 0)]
-            return CampaignProgress(progress: startingData)
+            //TODO if file exists, but campaign init data isnt set already, IMPOSSIBLE TO PLAY CAMPIAGN!!
+            var startingData : [LevelProgressData] = []
+            if(CampaignLevelHandler.allLevels.count > 0){
+                let campaignStartData = LevelProgressData(uuid: CampaignLevelHandler.allLevels[0].levelMetadata?.levelUUID, completed: false, locked: false, stars: 0, time: 0, distance: 0);
+                startingData.append(campaignStartData)
+            }
+            return Progress(progressData: startingData)
         }
     }
     
-    static func saveCampaignProgress(progress: CampaignProgress){
+    static func saveProgress(progress: Progress){
         do {
-            try Disk.save(progress, to: .documents, as: CAMPAIGN_PROGRESS_FILE)
+            let data0 = try progress.makeData()
+            let data = data0.compress(withAlgorithm: .LZMA);
+            try Disk.save(data: data!, to: .documents, as: PROGRESS_FILE);
+//            try Disk.save(progress, to: .documents, as: PROGRESS_FILE)
         } catch let error as NSError {
             print("""
-                ERROR SAVING CAMPAIGN
+                ERROR SAVING PROGRESS
                 Domain: \(error.domain)
                 Code: \(error.code)
                 Description: \(error.localizedDescription)
