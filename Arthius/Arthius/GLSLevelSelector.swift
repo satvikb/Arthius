@@ -10,8 +10,8 @@ import UIKit
 
 
 protocol GLSSelectorDelegate: class {
-    func globalLevelSelector_pressedPlayLevel(level: GLSLevelData)
-    func getThumbnail(levelUUID: String, completion: @escaping (_ img : UIImage) -> Void);
+    func globalLevelSelector_pressedPlayLevel(level: LevelData)
+//    func getThumbnail(levelUUID: String, completion: @escaping (_ img : UIImage) -> Void);
 }
 
 
@@ -24,14 +24,14 @@ protocol GLSDetailViewDelegate : class {
 class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
     
     weak var glsSelectorDelegate:GLSSelectorDelegate?
-    var levels : [GLSLevelData]!
+    var levels : [LevelData]!
     var xTiles : CGFloat!
     var yTiles : CGFloat!
     
     var showingDetailView : Bool = false;
     var startedLoadingLevel : Bool = false;
     
-    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [GLSLevelData]){
+    init(frame: CGRect, xTiles: CGFloat, yTiles : CGFloat, levels : [LevelData], downloads: [String: Int]){
         super.init(frame: frame)
         
         self.levels = levels
@@ -42,11 +42,11 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
         self.showsHorizontalScrollIndicator = false;
         self.isUserInteractionEnabled = true;
         
-        self.updateLevels(xTiles, yTiles, newLevels: levels)
+        self.updateLevels(xTiles, yTiles, newLevels: levels, downloads: downloads)
         
     }
     
-    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [GLSLevelData]){
+    func updateLevels(_ newXTiles : CGFloat, _ newYTiles : CGFloat, newLevels : [LevelData], downloads: [String:Int]){
         for subview in subviews{
             subview.removeFromSuperview()
         }
@@ -75,19 +75,19 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
             let y :CGFloat = CGFloat(Int(CGFloat(i)/yTiles))//-1;
             
             let propRect = CGRect(x: startX+sidePadding+(tilePropWidth*x)+(xMiddlePadding*x), y: /*startY*/+topPadding+(tilePropHeight*y)+(yMiddlePadding*y), width: tilePropWidth, height: tilePropHeight);
-            let levelTile = GLSSelectTile(frame: propToRectSelf(prop: propRect), _level: level)
+            let levelTile = GLSSelectTile(frame: propToRectSelf(prop: propRect), _level: level, downloads: downloads[(level.levelMetadata?.levelUUID)!]!)
             levelTile.backgroundColor = UIColor.clear
             levelTile.layer.borderColor = UIColor.black.cgColor
             levelTile.layer.borderWidth = 2;
             
-            print("Showing Level Tile: \(level.levelUUID)")
-            glsSelectorDelegate?.getThumbnail(levelUUID: level.levelUUID, completion: {(img : UIImage) in
-                levelTile.image = img
-                print("Showing Level Thumb: \(level.levelUUID)")
-            })
+            print("Showing Level Tile: \(level.levelMetadata?.levelUUID)")
+//            glsSelectorDelegate?.getThumbnail(levelUUID: level.levelUUID, completion: {(img : UIImage) in
+//                levelTile.image = img
+//                print("Showing Level Thumb: \(level.levelUUID)")
+//            })
             
             
-            levelTile.pressed = {(levelData : GLSLevelData) in
+            levelTile.pressed = {(levelData : LevelData) in
                 
                 let paddings = self.propToRect(prop: CGRect(x: sidePadding, y: topPadding, width: xMiddlePadding, height: yMiddlePadding), within: self.bounds)
                 
@@ -149,17 +149,36 @@ class GLSLevelSelector : UIScrollView, GLSDetailViewDelegate {
 }
 
 
-class GLSSelectTile : UIImageView {
-    var level : GLSLevelData
-    var pressed = {(glsData : GLSLevelData) in}
+class GLSSelectTile : UIView {
+    var level : LevelData!;
+    var downloadCounter : Int!;
+    
+    var pressed = {(glsData : LevelData) in}
     
     var heldDown : Bool = false;
     
-    init(frame: CGRect, _level: GLSLevelData){
+    
+    private var levelView : LevelView!;
+
+    
+    init(frame: CGRect, _level: LevelData, downloads : Int){
         level = _level;
+        downloadCounter = downloads
         super.init(frame: frame);
         self.isUserInteractionEnabled = true;
-        self.contentMode = UIViewContentMode.scaleAspectFit;
+//        self.contentMode = UIViewContentMode.scaleAspectFit;
+        
+        
+        levelView = LevelView(_level: Level(levelData: level), _parentView: .LevelCreate)
+        levelView.levelView.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+        //        levelView.levelView.delegate = self
+        levelView.levelView.scrollRectToVisible(propToRect(prop: (level.levelMetadata?.levelThumbnail?.cgRect)!), animated: false);
+        levelView.changeBordersBasedOnZoom = false
+        levelView.levelView.minimumZoomScale = 0.1
+        levelView.levelView.maximumZoomScale = 5
+        levelView.stageView.layer.borderWidth = 0
+        self.addSubview(levelView.levelView)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -243,7 +262,7 @@ class GLSLevelDetailView : UIView {
         getOpenViewForPlayButton().addSubview(playButton)
         
         
-        downloadCount = Label(frame: propToRect(prop: CGRect(x: 0.05, y: 0.05, width: 0.9, height: 0.2), within: getOpenViewForDownloadCounter().frame), text: "D: \(tileView.level.downloads)", _outPos: CGPoint(x: -1, y: 0.05), textColor: UIColor.white, valign: VAlign.Default, _insets: false)
+        downloadCount = Label(frame: propToRect(prop: CGRect(x: 0.05, y: 0.05, width: 0.9, height: 0.2), within: getOpenViewForDownloadCounter().frame), text: "D: \(tileView.downloadCounter)", _outPos: CGPoint(x: -1, y: 0.05), textColor: UIColor.white, valign: VAlign.Default, _insets: false)
 //        DownloadCounter.getDownloadCountFor(uuid: tileView.level.levelUUID, completion: {(downloads : Int) in
 //
 //        })

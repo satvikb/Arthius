@@ -8,9 +8,9 @@
 
 import UIKit
 
-class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
+class PublishLevelView : UIView, UITextFieldDelegate {
     
-    var publishBtnPressed = {(title : String, description : String, thumbnail : UIImage) in}
+    var publishBtnPressed = {(title : String, description : String, thumbnail : CGRect) in}
     var cancelled = {}
     
     var titleLabel : Label!;
@@ -25,6 +25,8 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
     var titleTextField : TextField!;
     var descriptionTextField : TextField!;
     
+    private var levelView : LevelView!;
+    
     init(frame: CGRect, level: LevelData) {
         super.init(frame: frame)
         
@@ -32,7 +34,7 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
         
         
         thumbnailView = UIView(frame: propToRect(prop: CGRect(x: 0.05, y: 0.2, width: 0.4, height: 0.275), within: self.frame))
-        let levelView = LevelView(_level: Level(levelData: level), _parentView: .LevelCreate)
+        levelView = LevelView(_level: Level(levelData: level), _parentView: .LevelCreate)
         levelView.levelView.frame = CGRect(x: 0, y: 0, width: thumbnailView.frame.width, height: thumbnailView.frame.height)
 //        levelView.levelView.delegate = self
         levelView.changeBordersBasedOnZoom = false
@@ -68,6 +70,7 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
         
         publishButton = Button(frame: propToRect(prop: CGRect(x: 0.1, y: 0.75, width: 0.8, height: 0.2), within: bottomView.frame), text: "publish", fontSize: Screen.fontSize(propFontSize: 30), outPos: propToRect(prop: CGRect(x: -1, y: 0.05, width: 0, height: 0), within: self.frame).origin)
         publishButton.pressed = {
+            
             self.publishBtnPressed(self.titleTextField.text!, self.descriptionTextField.text!, self.thumbnailFromView())
         }
         bottomView.addSubview(publishButton)
@@ -88,8 +91,34 @@ class PublishLevelView : UIView, UITextFieldDelegate, UIScrollViewDelegate {
         
     }
     
-    func thumbnailFromView() -> UIImage{
-        return UIImage(view: thumbnailView)
+    func thumbnailFromView() -> CGRect{
+        let scrollView = levelView.levelView
+        
+        var visibleRect : CGRect = CGRect(origin: (scrollView?.contentOffset)!, size: (scrollView?.bounds.size)!);
+
+        let theScale : CGFloat = 1.0 / (scrollView?.zoomScale)!;
+        visibleRect = visibleRect * theScale;
+        
+        
+        let prop = rectToProp(rect: visibleRect);
+
+        print("Thumb visible: \(visibleRect)__\(prop)");
+        
+        return prop;
+        
+//        CGRect visibleRect;
+//        visibleRect.origin = scrollView.contentOffset;
+//        visibleRect.size = scrollView.bounds.size;
+        
+//        float theScale = 1.0 / scale;
+//        visibleRect.origin.x *= theScale;
+//        visibleRect.origin.y *= theScale;
+//        visibleRect.size.width *= theScale;
+//        visibleRect.size.height *= theScale;
+//
+        
+        
+//        return UIImage(view: thumbnailView)
     }
     
     func animateIn(){

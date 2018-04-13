@@ -12,7 +12,7 @@ protocol CreateLevelViewDelegate: class {
     func account_isLoggedIn() -> Bool
     func createLevelView_pressMenu()
     func createLevelView_playLv()
-    func createLevelView_publishLv(title: String, description: String, thumbnail: UIImage)
+    func createLevelView_publishLv(title: String, description: String, thumbnail: CGRect)
 }
 
 enum ToolbarItems {
@@ -135,7 +135,7 @@ class CreateLevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegat
         
         let publishView = PublishLevelView(frame: propToRect(prop: CGRect(x: 0, y: 0, width: 1, height: 1)), level: levelData)
         
-        publishView.publishBtnPressed = { (title : String, description : String, thumbnail: UIImage) in
+        publishView.publishBtnPressed = { (title : String, description : String, thumbnail: CGRect) in
             self.delegate?.createLevelView_publishLv(title: title, description: description, thumbnail: thumbnail)
         }
         

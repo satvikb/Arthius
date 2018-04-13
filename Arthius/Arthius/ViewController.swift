@@ -236,20 +236,25 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: .PlaySelect)
     }
     
-    func globalLevelSelect_pressLevel(level: GLSLevelData) {
-        getLevelFile(uuid: level.levelUUID, completion: {(levelData : LevelData) in
-            DownloadCounter.addDownloadCounterTo(uuid: level.levelUUID)
-            self.currentLevel = Level(levelData: levelData);
-            self.switchToView(newView: .LevelPlay)
-        })
+    func globalLevelSelect_pressLevel(level: LevelData) {
+        
+        DownloadCounter.addDownloadCounterTo(uuid: (level.levelMetadata?.levelUUID)!)
+        self.currentLevel = Level(levelData: level);
+        self.switchToView(newView: .LevelPlay)
+        
+//        getLevelFile(uuid: level.levelUUID, completion: {(levelData : LevelData) in
+//            DownloadCounter.addDownloadCounterTo(uuid: level.levelUUID)
+//            self.currentLevel = Level(levelData: levelData);
+//            self.switchToView(newView: .LevelPlay)
+//        })
     }
     
     func getLevelFile(uuid: String, completion: @escaping (_ levelData : LevelData) -> Void){
         let storageRef = storage.reference()
         let levelRef = storageRef.child("levels/\(uuid).gws")
         
-        // Download in memory with a maximum allowed size of 10MB (10 * 1024 * 1024 bytes)
-        levelRef.getData(maxSize: 10 * 1024 * 1024, completion: {(datao : Data?, error : Error?) in
+        // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+        levelRef.getData(maxSize: 1 * 1024 * 1024, completion: {(datao : Data?, error : Error?) in
             if let error = error {
                 // Uh-oh, an error occurred!
                 print("error getData \(error.localizedDescription)")
@@ -273,14 +278,16 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         })
     }
     
-    func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([GLSLevelData]) -> Void){
+    //TODO multiple completions for each: get main metadata, get download counter, get thumbnail, etc.
+    func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([LevelData], [String:Int]) -> Void){//, downloadCompletion: @escaping (Int) -> Void){
         
         db.collection("levels").getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
                 
-                var lData : [GLSLevelData] = []
+                var lData : [LevelData] = []
+                var downloadData : [String:Int] = [:];
                 var num : Int = 0
                 
                 for document in querySnapshot!.documents {
@@ -292,21 +299,35 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
                     let creatorId : String = d["UserID"]! as! String
                     let levelUUID : String = d["LevelID"]! as! String
                     let description : String = d["Description"]! as! String
+//                    let thumbnail : Rect = d["Thumbnail"]! as! Rect
+
                     
-                    DownloadCounter.getDownloadCountFor(uuid: levelUUID, completion: {(downloads : Int) in
-                        let glsData = GLSLevelData(title: title, creatorId: creatorId, levelUUID: levelUUID, description: description, downloads: downloads)
-                        lData.append(glsData)
-                        num += 1
+                    //TODO is this super inefficient? downloading all levels that are queried...but...level sizes are max 3kb
+                    //start downloading it
+                    self.getLevelFile(uuid: levelUUID, completion: { (levelData : LevelData) in
+                        File.saveLevel(level: levelData, levelType: .PublicMade);
                         
-                        if(querySnapshot?.count == num){
-                            completion(lData)
-                        }
+                        
+                        lData.append(levelData)
+                        
+                        DownloadCounter.getDownloadCountFor(uuid: levelUUID, completion: {(downloads : Int) in
+//                            let glsData = GLSLevelData(title: title, creatorId: creatorId, levelUUID: levelUUID, description: description, downloads: downloads, thumbnail: thumbnail)
+//                            lData.append(glsData)
+                            downloadData[levelUUID] = downloads;
+                            num += 1
+                            
+                            if(querySnapshot?.count == num){
+                                completion(lData, downloadData)
+                            }
+                        })
                     })
+                    
+                    
+                    
                     
                     
                 }
                 
-//                completion(lData)
             }
         }
     }
@@ -391,48 +412,55 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
     }
     
     
-    func createLevelView_publishLv(title: String, description: String, thumbnail: UIImage){
+    func createLevelView_publishLv(title: String, description: String, thumbnail: CGRect){
         if(account_isLoggedIn()){
             currentLevel = Level(levelData: createLevelView.levelData)
+            
+            //TODO, also add title and description, basically MetadataHandler for levels
+            currentLevel.levelData?.levelMetadata?.levelThumbnail = thumbnail.rect;
+            File.saveLevel(level: currentLevel.levelData, levelType: .UserMade)
+            
+            
             let levelId = currentLevel.levelData?.levelMetadata?.levelUUID! ?? ""
             let userId = Auth.auth().currentUser?.uid ?? ""
             
             if(userId != ""){
-                let thumbnailStoragePath = "thumb/\(levelId).jpg"
                 
                 let data : [String : Any] = [
                     "LevelID" : levelId,
                     "UserID" : userId, //TODO handle no user id?
                     "Title" : title,
                     "Description" : description,
-                    //"Thumbnail" : thumbnailStoragePath //no need to actually store, can be remade with /{userId}/thumb/{levelUUID}.jpg
+//                    "Thumbnail" : thumbnail.rect
                 ]
                 
-                
+                print("up")
                 db.collection("levels").document(levelId).setData(data, completion: {(error) in
+                    print(error ?? "E")
                     print("Add document")
                     self.uploadCustomMadeFile(userId: userId, levelUUID: levelId)
                 })
                 
-                print("uploading thumb to: \(thumbnailStoragePath)")
-                uploadLevelImage(storagePath: thumbnailStoragePath, userId: userId, thumbnail: thumbnail)
+//                let thumbnailStoragePath = "thumb/\(levelId).jpg"
+//                print("uploading thumb to: \(thumbnailStoragePath)")
+//                uploadLevelImage(storagePath: thumbnailStoragePath, userId: userId, thumbnail: thumbnail)
             }
         }
     }
     
-    func uploadLevelImage(storagePath: String, userId: String, thumbnail: UIImage){
-        //test image
-        
-        let imageData : Data = UIImageJPEGRepresentation(thumbnail, 0.5)!.compress(withAlgorithm: .LZMA)!
-        
-        let storageRef = storage.reference()
-        let levelRef = storageRef.child(storagePath)
-        
-        let metadata = StorageMetadata()
-        metadata.contentType = "level/jpg"
-        
-        levelRef.putData(imageData)
-    }
+//    func uploadLevelImage(storagePath: String, userId: String, thumbnail: UIImage){
+//        //test image
+//
+//        let imageData : Data = UIImageJPEGRepresentation(thumbnail, 0.5)!.compress(withAlgorithm: .LZMA)!
+//
+//        let storageRef = storage.reference()
+//        let levelRef = storageRef.child(storagePath)
+//
+//        let metadata = StorageMetadata()
+//        metadata.contentType = "level/jpg"
+//
+//        levelRef.putData(imageData)
+//    }
     
     func uploadCustomMadeFile(userId : String, levelUUID : String){
         let storageRef = storage.reference()

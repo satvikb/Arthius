@@ -24,6 +24,10 @@ public func / (left: CGPoint, right: CGPoint) -> CGPoint {
     return CGPoint(x: left.x / right.x, y: left.y / right.y)
 }
 
+public func * (left: CGRect, right: CGFloat) -> CGRect {
+    return CGRect(x: left.origin.x*right, y: left.origin.y*right, width: left.width*right, height: left.width*right);
+}
+
 public extension CGPoint {
     public func length() -> CGFloat {
         return sqrt(x*x + y*y)
