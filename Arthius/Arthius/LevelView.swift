@@ -113,7 +113,7 @@ class Line : CAShapeLayer{
     
     func newLocation(p: CGPoint){
         linePath.addLine(to: p);
-        path = linePath.cgPath;
+//        path = linePath.cgPath;
         didChangeValue(forKey: "path")
         currentPoint = p;
         
@@ -417,7 +417,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             
             var currentLine = DummyLine(frame: levelView.frame, _startPoint: line.startPosition, _startColor: line.lineColor, _startThickness: line.lineThickness);
 
-            while(line.levelCountDistance < 400 && line.lineThickness >= 1 && line.madeItToEnd == false){
+            while(line.levelCountDistance < 700 && line.lineThickness >= 1 && line.madeItToEnd == false){
                 
                 
                 if(line.lineThickness != currentLine.lineThickness || line.lineColor != currentLine.lineColor){
@@ -692,6 +692,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             //TODO
             //currentGravityWellCreated.mass =
             currentGravityWellCreated.updateSize()
+//            updatePredictPath()
         }else if(recognizer.state == .ended){
 //            print("Created well of radius \(currentGravityWellCreated.areaOfEffectDiameter/2)")
             justCreatedWell = true;
@@ -713,16 +714,23 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
             }
             self.justCreatedWell = false
         }
+        
+        newWell.frameChanged = {
+            self.updatePredictPath()
+        }
 
         newWell.layer.zPosition = -100
         scaledGravityWells.append(newWell)
         
+        updatePredictPath()
+
         return newWell;
     }
     
     func removeGravityWell(well : GravityWell){
         well.removeFromSuperview()
         self.scaledGravityWells.remove(at: self.scaledGravityWells.index(of: well)!)
+        updatePredictPath()
     }
     
     func createColorBox(frame : CGRect, rotation : CGFloat, leftCol : Color, rightCol : Color, backgroundColor: Color, middlePropWidth : CGFloat) -> ColorBox{
@@ -745,21 +753,35 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
 //        levelSave!.levelData.gravityWells = gravityWellData;
 //    }
 
+    func updatePredictPath(){
+        for dl in drawLines{
+            dl.removeFromSuperlayer()
+        }
+        
+//    
+//        DispatchQueue.global(qos: .userInitiated).async {
+//            // Download file or perform expensive task
+//            self.drawLines = self.getPredictedPaths();
+//
+//            DispatchQueue.main.async {
+//                // Update the UI
+//                for dl in self.drawLines{
+//                    self.stageView.layer.addSublayer(dl);
+//                }
+//            }
+//        }
+        
+        self.drawLines = self.getPredictedPaths();
+        for dl in self.drawLines{
+            self.stageView.layer.addSublayer(dl);
+        }
+       
+    }
     
     @objc func update(){
         if(paused == false){
             
-            for dl in drawLines{
-                dl.removeFromSuperlayer()
-            }
             
-            drawLines = self.getPredictedPaths();
-            //                print(lines.count);
-            //                print("");
-            
-            for dl in drawLines{
-                self.stageView.layer.addSublayer(dl);
-            }
             
 //            for line in lines{
 //                if(line.madeItToEnd == false && line.lineThickness >= 1){
