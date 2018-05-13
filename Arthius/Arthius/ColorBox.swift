@@ -47,9 +47,7 @@ class ColorBox :  UIView {
         
 //        print("F \(frame)")
         super.init(frame: frame)//, rotation: rotation, box: box)
-        
         self.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        
         self.backgroundColor = UIColor.clear//ColorBox.ColorToUIColor(col: backgroundColor)
 
         bodyView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))//, rotation: rotation, box: box)

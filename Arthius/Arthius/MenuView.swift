@@ -30,7 +30,7 @@ class MenuView: UIView {
             self.menuDelegate?.menu_pressPlay()
         }
         self.addSubview(playButton)
-        
+        CGFloat.random
         createButton = Button(frame: propToRect(prop: CGRect(x: 0.2, y: 0.55, width: 0.6, height: 0.1)), text: "create")
         createButton.pressed = {
             self.menuDelegate?.menu_pressCreate()

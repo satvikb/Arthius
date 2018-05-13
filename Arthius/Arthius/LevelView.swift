@@ -54,7 +54,6 @@ class Line : CAShapeLayer{
         lineColor = startColor;
         currentPoint = startPosition;
         lineVelocity = startVelocity;
-        linePath = UIBezierPath();
 
         lineThickness = 10;
         
@@ -62,9 +61,7 @@ class Line : CAShapeLayer{
         
         super.init()
         
-        linePath.move(to: startPosition)
         self.frame = frame;
-        self.path = linePath.cgPath;
         self.lineCap = kCALineCapRound;
         self.fillColor = UIColor.clear.cgColor;
         self.lineWidth = lineThickness;
@@ -150,6 +147,69 @@ class Line : CAShapeLayer{
     }
 }
 
+class DummyLine : CAShapeLayer{
+
+    var currentPoint: CGPoint!
+    var linePath : UIBezierPath!;
+    //    var lineShape : CAShapeLayer!;
+    var lineColor : Color!;
+    var lineThickness : CGFloat!;
+
+    
+    var levelCountTimer : Double = 0;
+    var levelCountDistance : CGFloat = 0;
+    
+    
+    //oh why not, too much work to have an incremental number ID system
+    var uuid : String!
+    
+    //TODO: frame: should be just the screen bounds, or should it be level bounds (sizes bigger than screen)?
+    init(frame: CGRect, _startPoint : CGPoint, _startColor : Color, _startThickness : CGFloat) {
+        lineColor = _startColor;
+        lineThickness = _startThickness;
+        currentPoint = _startPoint;
+
+        uuid = UUID().uuidString
+        
+        linePath = UIBezierPath();
+        linePath.move(to: currentPoint)
+        
+        
+        super.init()
+        
+        self.frame = frame;
+        self.path = linePath.cgPath;
+        self.lineCap = kCALineCapRound;
+        self.fillColor = UIColor.clear.cgColor;
+        self.lineWidth = lineThickness;
+        updateStrokeColor()
+        self.zPosition = 100;
+        
+        path = nil;
+    }
+    
+    func newLocation(p: CGPoint){
+        linePath.addLine(to: p);
+        path = linePath.cgPath;
+        didChangeValue(forKey: "path")
+        currentPoint = p;
+        
+    }
+    
+    func updateStrokeColor(){
+        self.strokeColor = lineColor.uiColor().cgColor
+    }
+
+    override init(layer: Any) {
+        super.init(layer: layer)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        //        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class LevelEnd : UIView{
     var color : Color!;
     
@@ -193,6 +253,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     weak var levelViewDelegate:LevelViewDelegate?
 
     var lines : [Line] = []
+    var drawLines : [DummyLine] = [];
     var endPoints : [LevelEnd] = []
     var antiGravityZones : [AntiGravityZone] = []
     
@@ -211,7 +272,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     var scaledColorBoxes : [ColorBox] = []
     
     var displayLink : CADisplayLink!
-    var paused = true;
+    var paused = false;
     
     
     var currentTextsLabel : LevelTextsLabel!;
@@ -292,7 +353,7 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         for line in (level.levelData?.lineData)! {
             let newLine = Line(frame: levelView.frame, _startPoint: propToPoint(prop: (line.startPosition?.cgPoint)!), _startVelocity: propToVector(prop: (line.startVelocity?.cgVector)!), _startColor: line.startColor!, _startThickness: propToFloat(prop: CGFloat(line.startThickness), scaleWithX: true))
             lines.append(newLine)
-            self.stageView.layer.addSublayer(newLine)
+//            self.stageView.layer.addSublayer(newLine)
         }
     }
     
@@ -319,7 +380,11 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         playResetBtn.pressed = {
             if(self.paused == true){
                 //play
-                self.playLevel()
+//                self.playLevel()
+//                let lines = self.getPredictedPaths();
+//                print(lines.count);
+//                print("");
+
             }else if(self.paused == false){
                 //currently playing, pause and reset level
                 self.paused = true;
@@ -336,6 +401,98 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
         
         self.addSubview(playResetBtn);
         self.addSubview(homeBtn);
+    }
+    
+    
+    func getPredictedPaths() -> [DummyLine]{
+        
+        var layers : [DummyLine] = [];
+        
+        
+        for line in lines{
+            line.reset()
+            line.levelCountDistance = 0;
+            // different colors and thickness
+            var linesForLine : [DummyLine] = [];
+            
+            var currentLine = DummyLine(frame: levelView.frame, _startPoint: line.startPosition, _startColor: line.lineColor, _startThickness: line.lineThickness);
+
+            while(line.levelCountDistance < 400 && line.lineThickness >= 1 && line.madeItToEnd == false){
+                
+                
+                if(line.lineThickness != currentLine.lineThickness || line.lineColor != currentLine.lineColor){
+                    linesForLine.append(currentLine);
+                    
+                    currentLine = DummyLine(frame: currentLine.frame, _startPoint: currentLine.currentPoint, _startColor: line.lineColor, _startThickness: line.lineThickness);
+                }
+                
+                
+                if(line.madeItToEnd == false && line.lineThickness >= 1){
+                    line.tempLineForces = CGVector.zero;
+                    
+                    var forces = calculateGravityForcesForLine(line: line)
+                    line.tempLineForces = CGVector.zero;
+                    
+//                    for endView in endPoints{
+//
+//                        if(endView.frame.contains(stageView.convert(line.currentPoint, from: stageView))){
+//
+//                            if(line.lineColor == endView.color){
+//                                line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
+//                                line.madeItToEnd = true;
+//                            }
+//
+//                        }
+//                    }
+                    
+                    //ANTI GRAVITY ZONES
+                    //TODO doesnt work ?
+                    for antiGrav in antiGravityZones {
+                        if(antiGrav.frame.contains(line.currentPoint)){
+                            forces = CGVector.zero
+                        }
+                    }
+                    
+                    //pemdas
+                    let dV = forces / line.lineMass //accelerations
+                    line.lineVelocity = line.lineVelocity + dV
+                    
+                    let deltaVel = line.lineVelocity!
+                    
+                    let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+                    line.levelCountDistance += deltaVel.length()
+                    line.newLocation(p: pos)
+                    
+                    currentLine.newLocation(p: pos);
+                    
+                    //                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
+                    //handle collisions
+                    
+                    for gravWell in scaledGravityWells {
+                        let lineCircle = Circle(center: line.currentPoint, radius: line.lineThickness/2)
+                        let gravCircle = Circle(center: gravWell.corePoint, radius: gravWell.coreDiameter/2)
+                        
+                        let collide = lineCircle.collidesWith(circle2: gravCircle)
+                        
+                        if(collide && line.lineThickness >= 1){
+                            line.lineThickness = line.lineThickness - 1 //TODO use by how much it's collided
+                            line.updateLineThickness()
+                        }
+                        //                        print("C: \(line.currentPoint) \(gravWell.corePoint) \(collide)")
+                    }
+                    
+                    
+                    
+                    
+                    handleColorBoxesForLine(line: line)
+                }
+            }
+            
+            linesForLine.append(currentLine);
+            layers.append(contentsOf: linesForLine);
+        }
+        
+        return layers;
     }
     
     func playLevel(){
@@ -592,68 +749,80 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
     @objc func update(){
         if(paused == false){
             
-            for line in lines{
-                if(line.madeItToEnd == false && line.lineThickness >= 1){
-                    line.tempLineForces = CGVector.zero;
-                    
-                    var forces = calculateGravityForcesForLine(line: line)
-                    line.tempLineForces = CGVector.zero;
-                    
-                    for endView in endPoints{
-//                        let newFrame : CGRect = stageView.convert(endView.frame, from:levelView)
-//stageView.convert(<#T##point: CGPoint##CGPoint#>, from: <#T##UIView?#>)
-                        
-                        if(endView.frame.contains(stageView.convert(line.currentPoint, from: stageView))){
-//                            forces = CGVector.zero;
-
-                            if(line.lineColor == endView.color){
-                                line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
-                                line.madeItToEnd = true;
-                            }
-                            
-                        }
-                    }
-                    
-                    //ANTI GRAVITY ZONES
-                    //TODO doesnt work 
-                    for antiGrav in antiGravityZones {
-                        if(antiGrav.frame.contains(line.currentPoint)){
-                            forces = CGVector.zero
-                        }
-                    }
-                    
-                    //pemdas
-                    let dV = forces / line.lineMass //accelerations
-                    line.lineVelocity = line.lineVelocity + dV
-                    
-                    let deltaVel = line.lineVelocity!
-                    
-                    let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
-                    line.levelCountDistance += deltaVel.length()
-                    line.newLocation(p: pos)
-                    
-//                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
-                    //handle collisions
-                    
-                    for gravWell in scaledGravityWells {
-                        let lineCircle = Circle(center: line.currentPoint, radius: line.lineThickness/2)
-                        let gravCircle = Circle(center: gravWell.corePoint, radius: gravWell.coreDiameter/2)
-                        
-                        let collide = lineCircle.collidesWith(circle2: gravCircle)
-                        
-                        if(collide && line.lineThickness >= 1){
-                            line.lineThickness = line.lineThickness - 1 //TODO use by how much it's collided
-                            line.updateLineThickness()
-                        }
-//                        print("C: \(line.currentPoint) \(gravWell.corePoint) \(collide)")
-                    }
-                    
-                    
-                    
-                    
-                    handleColorBoxesForLine(line: line)
-                }
+            for dl in drawLines{
+                dl.removeFromSuperlayer()
             }
+            
+            drawLines = self.getPredictedPaths();
+            //                print(lines.count);
+            //                print("");
+            
+            for dl in drawLines{
+                self.stageView.layer.addSublayer(dl);
+            }
+            
+//            for line in lines{
+//                if(line.madeItToEnd == false && line.lineThickness >= 1){
+//                    line.tempLineForces = CGVector.zero;
+//
+//                    var forces = calculateGravityForcesForLine(line: line)
+//                    line.tempLineForces = CGVector.zero;
+//
+//                    for endView in endPoints{
+////                        let newFrame : CGRect = stageView.convert(endView.frame, from:levelView)
+////stageView.convert(<#T##point: CGPoint##CGPoint#>, from: <#T##UIView?#>)
+//
+//                        if(endView.frame.contains(stageView.convert(line.currentPoint, from: stageView))){
+////                            forces = CGVector.zero;
+//
+//                            if(line.lineColor == endView.color){
+//                                line.levelCountTimer = Date().timeIntervalSince1970-line.levelCountTimer
+//                                line.madeItToEnd = true;
+//                            }
+//
+//                        }
+//                    }
+//
+//                    //ANTI GRAVITY ZONES
+//                    //TODO doesnt work ?
+//                    for antiGrav in antiGravityZones {
+//                        if(antiGrav.frame.contains(line.currentPoint)){
+//                            forces = CGVector.zero
+//                        }
+//                    }
+//
+//                    //pemdas
+//                    let dV = forces / line.lineMass //accelerations
+//                    line.lineVelocity = line.lineVelocity + dV
+//
+//                    let deltaVel = line.lineVelocity!
+//
+//                    let pos = line.currentPoint + CGPoint(x: deltaVel.dx, y: deltaVel.dy);
+//                    line.levelCountDistance += deltaVel.length()
+//                    line.newLocation(p: pos)
+//
+////                    print("Line \(line.levelCountDistance) \(line.levelCountTimer)")
+//                    //handle collisions
+//
+//                    for gravWell in scaledGravityWells {
+//                        let lineCircle = Circle(center: line.currentPoint, radius: line.lineThickness/2)
+//                        let gravCircle = Circle(center: gravWell.corePoint, radius: gravWell.coreDiameter/2)
+//
+//                        let collide = lineCircle.collidesWith(circle2: gravCircle)
+//
+//                        if(collide && line.lineThickness >= 1){
+//                            line.lineThickness = line.lineThickness - 1 //TODO use by how much it's collided
+//                            line.updateLineThickness()
+//                        }
+////                        print("C: \(line.currentPoint) \(gravWell.corePoint) \(collide)")
+//                    }
+//
+//
+//
+//
+//                    handleColorBoxesForLine(line: line)
+//                }
+//            }
         }
         
         if(testAllLines() == true && beatLevel == false){
@@ -834,7 +1003,8 @@ class LevelView : UIView, UIScrollViewDelegate, UIGestureRecognizerDelegate {
                 levelDead = true
             }
         }
-        return levelDead
+        return false
+//        return levelDead
     }
     
     //TODO doesnt work

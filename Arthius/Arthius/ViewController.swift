@@ -86,6 +86,7 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
         switchToView(newView: .Menu)
     }
     
+    
     func firebaseAuthHandler(){
         let _ = Auth.auth().addStateDidChangeListener({(auth, user) in
             print("CHANGE \(String(describing: user?.uid))")
@@ -277,6 +278,17 @@ class ViewController: UIViewController, MenuViewDelegate, AccountViewDelegate, P
             }
         })
     }
+    
+    
+    /*
+ 
+     well there is one thing in arthius that i think a change to the language can do (or maybe sth im just overlooking), but when i get Global Levels, i do it in two parts: the Level File, and the Download Counter. since both of these are async with firebase, i have to do this with completions, but because i need to return the data when ALL the data is downloaded (both level file & downloads in one object), i do a completion handler within the completion handler, and return data once everything is downloaded.
+     
+     this can be fixed if im able to change the data that is returned in the completion AFTER the completion is already called, like send a reference to to the object through the completion, and then edit the data even after the completion is called, updating the data accordingly
+ 
+ */
+    
+    
     
     //TODO multiple completions for each: get main metadata, get download counter, get thumbnail, etc.
     func globalLevelSelect_getLevels(query: LevelQuery, completion: @escaping ([LevelData], [String:Int]) -> Void){//, downloadCompletion: @escaping (Int) -> Void){
